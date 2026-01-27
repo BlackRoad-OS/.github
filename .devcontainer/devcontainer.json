@@ -83,5 +83,5 @@
     "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,readonly,type=bind,consistency=cached"
   ],
 
-  "postAttachCommand": "echo '🚀 BlackRoad Agent Codespace Ready! Run: python -m operator.cli --help'"
+  "postAttachCommand": "./quickstart.sh"
 }
