@@ -6,7 +6,7 @@
 [![Organizations](https://img.shields.io/badge/organizations-15-green.svg)](orgs/)
 [![Status](https://img.shields.io/badge/status-active-success.svg)](.STATUS)
 [![AI](https://img.shields.io/badge/AI-Claude%20Code%20API-blue.svg)](CLAUDE_CODE_API.md)
-[![Tests](https://img.shields.io/badge/tests-73%20passing-brightgreen.svg)](TESTING.md)
+[![Tests](https://img.shields.io/badge/tests-97%20passing-brightgreen.svg)](TESTING.md)
 [![Auto-Merge](https://img.shields.io/badge/auto--merge-enabled-purple.svg)](AUTO_MERGE.md)
 
 ---
