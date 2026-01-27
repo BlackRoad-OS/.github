@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "blackroad": {
+      "command": "python",
+      "args": ["-m", "blackroad_mcp"],
+      "cwd": "${workspaceFolder}/prototypes/mcp-server",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/prototypes/mcp-server:${workspaceFolder}/prototypes/operator:${workspaceFolder}/prototypes/dispatcher:${workspaceFolder}/prototypes/webhooks"
+      }
+    }
+  }
+}
