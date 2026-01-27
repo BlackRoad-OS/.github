@@ -1,0 +1,98 @@
+# aria - Storage Node Configuration
+# Role: Database, object storage, caching, backups
+
+node:
+  name: aria
+  role: storage
+  status: planned
+
+hardware:
+  model: Raspberry Pi 5
+  memory: 4GB
+  storage:
+    - type: SD
+      size: 64GB
+      mount: /boot
+    - type: NVMe
+      size: 2TB
+      mount: /data
+      filesystem: ext4
+
+network:
+  tailscale:
+    hostname: aria.blackroad.ts.net
+    ip: 100.x.x.3
+  cloudflare:
+    tunnel: blackroad-storage
+    routes:
+      - hostname: storage.blackroad.ai
+        service: http://localhost:9000
+
+services:
+  minio:
+    enabled: true
+    port: 9000
+    console_port: 9001
+    description: S3-compatible object storage
+    restart: always
+    data_dir: /data/minio
+    buckets:
+      - blackroad-assets
+      - blackroad-backups
+      - blackroad-uploads
+
+  postgres:
+    enabled: true
+    port: 5432
+    description: Primary database
+    restart: always
+    data_dir: /data/postgres
+    databases:
+      - blackroad
+      - salesforce_cache
+      - metrics
+
+  redis:
+    enabled: true
+    port: 6379
+    description: Cache and job queue
+    restart: always
+    maxmemory: 1gb
+    persistence: aof
+
+  backup-agent:
+    enabled: true
+    description: Automated backup service
+    restart: always
+    schedule:
+      postgres: "0 */4 * * *"   # Every 4 hours
+      minio: "0 2 * * *"        # 2am daily
+    retention:
+      postgres: 30d
+      minio: 90d
+
+environment:
+  NODE_NAME: aria
+  NODE_ROLE: storage
+  DATA_DIR: /data
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+  MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+
+monitoring:
+  prometheus:
+    enabled: true
+    port: 9100
+  alerts:
+    - name: disk_usage_high
+      threshold: 85%
+      action: notify
+    - name: postgres_connections_high
+      threshold: 90%
+      action: notify
+
+signals:
+  emit:
+    - "🟢 HW → OS : node_online, node=aria"
+    - "💾 ARC → OS : backup_complete, type=${type}, size=${size}"
+    - "📊 ARC → OS : storage_report, used=${used}GB, free=${free}GB"

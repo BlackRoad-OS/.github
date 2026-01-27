@@ -1,0 +1,22 @@
+# Salesforce Sync Dependencies
+
+# Salesforce API client
+simple-salesforce>=1.12.0
+
+# Environment variables
+python-dotenv>=1.0.0
+
+# YAML config
+pyyaml>=6.0
+
+# Optional: Better CLI
+# click>=8.0.0
+# rich>=13.0.0
+
+# Optional: Async support
+# aiohttp>=3.8.0
+
+# Development
+# pytest>=7.0.0
+# black>=23.0.0
+# mypy>=1.0.0

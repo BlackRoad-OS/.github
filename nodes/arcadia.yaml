@@ -1,0 +1,97 @@
+# arcadia - Mobile Node Configuration
+# Role: Mobile client, field access, push notifications
+
+node:
+  name: arcadia
+  role: mobile
+  status: planned
+  type: mobile
+
+platform:
+  os: iOS / Android
+  framework: React Native / Swift
+
+network:
+  tailscale:
+    hostname: arcadia.blackroad.ts.net
+    ip: 100.x.x.7
+  connectivity:
+    - WiFi
+    - Cellular
+    - Offline capable
+
+capabilities:
+  notifications:
+    provider: Firebase / APNs
+    types:
+      - alerts
+      - signals
+      - reminders
+
+  offline:
+    enabled: true
+    sync_on_connect: true
+    local_storage: SQLite
+
+  biometrics:
+    enabled: true
+    types:
+      - Face ID
+      - Touch ID
+      - PIN fallback
+
+features:
+  dashboard:
+    description: Mobile KPI dashboard
+    screens:
+      - home
+      - metrics
+      - orgs
+      - settings
+
+  quick_actions:
+    description: Rapid access controls
+    actions:
+      - check_status
+      - emit_signal
+      - view_logs
+      - emergency_stop
+
+  voice:
+    description: Voice commands
+    enabled: true
+    wake_word: "Hey BlackRoad"
+    commands:
+      - "Check status"
+      - "Route query"
+      - "Show metrics"
+
+services:
+  push-listener:
+    description: Receive push notifications
+    handlers:
+      - signal_received
+      - alert_triggered
+      - node_status_changed
+
+  sync-agent:
+    description: Background sync
+    interval: 300  # 5 minutes
+    sync_items:
+      - metrics
+      - signals
+      - node_status
+
+environment:
+  NODE_NAME: arcadia
+  NODE_ROLE: mobile
+  API_URL: https://api.blackroad.ai
+  OFFLINE_MODE: auto
+
+signals:
+  emit:
+    - "📱 OS → OS : mobile_connected, device=${device_id}"
+    - "🔔 OS → OS : notification_received, type=${type}"
+  receive:
+    - "⚠️ OS → OS : alert, message=${message}"
+    - "📊 OS → OS : metrics_update"

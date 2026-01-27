@@ -1,0 +1,77 @@
+# octavia - Compute Node Configuration
+# Role: Heavy AI processing, background jobs, data pipelines
+
+node:
+  name: octavia
+  role: compute
+  status: planned
+
+hardware:
+  model: Raspberry Pi 5
+  memory: 4GB
+  storage:
+    - type: SD
+      size: 64GB
+      mount: /
+  accelerator:
+    model: Hailo-8
+    tops: 26
+    usage: AI inference
+
+network:
+  tailscale:
+    hostname: octavia.blackroad.ts.net
+    ip: 100.x.x.2
+
+services:
+  hailo-inference:
+    enabled: true
+    port: 5000
+    description: AI inference worker
+    restart: always
+    models:
+      - yolov8m        # Object detection (larger)
+      - whisper-small  # Speech to text (better accuracy)
+      - embedding-ada  # Text embeddings
+
+  job-worker:
+    enabled: true
+    port: 8081
+    description: Background job processor
+    restart: always
+    queues:
+      - default
+      - ai-inference
+      - data-processing
+    concurrency: 4
+
+  data-pipeline:
+    enabled: true
+    description: ETL processing
+    restart: always
+    pipelines:
+      - salesforce-sync
+      - drive-sync
+      - metrics-aggregation
+
+environment:
+  NODE_NAME: octavia
+  NODE_ROLE: compute
+  PRIMARY_NODE: lucidia.blackroad.ts.net
+  HAILO_DEVICE: /dev/hailo0
+  JOB_REDIS: aria.blackroad.ts.net:6379
+
+monitoring:
+  prometheus:
+    enabled: true
+    port: 9100
+  alerts:
+    - name: job_queue_backed_up
+      threshold: 1000
+      action: notify
+
+signals:
+  emit:
+    - "🟢 HW → OS : node_online, node=octavia"
+    - "⚙️ HW → OS : job_complete, job=${job_id}, duration=${ms}ms"
+    - "🧠 HW → OS : inference_complete, model=${model}, latency=${ms}ms"

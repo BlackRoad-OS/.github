@@ -1,0 +1,128 @@
+# Auto-triage issues using classification
+# Routes issues to appropriate teams/labels
+
+name: Issue Triage
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  triage:
+    name: Triage Issue
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Classify issue
+        id: classify
+        env:
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          cd prototypes/operator
+          python -c "
+          import os
+          from routing.core.router import Operator
+
+          op = Operator()
+
+          title = os.environ.get('ISSUE_TITLE', '')
+          body = os.environ.get('ISSUE_BODY', '')[:500]  # Limit for classification
+          query = f'{title} {body}'
+
+          result = op.route(query)
+
+          print(f'org={result.org_code}')
+          print(f'category={result.classification.category}')
+          print(f'confidence={result.confidence}')
+
+          # Output for GitHub Actions
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write(f'org={result.org_code}\\n')
+              f.write(f'category={result.classification.category}\\n')
+              f.write(f'confidence={result.confidence}\\n')
+          "
+
+      - name: Apply labels
+        if: steps.classify.outputs.confidence > 0.6
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const org = '${{ steps.classify.outputs.org }}';
+            const category = '${{ steps.classify.outputs.category }}';
+
+            const labels = [];
+
+            // Add org label
+            const orgLabels = {
+              'OS': 'org:os',
+              'AI': 'org:ai',
+              'FND': 'org:foundation',
+              'CLD': 'org:cloud',
+              'HW': 'org:hardware',
+              'SEC': 'org:security',
+            };
+            if (orgLabels[org]) labels.push(orgLabels[org]);
+
+            // Add category label
+            if (category) labels.push(`area:${category.toLowerCase()}`);
+
+            if (labels.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: labels
+              });
+              console.log(`Added labels: ${labels.join(', ')}`);
+            }
+
+      - name: Add triage comment
+        if: steps.classify.outputs.confidence > 0.6
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const org = '${{ steps.classify.outputs.org }}';
+            const category = '${{ steps.classify.outputs.category }}';
+            const confidence = '${{ steps.classify.outputs.confidence }}';
+
+            const orgNames = {
+              'OS': 'OS (Core Infrastructure)',
+              'AI': 'AI (Intelligence)',
+              'FND': 'Foundation (CRM/Finance)',
+              'CLD': 'Cloud (Infrastructure)',
+              'HW': 'Hardware',
+              'SEC': 'Security',
+            };
+
+            const body = `## Auto-Triage
+
+            This issue has been automatically triaged:
+
+            - **Team**: ${orgNames[org] || org}
+            - **Category**: ${category}
+            - **Confidence**: ${(parseFloat(confidence) * 100).toFixed(0)}%
+
+            _This is an automated classification. Please adjust labels if incorrect._
+
+            ---
+            📡 \`OS → ${org} : issue_triaged\``;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: body
+            });

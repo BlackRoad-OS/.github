@@ -1,0 +1,108 @@
+# lucidia - Primary Node Configuration
+# Role: Main routing, coordination, primary AI inference
+
+node:
+  name: lucidia
+  role: primary
+  status: planned
+
+hardware:
+  model: Raspberry Pi 5
+  memory: 8GB
+  storage:
+    - type: SD
+      size: 64GB
+      mount: /boot
+    - type: NVMe
+      size: 512GB
+      mount: /data
+  accelerator:
+    model: Hailo-8
+    tops: 26
+    usage: AI inference
+
+network:
+  tailscale:
+    hostname: lucidia.blackroad.ts.net
+    ip: 100.x.x.1
+  cloudflare:
+    tunnel: blackroad-primary
+    routes:
+      - hostname: api.blackroad.ai
+        service: http://localhost:8080
+      - hostname: ssh.blackroad.ai
+        service: ssh://localhost:22
+
+services:
+  blackroad-operator:
+    enabled: true
+    port: 8080
+    description: Main routing engine
+    restart: always
+    depends_on:
+      - tailscale
+      - cloudflare-tunnel
+
+  blackroad-metrics:
+    enabled: true
+    port: 9090
+    description: KPI dashboard
+    restart: always
+
+  hailo-inference:
+    enabled: true
+    port: 5000
+    description: Local AI inference (26 TOPS)
+    restart: always
+    models:
+      - yolov8n        # Object detection
+      - whisper-tiny   # Speech to text
+      - llama-7b-q4    # Text generation (quantized)
+
+  tailscale:
+    enabled: true
+    description: Mesh networking
+    args:
+      - --advertise-routes=192.168.1.0/24
+      - --accept-dns=false
+
+  cloudflare-tunnel:
+    enabled: true
+    description: External access tunnel
+    config: /etc/cloudflared/config.yaml
+
+environment:
+  NODE_NAME: lucidia
+  NODE_ROLE: primary
+  BRIDGE_URL: http://localhost:8080
+  HAILO_DEVICE: /dev/hailo0
+  DATA_DIR: /data
+
+monitoring:
+  prometheus:
+    enabled: true
+    port: 9100
+  alerts:
+    - name: cpu_high
+      threshold: 80%
+      action: notify
+    - name: memory_high
+      threshold: 90%
+      action: notify
+    - name: disk_full
+      threshold: 95%
+      action: notify
+
+backup:
+  enabled: true
+  destination: aria:/backups/lucidia
+  schedule: "0 3 * * *"  # 3am daily
+  retention: 7d
+
+signals:
+  emit:
+    - "🟢 HW → OS : node_online, node=lucidia"
+    - "📊 HW → OS : metrics_report, cpu=${cpu}%, mem=${mem}%"
+  receive:
+    - "🔄 OS → HW : restart_service, service=${service}"
+    - "🛑 OS → HW : shutdown"

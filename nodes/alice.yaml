@@ -1,0 +1,98 @@
+# alice - Agent Node Configuration
+# Role: AI agent execution, MCP server, autonomous tasks
+
+node:
+  name: alice
+  role: agents
+  status: planned
+
+hardware:
+  model: Raspberry Pi 5
+  memory: 4GB
+  storage:
+    - type: SD
+      size: 64GB
+      mount: /
+  accelerator:
+    model: Hailo-8
+    tops: 26
+    usage: AI inference
+
+network:
+  tailscale:
+    hostname: alice.blackroad.ts.net
+    ip: 100.x.x.4
+
+services:
+  agent-runtime:
+    enabled: true
+    port: 8082
+    description: AI agent execution environment
+    restart: always
+    max_concurrent_agents: 4
+    sandbox: true
+    capabilities:
+      - file_read
+      - file_write
+      - http_request
+      - database_query
+      - shell_execute  # sandboxed
+
+  hailo-inference:
+    enabled: true
+    port: 5000
+    description: Local AI inference
+    restart: always
+    models:
+      - llama-7b-q4     # Agent reasoning
+      - code-llama-7b   # Code generation
+      - embedding-ada   # Semantic search
+
+  mcp-server:
+    enabled: true
+    port: 8083
+    description: Model Context Protocol server
+    restart: always
+    tools:
+      - file_operations
+      - database_access
+      - api_calls
+      - code_execution
+
+  cron-agents:
+    enabled: true
+    description: Scheduled agent tasks
+    tasks:
+      - name: daily-sync
+        schedule: "0 6 * * *"
+        agent: sync-agent
+      - name: weekly-report
+        schedule: "0 9 * * 1"
+        agent: report-agent
+
+environment:
+  NODE_NAME: alice
+  NODE_ROLE: agents
+  PRIMARY_NODE: lucidia.blackroad.ts.net
+  STORAGE_NODE: aria.blackroad.ts.net
+  HAILO_DEVICE: /dev/hailo0
+  AGENT_SANDBOX: true
+
+monitoring:
+  prometheus:
+    enabled: true
+    port: 9100
+  alerts:
+    - name: agent_timeout
+      threshold: 300s
+      action: kill_and_notify
+    - name: agent_memory_leak
+      threshold: 2GB
+      action: restart
+
+signals:
+  emit:
+    - "🟢 HW → OS : node_online, node=alice"
+    - "🤖 AI → OS : agent_started, agent=${agent_id}"
+    - "✔️ AI → OS : agent_complete, agent=${agent_id}, success=true"
+    - "❌ AI → OS : agent_failed, agent=${agent_id}, error=${error}"

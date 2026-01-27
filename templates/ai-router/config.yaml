@@ -1,0 +1,50 @@
+# AI Router Configuration
+# Copy to your project and customize
+
+providers:
+  openai:
+    enabled: true
+    default_model: gpt-4o-mini
+    # api_key: Set via OPENAI_API_KEY env var
+
+  anthropic:
+    enabled: true
+    default_model: claude-3-5-haiku-20241022
+    # api_key: Set via ANTHROPIC_API_KEY env var
+
+  hailo:
+    enabled: true
+    default_model: tinyllama-1b-q4
+    base_url: http://localhost:5000
+    # For Pi cluster: http://lucidia:5000
+
+  ollama:
+    enabled: true
+    default_model: llama3.2
+    base_url: http://localhost:11434
+
+routing:
+  # Default strategy: cost, latency, quality, local_first, cloud_first
+  default_strategy: cost
+
+  # Enable automatic fallback on failure
+  fallback_enabled: true
+
+  # Max providers to try before giving up
+  max_retries: 3
+
+tracking:
+  enabled: true
+  storage_path: .ai-router-costs.json
+
+  # Budget alerts
+  alerts:
+    - threshold: 10.00
+      period: day
+    - threshold: 50.00
+      period: week
+
+signals:
+  enabled: true
+  source: AI
+  target: OS

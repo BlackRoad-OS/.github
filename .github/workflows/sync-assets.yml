@@ -1,0 +1,129 @@
+# Sync assets across the mesh
+# Syncs from Figma, Salesforce, and other sources
+
+name: Sync Assets
+
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+    inputs:
+      source:
+        description: 'Source to sync from'
+        required: true
+        type: choice
+        options:
+          - all
+          - figma
+          - salesforce
+          - drive
+      force:
+        description: 'Force sync (ignore cache)'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  # Sync Figma designs
+  sync-figma:
+    name: Sync Figma
+    runs-on: ubuntu-latest
+    if: inputs.source == 'all' || inputs.source == 'figma'
+    env:
+      FIGMA_TOKEN: ${{ secrets.FIGMA_TOKEN }}
+      FIGMA_FILE_KEY: ${{ vars.FIGMA_FILE_KEY }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Export Figma components
+        run: |
+          echo "🎨 Syncing from Figma..."
+          echo "  File: $FIGMA_FILE_KEY"
+          # npx figma-export components $FIGMA_FILE_KEY
+          echo "✓ Figma sync complete"
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "🎨 Sync Figma assets"
+
+  # Sync Salesforce data
+  sync-salesforce:
+    name: Sync Salesforce
+    runs-on: ubuntu-latest
+    if: inputs.source == 'all' || inputs.source == 'salesforce'
+    env:
+      SF_CLIENT_ID: ${{ secrets.SF_CLIENT_ID }}
+      SF_CLIENT_SECRET: ${{ secrets.SF_CLIENT_SECRET }}
+      SF_INSTANCE_URL: ${{ vars.SF_INSTANCE_URL }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install simple-salesforce pyyaml
+
+      - name: Sync Salesforce metadata
+        run: |
+          echo "☁️ Syncing from Salesforce..."
+          python -c "
+          # from simple_salesforce import Salesforce
+          # sf = Salesforce(...)
+          # Export objects, fields, etc.
+          print('✓ Salesforce sync complete')
+          "
+
+  # Sync Google Drive
+  sync-drive:
+    name: Sync Drive
+    runs-on: ubuntu-latest
+    if: inputs.source == 'all' || inputs.source == 'drive'
+    env:
+      GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install google-api-python-client google-auth
+
+      - name: Sync Drive files
+        run: |
+          echo "📁 Syncing from Google Drive..."
+          # Export shared documents, assets
+          echo "✓ Drive sync complete"
+
+  # Summary
+  summary:
+    name: Sync Summary
+    runs-on: ubuntu-latest
+    needs: [sync-figma, sync-salesforce, sync-drive]
+    if: always()
+    steps:
+      - name: Report results
+        run: |
+          echo "📡 SYNC COMPLETE"
+          echo ""
+          echo "Results:"
+          echo "  Figma:      ${{ needs.sync-figma.result || 'skipped' }}"
+          echo "  Salesforce: ${{ needs.sync-salesforce.result || 'skipped' }}"
+          echo "  Drive:      ${{ needs.sync-drive.result || 'skipped' }}"

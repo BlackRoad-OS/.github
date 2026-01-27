@@ -1,0 +1,582 @@
+# BlackRoad Routing Registry
+# Master table mapping orgs to services to endpoints
+
+# ═══════════════════════════════════════════════════════════════════
+# ORGANIZATION REGISTRY
+# ═══════════════════════════════════════════════════════════════════
+
+orgs:
+  # ─────────────────────────────────────────────────────────────────
+  # OS - Core Infrastructure (The Bridge)
+  # ─────────────────────────────────────────────────────────────────
+  OS:
+    name: BlackRoad-OS
+    code: OS
+    status: active
+    description: Core infrastructure, routing, coordination
+    github: https://github.com/BlackRoad-OS
+    primary_node: lucidia
+
+    services:
+      operator:
+        description: Main routing engine
+        type: internal
+        endpoint: http://lucidia:8080/v1/route
+        health: http://lucidia:8080/health
+
+      metrics:
+        description: KPI dashboard
+        type: internal
+        endpoint: http://lucidia:9090/v1/metrics
+        health: http://lucidia:9090/health
+
+      bridge:
+        description: Control plane API
+        type: internal
+        endpoint: http://lucidia:8080/v1/bridge
+        health: http://lucidia:8080/health
+
+    repos:
+      - name: .github
+        description: The Bridge - central coordination
+        url: https://github.com/BlackRoad-OS/.github
+      - name: operator
+        description: Routing engine
+        url: https://github.com/BlackRoad-OS/operator
+      - name: mesh
+        description: Node mesh networking
+        url: https://github.com/BlackRoad-OS/mesh
+
+  # ─────────────────────────────────────────────────────────────────
+  # AI - Intelligence Routing
+  # ─────────────────────────────────────────────────────────────────
+  AI:
+    name: BlackRoad-AI
+    code: AI
+    status: planned
+    description: AI routing, prompts, agents
+    github: https://github.com/BlackRoad-AI
+    primary_node: alice
+
+    services:
+      router:
+        description: AI provider routing
+        type: internal
+        endpoint: http://alice:8080/v1/complete
+        health: http://alice:8080/health
+        fallback: http://lucidia:8080/v1/ai
+
+      embeddings:
+        description: Vector embeddings
+        type: internal
+        endpoint: http://alice:8080/v1/embed
+        health: http://alice:8080/health
+
+      agents:
+        description: AI agent runtime
+        type: internal
+        endpoint: http://alice:8082/v1/agents
+        health: http://alice:8082/health
+
+    repos:
+      - name: router
+        description: AI provider routing
+        url: https://github.com/BlackRoad-AI/router
+      - name: prompts
+        description: Prompt library
+        url: https://github.com/BlackRoad-AI/prompts
+      - name: agents
+        description: Autonomous agents
+        url: https://github.com/BlackRoad-AI/agents
+
+  # ─────────────────────────────────────────────────────────────────
+  # CLD - Edge/Cloud Computing
+  # ─────────────────────────────────────────────────────────────────
+  CLD:
+    name: BlackRoad-Cloud
+    code: CLD
+    status: planned
+    description: Edge compute, Cloudflare, CDN
+    github: https://github.com/BlackRoad-Cloud
+    primary_node: shellfish
+
+    services:
+      worker:
+        description: Cloudflare Worker API
+        type: external
+        endpoint: https://api.blackroad.ai
+        health: https://api.blackroad.ai/health
+
+      kv:
+        description: Edge KV storage
+        type: external
+        endpoint: https://api.blackroad.ai/kv
+        provider: cloudflare
+
+      d1:
+        description: Edge database
+        type: external
+        endpoint: https://api.blackroad.ai/db
+        provider: cloudflare
+
+      r2:
+        description: Object storage
+        type: external
+        endpoint: https://storage.blackroad.ai
+        provider: cloudflare
+
+    repos:
+      - name: workers
+        description: Cloudflare Workers
+        url: https://github.com/BlackRoad-Cloud/workers
+      - name: infra
+        description: Infrastructure as code
+        url: https://github.com/BlackRoad-Cloud/infra
+
+  # ─────────────────────────────────────────────────────────────────
+  # HW - Hardware / IoT
+  # ─────────────────────────────────────────────────────────────────
+  HW:
+    name: BlackRoad-Hardware
+    code: HW
+    status: planned
+    description: Pi cluster, Hailo, sensors
+    github: https://github.com/BlackRoad-Hardware
+    primary_node: lucidia
+
+    services:
+      hailo:
+        description: Hailo-8 inference
+        type: internal
+        endpoint: http://lucidia:5000/v1/inference
+        health: http://lucidia:5000/health
+        nodes: [lucidia, octavia, alice]
+
+      sensors:
+        description: Sensor data collection
+        type: internal
+        endpoint: http://lucidia:8085/v1/sensors
+        health: http://lucidia:8085/health
+
+      mesh:
+        description: Node mesh management
+        type: internal
+        endpoint: http://lucidia:8086/v1/mesh
+        health: http://lucidia:8086/health
+
+    repos:
+      - name: hailo
+        description: Hailo-8 integration
+        url: https://github.com/BlackRoad-Hardware/hailo
+      - name: nodes
+        description: Node configurations
+        url: https://github.com/BlackRoad-Hardware/nodes
+
+  # ─────────────────────────────────────────────────────────────────
+  # LAB - Research & Development
+  # ─────────────────────────────────────────────────────────────────
+  LAB:
+    name: BlackRoad-Labs
+    code: LAB
+    status: planned
+    description: Experiments, prototypes, R&D
+    github: https://github.com/BlackRoad-Labs
+    primary_node: octavia
+
+    services:
+      experiments:
+        description: Experiment runner
+        type: internal
+        endpoint: http://octavia:8090/v1/experiments
+        health: http://octavia:8090/health
+
+    repos:
+      - name: experiments
+        description: Active experiments
+        url: https://github.com/BlackRoad-Labs/experiments
+
+  # ─────────────────────────────────────────────────────────────────
+  # SEC - Security
+  # ─────────────────────────────────────────────────────────────────
+  SEC:
+    name: BlackRoad-Security
+    code: SEC
+    status: planned
+    description: Zero trust, secrets, auth
+    github: https://github.com/BlackRoad-Security
+    primary_node: lucidia
+
+    services:
+      auth:
+        description: Authentication service
+        type: internal
+        endpoint: http://lucidia:8087/v1/auth
+        health: http://lucidia:8087/health
+
+      vault:
+        description: Secrets management
+        type: internal
+        endpoint: http://lucidia:8200/v1/secret
+        health: http://lucidia:8200/health
+
+    repos:
+      - name: auth
+        description: Authentication
+        url: https://github.com/BlackRoad-Security/auth
+      - name: vault
+        description: Secrets vault
+        url: https://github.com/BlackRoad-Security/vault
+
+  # ─────────────────────────────────────────────────────────────────
+  # FND - Foundation (Business)
+  # ─────────────────────────────────────────────────────────────────
+  FND:
+    name: BlackRoad-Foundation
+    code: FND
+    status: planned
+    description: CRM, billing, legal
+    github: https://github.com/BlackRoad-Foundation
+    primary_node: lucidia
+
+    services:
+      salesforce:
+        description: Salesforce sync
+        type: external
+        endpoint: http://lucidia:8091/v1/salesforce
+        health: http://lucidia:8091/health
+        provider: salesforce
+
+      stripe:
+        description: Stripe billing
+        type: external
+        endpoint: http://lucidia:8092/v1/stripe
+        health: http://lucidia:8092/health
+        provider: stripe
+
+      crm:
+        description: CRM operations
+        type: internal
+        endpoint: http://lucidia:8091/v1/crm
+        health: http://lucidia:8091/health
+
+    repos:
+      - name: salesforce-sync
+        description: Salesforce integration
+        url: https://github.com/BlackRoad-Foundation/salesforce-sync
+      - name: stripe-billing
+        description: Stripe integration
+        url: https://github.com/BlackRoad-Foundation/stripe-billing
+
+  # ─────────────────────────────────────────────────────────────────
+  # MED - Media & Content
+  # ─────────────────────────────────────────────────────────────────
+  MED:
+    name: BlackRoad-Media
+    code: MED
+    status: planned
+    description: Content, social, marketing
+    github: https://github.com/BlackRoad-Media
+    primary_node: octavia
+
+    services:
+      content:
+        description: Content management
+        type: internal
+        endpoint: http://octavia:8093/v1/content
+        health: http://octavia:8093/health
+
+      social:
+        description: Social media automation
+        type: external
+        endpoint: http://octavia:8094/v1/social
+        health: http://octavia:8094/health
+
+    repos:
+      - name: content
+        description: Content pipeline
+        url: https://github.com/BlackRoad-Media/content
+      - name: social
+        description: Social automation
+        url: https://github.com/BlackRoad-Media/social
+
+  # ─────────────────────────────────────────────────────────────────
+  # INT - Interactive (Gaming/Metaverse)
+  # ─────────────────────────────────────────────────────────────────
+  INT:
+    name: BlackRoad-Interactive
+    code: INT
+    status: planned
+    description: Gaming, metaverse, VR/AR
+    github: https://github.com/BlackRoad-Interactive
+    primary_node: octavia
+
+    services:
+      game:
+        description: Game server
+        type: internal
+        endpoint: http://octavia:8095/v1/game
+        health: http://octavia:8095/health
+
+      metaverse:
+        description: Metaverse gateway
+        type: external
+        endpoint: https://meta.blackroad.ai
+        health: https://meta.blackroad.ai/health
+
+    repos:
+      - name: unity-sdk
+        description: Unity integration
+        url: https://github.com/BlackRoad-Interactive/unity-sdk
+      - name: metaverse
+        description: Metaverse client
+        url: https://github.com/BlackRoad-Interactive/metaverse
+
+  # ─────────────────────────────────────────────────────────────────
+  # EDU - Education
+  # ─────────────────────────────────────────────────────────────────
+  EDU:
+    name: BlackRoad-Education
+    code: EDU
+    status: planned
+    description: Learning, courses, tutorials
+    github: https://github.com/BlackRoad-Education
+    primary_node: aria
+
+    services:
+      courses:
+        description: Course platform
+        type: external
+        endpoint: https://learn.blackroad.ai
+        health: https://learn.blackroad.ai/health
+
+      docs:
+        description: Documentation
+        type: external
+        endpoint: https://docs.blackroad.ai
+        health: https://docs.blackroad.ai/health
+
+    repos:
+      - name: courses
+        description: Course content
+        url: https://github.com/BlackRoad-Education/courses
+      - name: docs
+        description: Documentation
+        url: https://github.com/BlackRoad-Education/docs
+
+  # ─────────────────────────────────────────────────────────────────
+  # GOV - Governance
+  # ─────────────────────────────────────────────────────────────────
+  GOV:
+    name: BlackRoad-Gov
+    code: GOV
+    status: planned
+    description: Governance, voting, proposals
+    github: https://github.com/BlackRoad-Gov
+    primary_node: lucidia
+
+    services:
+      governance:
+        description: Governance platform
+        type: internal
+        endpoint: http://lucidia:8096/v1/governance
+        health: http://lucidia:8096/health
+
+    repos:
+      - name: governance
+        description: Governance system
+        url: https://github.com/BlackRoad-Gov/governance
+
+  # ─────────────────────────────────────────────────────────────────
+  # ARC - Archive
+  # ─────────────────────────────────────────────────────────────────
+  ARC:
+    name: BlackRoad-Archive
+    code: ARC
+    status: planned
+    description: Storage, backup, preservation
+    github: https://github.com/BlackRoad-Archive
+    primary_node: aria
+
+    services:
+      storage:
+        description: Object storage (Minio)
+        type: internal
+        endpoint: http://aria:9000
+        health: http://aria:9000/minio/health/live
+
+      gdrive:
+        description: Google Drive sync
+        type: external
+        endpoint: http://aria:8097/v1/gdrive
+        health: http://aria:8097/health
+        provider: google
+
+      backup:
+        description: Backup service
+        type: internal
+        endpoint: http://aria:8098/v1/backup
+        health: http://aria:8098/health
+
+    repos:
+      - name: gdrive-sync
+        description: Google Drive integration
+        url: https://github.com/BlackRoad-Archive/gdrive-sync
+      - name: backup
+        description: Backup automation
+        url: https://github.com/BlackRoad-Archive/backup
+
+  # ─────────────────────────────────────────────────────────────────
+  # STU - Studio (Design)
+  # ─────────────────────────────────────────────────────────────────
+  STU:
+    name: BlackRoad-Studio
+    code: STU
+    status: planned
+    description: Design, Figma, Canva
+    github: https://github.com/BlackRoad-Studio
+    primary_node: octavia
+
+    services:
+      figma:
+        description: Figma integration
+        type: external
+        endpoint: http://octavia:8099/v1/figma
+        health: http://octavia:8099/health
+        provider: figma
+
+      assets:
+        description: Asset pipeline
+        type: internal
+        endpoint: http://octavia:8100/v1/assets
+        health: http://octavia:8100/health
+
+    repos:
+      - name: design-system
+        description: Design tokens and components
+        url: https://github.com/BlackRoad-Studio/design-system
+      - name: assets
+        description: Asset management
+        url: https://github.com/BlackRoad-Studio/assets
+
+  # ─────────────────────────────────────────────────────────────────
+  # VEN - Ventures
+  # ─────────────────────────────────────────────────────────────────
+  VEN:
+    name: BlackRoad-Ventures
+    code: VEN
+    status: planned
+    description: Investments, portfolio, deals
+    github: https://github.com/BlackRoad-Ventures
+    primary_node: lucidia
+
+    services:
+      portfolio:
+        description: Portfolio management
+        type: internal
+        endpoint: http://lucidia:8101/v1/portfolio
+        health: http://lucidia:8101/health
+
+    repos:
+      - name: portfolio
+        description: Portfolio tracker
+        url: https://github.com/BlackRoad-Ventures/portfolio
+
+  # ─────────────────────────────────────────────────────────────────
+  # BBX - Blackbox Enterprises
+  # ─────────────────────────────────────────────────────────────────
+  BBX:
+    name: Blackbox-Enterprises
+    code: BBX
+    status: planned
+    description: Enterprise, stealth, special projects
+    github: https://github.com/Blackbox-Enterprises
+    primary_node: lucidia
+
+    services:
+      enterprise:
+        description: Enterprise API
+        type: internal
+        endpoint: http://lucidia:8102/v1/enterprise
+        health: http://lucidia:8102/health
+        auth: required
+
+    repos:
+      - name: enterprise
+        description: Enterprise platform
+        url: https://github.com/Blackbox-Enterprises/enterprise
+
+
+# ═══════════════════════════════════════════════════════════════════
+# DEFAULT ROUTES
+# ═══════════════════════════════════════════════════════════════════
+
+defaults:
+  # Fallback org when classification fails
+  fallback_org: AI
+
+  # Default service within each org
+  default_services:
+    OS: operator
+    AI: router
+    CLD: worker
+    HW: hailo
+    LAB: experiments
+    SEC: auth
+    FND: crm
+    MED: content
+    INT: game
+    EDU: courses
+    GOV: governance
+    ARC: storage
+    STU: assets
+    VEN: portfolio
+    BBX: enterprise
+
+
+# ═══════════════════════════════════════════════════════════════════
+# ROUTING RULES
+# ═══════════════════════════════════════════════════════════════════
+
+rules:
+  # High-priority exact matches
+  - pattern: "salesforce"
+    org: FND
+    service: salesforce
+    priority: 100
+
+  - pattern: "stripe|billing|payment"
+    org: FND
+    service: stripe
+    priority: 100
+
+  - pattern: "cloudflare|worker|edge"
+    org: CLD
+    service: worker
+    priority: 100
+
+  - pattern: "hailo|inference|26 tops"
+    org: HW
+    service: hailo
+    priority: 100
+
+  - pattern: "figma|canva|design"
+    org: STU
+    service: figma
+    priority: 100
+
+  - pattern: "gdrive|google drive|docs"
+    org: ARC
+    service: gdrive
+    priority: 100
+
+  # AI routing (catch-all for intelligence)
+  - pattern: "ask|question|what|how|why|explain"
+    org: AI
+    service: router
+    priority: 50
+
+  # Code/development
+  - pattern: "code|function|class|bug|debug"
+    org: AI
+    service: router
+    priority: 50
