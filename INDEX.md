@@ -30,6 +30,7 @@ The core of The Bridge - start here.
 | [INTEGRATIONS.md](INTEGRATIONS.md) | External services | 30+ integrations |
 | [CLAUDE_CODE_API.md](CLAUDE_CODE_API.md) | AI development | Claude Code best practices |
 | [TESTING.md](TESTING.md) | Testing guide | How to test prototypes |
+| [AUTO_MERGE.md](AUTO_MERGE.md) | Auto-merge | Automatic PR merging |
 
 ---
 

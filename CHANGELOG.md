@@ -41,6 +41,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - TESTING.md comprehensive testing guide
   - Code coverage reporting (HTML, XML, terminal)
   - Test markers for organization and filtering
+- Auto-Merge Workflow 🤖
+  - Automatic PR merging when all checks pass
+  - Support for copilot/** branches
+  - Auto-merge label support
+  - GitHub Actions workflow (.github/workflows/auto-merge.yml)
+  - AUTO_MERGE.md comprehensive documentation
+  - Squash merge strategy
+  - Eligibility checking and safety guards
+  - PR comments with merge status
 
 ---
 

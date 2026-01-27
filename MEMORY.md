@@ -199,6 +199,24 @@ If you're a new Claude session reading this:
 
 **Result:** BlackRoad now has a complete testing infrastructure! Tests run automatically on every push. 🎉
 
+### Session 5: 2026-01-27 (Auto-Merge Workflow)
+
+**Request:** "Go ahead and merge after each push if able!"
+
+**What we added:**
+- ✅ Auto-Merge Workflow 🤖
+  - GitHub Actions workflow (auto-merge.yml)
+  - Automatic PR merging when all checks pass
+  - Support for copilot/** branches (auto-eligible)
+  - Auto-merge label support for other branches
+  - Eligibility checking (checks passed, no conflicts, not draft)
+  - Squash merge strategy
+  - PR comments with merge status
+  - AUTO_MERGE.md comprehensive documentation
+  - Safety guards and status checking
+
+**Result:** PRs from copilot branches now auto-merge when all checks pass! Fast iteration enabled. 🚀
+
 ---
 
 ## Active Threads
