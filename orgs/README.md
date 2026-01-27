@@ -49,12 +49,12 @@ orgs/[OrgName]/
 | BlackRoad-Media | `MED` | ✔️ | 💤 |
 | BlackRoad-Hardware | `HW` | ✔️ | 💤 |
 | BlackRoad-Interactive | `INT` | ✔️ | 💤 |
-| BlackRoad-Education | `EDU` | 💤 | 💤 |
-| BlackRoad-Gov | `GOV` | 💤 | 💤 |
-| BlackRoad-Archive | `ARC` | 💤 | 💤 |
-| BlackRoad-Studio | `STU` | 💤 | 💤 |
-| BlackRoad-Ventures | `VEN` | 💤 | 💤 |
-| Blackbox-Enterprises | `BBX` | 💤 | 💤 |
+| BlackRoad-Education | `EDU` | ✔️ | 💤 |
+| BlackRoad-Gov | `GOV` | ✔️ | 💤 |
+| BlackRoad-Archive | `ARC` | ✔️ | 💤 |
+| BlackRoad-Studio | `STU` | ✔️ | 💤 |
+| BlackRoad-Ventures | `VEN` | ✔️ | 💤 |
+| Blackbox-Enterprises | `BBX` | ✔️ | 💤 |
 
 ---
 
