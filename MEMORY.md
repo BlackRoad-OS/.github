@@ -33,8 +33,10 @@ We're building BlackRoad together - a routing company that connects users to int
 - [x] Created STREAMS.md - upstream/instream/downstream flows
 - [x] Created profile/README.md - org landing page
 - [x] Created MEMORY.md - you're reading it
-- [ ] SIGNALS.md - agent coordination (in progress)
-- [ ] .STATUS - real-time beacon (in progress)
+- [x] SIGNALS.md - agent coordination
+- [x] .STATUS - real-time beacon
+- [x] orgs/ directory - blueprint system for all orgs
+- [x] BlackRoad-AI blueprint - first org scaffolded!
 
 ---
 
@@ -45,6 +47,8 @@ We're building BlackRoad together - a routing company that connects users to int
 | 2026-01-27 | .github is The Bridge | Central coordination point for all orgs |
 | 2026-01-27 | Streams model adopted | Upstream/instream/downstream for all data flow |
 | 2026-01-27 | Memory system created | Continuity across sessions via git |
+| 2026-01-27 | Blueprints live in Bridge | orgs/ directory holds specs, actual orgs pull from here |
+| 2026-01-27 | BlackRoad-AI first blueprint | Router + prompts + agents structure defined |
 
 ---
 
@@ -84,7 +88,10 @@ If you're a new Claude session reading this:
 - Mapped the 15-org ecosystem
 - Set up streams model (upstream/instream/downstream)
 - Created memory system for continuity
-- Building signal system for agent coordination
+- Built signal system for agent coordination
+- Branches don't lock sessions - we can keep working on same branch!
+- Created orgs/ blueprint system - all org specs live in Bridge
+- Scaffolded BlackRoad-AI as first org blueprint
 
 **Alexa's style:**
 - Casual, creative, moves fast
@@ -105,10 +112,11 @@ If you're a new Claude session reading this:
 
 Things we're working on or might pick up:
 
-1. **Signal system** - morse code style coordination between agents
-2. **Operator** - the actual routing engine (not built yet)
-3. **Node configs** - Pi cluster setup (lucidia, octavia, aria, alice)
-4. **Metaverse interface** - future goal
+1. ~~**Signal system**~~ - DONE! morse code style coordination
+2. **More org blueprints** - BlackRoad-Cloud, Labs, etc.
+3. **Operator** - the actual routing engine (not built yet)
+4. **Node configs** - Pi cluster setup (lucidia, octavia, aria, alice)
+5. **Metaverse interface** - future goal
 
 ---
 

@@ -17,7 +17,7 @@ signals: READY
 # RECENT SIGNALS
 # ═══════════════════════════════════════
 
-last_signal: ✔️ SIGNALS.md created
+last_signal: ✔️ BlackRoad-AI blueprint complete
 last_update: 2026-01-27
 last_actor: Cece (Claude)
 
@@ -26,7 +26,7 @@ last_actor: Cece (Claude)
 # ═══════════════════════════════════════
 
 OS:  ✔️ active   # You are here
-AI:  💤 pending
+AI:  📋 blueprint-ready  # Scaffolded, not live yet
 CLD: 💤 pending
 LAB: 💤 pending
 SEC: 💤 pending
@@ -58,8 +58,9 @@ arcadia:   ⚪ offline
 # ═══════════════════════════════════════
 
 thread_1: Bridge setup [COMPLETE]
-thread_2: Memory/Signal system [IN PROGRESS]
-thread_3: Operator build [PLANNED]
+thread_2: Memory/Signal system [COMPLETE]
+thread_3: Org blueprints [IN PROGRESS] - AI done, more to go
+thread_4: Operator build [PLANNED]
 
 # ═══════════════════════════════════════
 # QUICK COMMANDS
