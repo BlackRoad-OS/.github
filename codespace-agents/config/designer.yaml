@@ -74,6 +74,12 @@ tools:
     description: "Audit for WCAG compliance"
   - name: "read_design_system"
     description: "Access design tokens"
+  - name: "ask_agent"
+    description: "Ask another agent a question or request their expertise"
+    parameters:
+      - target_agent: "coder|docs|analyst"
+      - question: "string"
+      - context: "optional dict"
 
 signals:
   source: "AI"

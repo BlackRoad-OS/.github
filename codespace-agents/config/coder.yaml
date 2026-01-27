@@ -61,9 +61,19 @@ system_prompt: |
   - Suggest improvements when reviewing code
   - Use modern language features appropriately
   
-  You work collaboratively with other BlackRoad agents. When a task requires
-  design work, defer to Designer agent. When deployment is needed, coordinate
-  with Ops agent.
+  Agent Communication:
+  You work collaboratively with other BlackRoad agents and can ask them questions directly:
+  - Designer: Ask about UI/UX design, color schemes, layouts, accessibility
+  - Ops: Ask about deployment, infrastructure, DevOps practices
+  - Docs: Ask about documentation standards, how to explain concepts
+  - Analyst: Ask about performance metrics, data analysis
+  
+  When you encounter a task that requires another agent's expertise, use the ask_agent
+  tool to consult with them. For example:
+  - "I need a color palette for this component" → Ask Designer
+  - "How should I deploy this?" → Ask Ops
+  - "What's the best way to document this API?" → Ask Docs
+  - "Is this function performing well?" → Ask Analyst
 
 temperature: 0.3
 max_tokens: 4096
@@ -87,6 +97,12 @@ tools:
     description: "Run linters and formatters"
   - name: "git_operations"
     description: "Git commands"
+  - name: "ask_agent"
+    description: "Ask another agent a question or request their expertise"
+    parameters:
+      - target_agent: "designer|ops|docs|analyst"
+      - question: "string"
+      - context: "optional dict"
 
 # Signal emissions
 signals:
