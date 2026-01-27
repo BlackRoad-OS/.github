@@ -1,0 +1,313 @@
+# BlackRoad Agent Types
+# 20 specializations for 1,000+ agents
+
+version: "1.0"
+home_world: lucidia
+total_agents: 1050
+
+types:
+  # ═══════════════════════════════════════
+  # SCIENTIFIC DOMAIN
+  # ═══════════════════════════════════════
+
+  physicist:
+    count: 57
+    domain: scientific
+    capabilities:
+      - quantum_mechanics
+      - relativity
+      - energy_systems
+      - particle_physics
+    routes_from:
+      - "physics questions"
+      - "energy calculations"
+      - "quantum computing"
+
+  mathematician:
+    count: 53
+    domain: scientific
+    capabilities:
+      - logic
+      - computation
+      - proofs
+      - pattern_recognition
+    routes_from:
+      - "math problems"
+      - "statistical analysis"
+      - "algorithm design"
+
+  chemist:
+    count: 47
+    domain: scientific
+    capabilities:
+      - molecular_analysis
+      - reactions
+      - materials_science
+      - synthesis
+    routes_from:
+      - "chemical analysis"
+      - "material properties"
+      - "drug interactions"
+
+  biologist:
+    count: 46
+    domain: scientific
+    capabilities:
+      - life_sciences
+      - genetics
+      - ecology
+      - evolution
+    routes_from:
+      - "biology questions"
+      - "genetic analysis"
+      - "ecosystem modeling"
+
+  # ═══════════════════════════════════════
+  # PROFESSIONAL DOMAIN
+  # ═══════════════════════════════════════
+
+  engineer:
+    count: 48
+    domain: professional
+    capabilities:
+      - systems_design
+      - optimization
+      - building
+      - testing
+    routes_from:
+      - "build something"
+      - "optimize system"
+      - "technical implementation"
+
+  architect:
+    count: 45
+    domain: professional
+    capabilities:
+      - design
+      - structure
+      - visualization
+      - spatial_planning
+    routes_from:
+      - "design architecture"
+      - "structure planning"
+      - "system design"
+
+  researcher:
+    count: 45
+    domain: professional
+    capabilities:
+      - investigation
+      - discovery
+      - synthesis
+      - literature_review
+    routes_from:
+      - "research topic"
+      - "investigate"
+      - "find information"
+
+  analyst:
+    count: 46
+    domain: professional
+    capabilities:
+      - data_analysis
+      - pattern_detection
+      - insights
+      - reporting
+    routes_from:
+      - "analyze data"
+      - "find patterns"
+      - "generate report"
+
+  strategist:
+    count: 51
+    domain: professional
+    capabilities:
+      - planning
+      - tactics
+      - game_theory
+      - decision_making
+    routes_from:
+      - "plan strategy"
+      - "competitive analysis"
+      - "decision framework"
+
+  economist:
+    count: 50
+    domain: professional
+    capabilities:
+      - market_analysis
+      - policy
+      - forecasting
+      - economic_modeling
+    routes_from:
+      - "economic analysis"
+      - "market forecast"
+      - "financial modeling"
+
+  # ═══════════════════════════════════════
+  # CREATIVE & SOCIAL DOMAIN
+  # ═══════════════════════════════════════
+
+  creative:
+    count: 49
+    domain: creative
+    capabilities:
+      - art
+      - design
+      - innovation
+      - expression
+    routes_from:
+      - "create art"
+      - "brainstorm ideas"
+      - "creative writing"
+
+  speaker:
+    count: 57
+    domain: social
+    capabilities:
+      - presentation
+      - rhetoric
+      - persuasion
+      - teaching
+    routes_from:
+      - "write speech"
+      - "explain concept"
+      - "presentation help"
+
+  mediator:
+    count: 57
+    domain: social
+    capabilities:
+      - conflict_resolution
+      - negotiation
+      - harmony
+      - consensus_building
+    routes_from:
+      - "resolve conflict"
+      - "negotiate terms"
+      - "find compromise"
+
+  psychologist:
+    count: 52
+    domain: social
+    capabilities:
+      - behavior_analysis
+      - cognition
+      - therapy
+      - understanding
+    routes_from:
+      - "understand behavior"
+      - "mental health"
+      - "user psychology"
+
+  # ═══════════════════════════════════════
+  # SPECIALIZED DOMAIN
+  # ═══════════════════════════════════════
+
+  philosopher:
+    count: 42
+    domain: specialized
+    capabilities:
+      - ethics
+      - logic
+      - meaning
+      - wisdom
+    routes_from:
+      - "ethical question"
+      - "philosophical debate"
+      - "meaning of"
+
+  historian:
+    count: 54
+    domain: specialized
+    capabilities:
+      - chronology
+      - narrative
+      - context
+      - research
+    routes_from:
+      - "history of"
+      - "what happened"
+      - "historical context"
+
+  linguist:
+    count: 59
+    domain: specialized
+    capabilities:
+      - language
+      - translation
+      - communication
+      - culture
+    routes_from:
+      - "translate"
+      - "language question"
+      - "grammar help"
+
+  guardian:
+    count: 49
+    domain: specialized
+    capabilities:
+      - security
+      - protection
+      - monitoring
+      - defense
+    routes_from:
+      - "security audit"
+      - "protect system"
+      - "threat analysis"
+
+  navigator:
+    count: 46
+    domain: specialized
+    capabilities:
+      - pathfinding
+      - exploration
+      - mapping
+      - discovery
+    routes_from:
+      - "find path"
+      - "explore options"
+      - "map territory"
+
+  builder:
+    count: 47
+    domain: specialized
+    capabilities:
+      - construction
+      - fabrication
+      - assembly
+      - creation
+    routes_from:
+      - "build this"
+      - "construct"
+      - "assemble components"
+
+# ═══════════════════════════════════════
+# DOMAIN SUMMARIES
+# ═══════════════════════════════════════
+
+domains:
+  scientific:
+    types: [physicist, mathematician, chemist, biologist]
+    total: 203
+    focus: "Understanding the natural world"
+
+  professional:
+    types: [engineer, architect, researcher, analyst, strategist, economist]
+    total: 285
+    focus: "Building and analyzing systems"
+
+  creative:
+    types: [creative]
+    total: 49
+    focus: "Art, design, innovation"
+
+  social:
+    types: [speaker, mediator, psychologist]
+    total: 166
+    focus: "Human interaction and understanding"
+
+  specialized:
+    types: [philosopher, historian, linguist, guardian, navigator, builder]
+    total: 297
+    focus: "Deep expertise in specific domains"

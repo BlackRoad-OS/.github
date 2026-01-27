@@ -168,11 +168,13 @@ Things we're working on or might pick up:
 4. ~~**Metrics dashboard**~~ - DONE! Counter, health, dashboard, status_updater
 5. ~~**Explorer browser**~~ - DONE! Browse ecosystem from CLI
 6. ~~**Integration templates**~~ - DONE! Salesforce, Stripe, Cloudflare, GDrive, GitHub, Design
-7. **Control plane CLI** - Unified interface for all tools
-8. **Node configs** - Pi cluster setup (lucidia, octavia, aria, alice)
-9. **GitHub Actions** - Automated workflows for the Bridge
-10. **Webhook handlers** - Receive signals from external services
-11. **Metaverse interface** - future goal
+7. ~~**Control plane CLI**~~ - DONE! Unified interface in prototypes/control-plane
+8. ~~**Node configs**~~ - DONE! All 7 nodes configured (lucidia, octavia, aria, alice, shellfish, cecilia, arcadia)
+9. ~~**GitHub Actions**~~ - DONE! 8 workflows (ci, deploy, pr-review, health-check, issue-triage, webhook-dispatch, sync-assets, release)
+10. ~~**Webhook handlers**~~ - DONE! prototypes/webhooks with handlers for GitHub, Stripe, Salesforce, Cloudflare, Slack, Google, Figma
+11. ~~**MCP Server**~~ - DONE! prototypes/mcp-server for AI assistant mesh access
+12. ~~**Dispatcher**~~ - DONE! prototypes/dispatcher for routing queries to services
+13. **Metaverse interface** - future goal
 
 ---
 
