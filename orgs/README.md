@@ -42,12 +42,12 @@ orgs/[OrgName]/
 |-----|------|-----------|------|
 | BlackRoad-OS | `OS` | ✔️ (you're in it) | ✔️ |
 | BlackRoad-AI | `AI` | ✔️ | 💤 |
-| BlackRoad-Cloud | `CLD` | 💤 | 💤 |
-| BlackRoad-Labs | `LAB` | 💤 | 💤 |
+| BlackRoad-Cloud | `CLD` | ✔️ | 💤 |
+| BlackRoad-Labs | `LAB` | ✔️ | 💤 |
 | BlackRoad-Security | `SEC` | 💤 | 💤 |
 | BlackRoad-Foundation | `FND` | 💤 | 💤 |
 | BlackRoad-Media | `MED` | 💤 | 💤 |
-| BlackRoad-Hardware | `HW` | 💤 | 💤 |
+| BlackRoad-Hardware | `HW` | ✔️ | 💤 |
 | BlackRoad-Education | `EDU` | 💤 | 💤 |
 | BlackRoad-Gov | `GOV` | 💤 | 💤 |
 | BlackRoad-Interactive | `INT` | 💤 | 💤 |
