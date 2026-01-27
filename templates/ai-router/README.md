@@ -1,12 +1,14 @@
 # AI Router
 
 > **Route to intelligence, don't build it.**
+> Uses Anthropic Claude Code API for intelligent routing.
 
 ```
 Template: ai-router
 Org: BlackRoad-AI (AI)
 Status: READY
 Version: 0.1.0
+API: Anthropic Claude Code API
 ```
 
 ---

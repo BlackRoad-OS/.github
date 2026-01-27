@@ -1,0 +1,93 @@
+name: 🐛 Bug Report
+description: Report a bug or unexpected behavior
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this bug! The issue will be auto-triaged to the appropriate organization.
+
+  - type: dropdown
+    id: organization
+    attributes:
+      label: Organization
+      description: Which BlackRoad organization does this relate to?
+      options:
+        - BlackRoad-OS (Core Infrastructure)
+        - BlackRoad-AI (Intelligence Routing)
+        - BlackRoad-Cloud (Edge Compute)
+        - BlackRoad-Hardware (Pi Cluster / IoT)
+        - BlackRoad-Security (Auth / Secrets)
+        - BlackRoad-Labs (Experiments)
+        - BlackRoad-Foundation (CRM / Finance)
+        - BlackRoad-Ventures (Marketplace)
+        - Blackbox-Enterprises (Enterprise)
+        - BlackRoad-Media (Content)
+        - BlackRoad-Studio (Design)
+        - BlackRoad-Interactive (Metaverse)
+        - BlackRoad-Education (Learning)
+        - BlackRoad-Gov (Governance)
+        - BlackRoad-Archive (Storage)
+        - Not sure / Multiple orgs
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is
+      placeholder: What happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: What should have happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: How can we reproduce this issue?
+      placeholder: |
+        1. Go to '...'
+        2. Run command '...'
+        3. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: System information
+      placeholder: |
+        - OS: [e.g., Ubuntu 22.04, macOS 14]
+        - Version: [e.g., v1.0.0]
+        - Hardware: [e.g., Raspberry Pi 4, x86_64]
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant Logs
+      description: Paste any relevant logs or error messages
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Any other context about the problem
+    validations:
+      required: false

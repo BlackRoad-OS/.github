@@ -1,0 +1,113 @@
+# Run BlackRoad tests on pull requests and pushes
+name: Tests
+
+on:
+  push:
+    branches: [main, develop, "copilot/**"]
+    paths:
+      - 'prototypes/**'
+      - 'tests/**'
+      - 'pytest.ini'
+      - 'requirements-test.txt'
+      - '.github/workflows/tests.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'prototypes/**'
+      - 'tests/**'
+      - 'pytest.ini'
+      - 'requirements-test.txt'
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12']
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-test.txt
+      
+      - name: Run pytest
+        run: |
+          python -m pytest tests/ \
+            --verbose \
+            --cov=prototypes \
+            --cov-report=term-missing \
+            --cov-report=xml \
+            --cov-report=html \
+            -ra
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        if: matrix.python-version == '3.12'
+        with:
+          files: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+      
+      - name: Archive coverage results
+        uses: actions/upload-artifact@v4
+        if: matrix.python-version == '3.12'
+        with:
+          name: coverage-report
+          path: htmlcov/
+          retention-days: 30
+      
+      - name: Test Summary
+        if: always()
+        run: |
+          echo "## Test Results 🧪" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Python ${{ matrix.python-version }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          python -m pytest tests/ --quiet --tb=no || true
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+  lint:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+      
+      - name: Install linting tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install black ruff mypy
+      
+      - name: Check code formatting with Black
+        run: |
+          black --check --diff prototypes/ tests/ || true
+      
+      - name: Lint with Ruff
+        run: |
+          ruff check prototypes/ tests/ || true
+        continue-on-error: true
+      
+      - name: Type check with mypy
+        run: |
+          mypy prototypes/ --ignore-missing-imports || true
+        continue-on-error: true
