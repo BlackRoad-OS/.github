@@ -1,0 +1,155 @@
+# Automated PR review checks
+# Validates PRs and provides feedback
+
+name: PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  # Analyze changes
+  analyze:
+    name: Analyze Changes
+    runs-on: ubuntu-latest
+    outputs:
+      files_changed: ${{ steps.changes.outputs.files }}
+      has_python: ${{ steps.changes.outputs.python }}
+      has_yaml: ${{ steps.changes.outputs.yaml }}
+      has_workflows: ${{ steps.changes.outputs.workflows }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: changes
+        run: |
+          FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | tr '\n' ' ')
+          echo "files=$FILES" >> $GITHUB_OUTPUT
+
+          # Check file types
+          if echo "$FILES" | grep -q "\.py"; then echo "python=true" >> $GITHUB_OUTPUT; else echo "python=false" >> $GITHUB_OUTPUT; fi
+          if echo "$FILES" | grep -q "\.ya?ml"; then echo "yaml=true" >> $GITHUB_OUTPUT; else echo "yaml=false" >> $GITHUB_OUTPUT; fi
+          if echo "$FILES" | grep -q "workflows/"; then echo "workflows=true" >> $GITHUB_OUTPUT; else echo "workflows=false" >> $GITHUB_OUTPUT; fi
+
+  # Review Python changes
+  review-python:
+    name: Review Python
+    runs-on: ubuntu-latest
+    needs: analyze
+    if: needs.analyze.outputs.has_python == 'true'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install tools
+        run: pip install ruff bandit
+
+      - name: Run Ruff
+        run: |
+          echo "## Ruff Check" >> $GITHUB_STEP_SUMMARY
+          ruff check prototypes/ --output-format=github || true
+
+      - name: Security scan
+        run: |
+          echo "## Security Scan" >> $GITHUB_STEP_SUMMARY
+          bandit -r prototypes/ -f txt || true
+
+  # Review YAML changes
+  review-yaml:
+    name: Review YAML
+    runs-on: ubuntu-latest
+    needs: analyze
+    if: needs.analyze.outputs.has_yaml == 'true'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate YAML
+        run: |
+          echo "## YAML Validation" >> $GITHUB_STEP_SUMMARY
+          find . -name "*.yaml" -o -name "*.yml" | while read f; do
+            python -c "import yaml; yaml.safe_load(open('$f'))" && echo "✓ $f" || echo "✗ $f"
+          done >> $GITHUB_STEP_SUMMARY
+
+  # Review workflow changes
+  review-workflows:
+    name: Review Workflows
+    runs-on: ubuntu-latest
+    needs: analyze
+    if: needs.analyze.outputs.has_workflows == 'true'
+    permissions:
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check workflow syntax
+        run: |
+          echo "## Workflow Review" >> $GITHUB_STEP_SUMMARY
+          for f in .github/workflows/*.yml; do
+            echo "Checking $f..."
+            # Basic YAML validation
+            python -c "import yaml; yaml.safe_load(open('$f'))" && echo "✓ $f valid" || echo "✗ $f invalid"
+          done >> $GITHUB_STEP_SUMMARY
+
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = `## Workflow Changes Detected
+
+            This PR modifies GitHub Actions workflows. Please ensure:
+
+            - [ ] Workflow names are descriptive
+            - [ ] Secrets are properly referenced
+            - [ ] Triggers are appropriate
+            - [ ] Jobs have appropriate permissions
+
+            _Automated workflow review_`;
+
+            // Check if comment already exists
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existing = comments.data.find(c =>
+              c.body.includes('Workflow Changes Detected') &&
+              c.user.login === 'github-actions[bot]'
+            );
+
+            if (!existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body
+              });
+            }
+
+  # Summary
+  summary:
+    name: PR Summary
+    runs-on: ubuntu-latest
+    needs: [analyze, review-python, review-yaml, review-workflows]
+    if: always()
+
+    steps:
+      - name: Generate summary
+        run: |
+          echo "# PR Review Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Python Review | ${{ needs.review-python.result || 'skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| YAML Review | ${{ needs.review-yaml.result || 'skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Workflow Review | ${{ needs.review-workflows.result || 'skipped' }} |" >> $GITHUB_STEP_SUMMARY

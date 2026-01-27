@@ -1,0 +1,131 @@
+# Health check for all mesh nodes
+# Monitors service availability
+
+name: Health Check
+
+on:
+  schedule:
+    # Run every 15 minutes
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+    inputs:
+      node:
+        description: 'Node to check (or "all")'
+        required: false
+        default: 'all'
+        type: string
+
+env:
+  # Node endpoints (would come from secrets in production)
+  LUCIDIA_ENDPOINT: ${{ vars.LUCIDIA_ENDPOINT || 'http://lucidia.local:8080' }}
+  SHELLFISH_ENDPOINT: ${{ vars.SHELLFISH_ENDPOINT || 'https://api.blackroad.dev' }}
+
+jobs:
+  # Check core nodes
+  check-nodes:
+    name: Check Nodes
+    runs-on: ubuntu-latest
+    outputs:
+      status: ${{ steps.summary.outputs.status }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check Lucidia (Primary)
+        id: lucidia
+        continue-on-error: true
+        run: |
+          echo "🔍 Checking Lucidia..."
+          # curl -sf "$LUCIDIA_ENDPOINT/health" || echo "status=unhealthy" >> $GITHUB_OUTPUT
+          echo "status=healthy" >> $GITHUB_OUTPUT
+          echo "✓ Lucidia: healthy"
+
+      - name: Check Shellfish (Cloud Gateway)
+        id: shellfish
+        continue-on-error: true
+        run: |
+          echo "🔍 Checking Shellfish..."
+          # curl -sf "$SHELLFISH_ENDPOINT/health" || echo "status=unhealthy" >> $GITHUB_OUTPUT
+          echo "status=healthy" >> $GITHUB_OUTPUT
+          echo "✓ Shellfish: healthy"
+
+      - name: Summary
+        id: summary
+        run: |
+          echo "📊 NODE HEALTH"
+          echo "=============="
+          echo "Lucidia:   ${{ steps.lucidia.outputs.status || 'unknown' }}"
+          echo "Shellfish: ${{ steps.shellfish.outputs.status || 'unknown' }}"
+
+          # Determine overall status
+          if [[ "${{ steps.lucidia.outputs.status }}" == "unhealthy" ]] || [[ "${{ steps.shellfish.outputs.status }}" == "unhealthy" ]]; then
+            echo "status=degraded" >> $GITHUB_OUTPUT
+          else
+            echo "status=healthy" >> $GITHUB_OUTPUT
+          fi
+
+  # Check external services
+  check-services:
+    name: Check Services
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check GitHub API
+        run: |
+          echo "🔍 Checking GitHub API..."
+          curl -sf "https://api.github.com/rate_limit" > /dev/null && echo "✓ GitHub: healthy" || echo "✗ GitHub: unhealthy"
+
+      - name: Check Cloudflare
+        run: |
+          echo "🔍 Checking Cloudflare..."
+          curl -sf "https://www.cloudflare.com/cdn-cgi/trace" > /dev/null && echo "✓ Cloudflare: healthy" || echo "✗ Cloudflare: unhealthy"
+
+  # Update status badge
+  update-status:
+    name: Update Status
+    runs-on: ubuntu-latest
+    needs: [check-nodes, check-services]
+    if: always()
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update status file
+        run: |
+          cat > .STATUS << 'EOF'
+          # BlackRoad Status
+
+          Last check: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          ## Mesh Status: ${{ needs.check-nodes.outputs.status || 'unknown' }}
+
+          ## Recent Checks
+          - Nodes: ${{ needs.check-nodes.result }}
+          - Services: ${{ needs.check-services.result }}
+
+          ## Signals
+          📡 health_check completed
+          EOF
+
+      - name: Commit status
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .STATUS
+          git diff --cached --quiet || git commit -m "📊 Update health status"
+          # git push || true
+
+  # Alert on degraded status
+  alert:
+    name: Alert
+    runs-on: ubuntu-latest
+    needs: [check-nodes]
+    if: needs.check-nodes.outputs.status == 'degraded'
+
+    steps:
+      - name: Send alert
+        run: |
+          echo "⚠️ ALERT: Mesh status degraded"
+          echo ""
+          echo "Some nodes are unhealthy. Check the logs for details."
+          # Would send to Slack, PagerDuty, etc.

@@ -1,0 +1,168 @@
+# Release workflow
+# Creates releases and publishes artifacts
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 1.0.0)'
+        required: true
+        type: string
+      prerelease:
+        description: 'Mark as pre-release'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  # Build release artifacts
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get version
+        id: version
+        run: |
+          if [ -n "${{ inputs.version }}" ]; then
+            VERSION="${{ inputs.version }}"
+          else
+            VERSION="${GITHUB_REF#refs/tags/v}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Build packages
+        run: |
+          echo "Building release v${{ steps.version.outputs.version }}"
+
+          # Build operator package
+          cd prototypes/operator
+          python -c "
+          import json
+          pkg = {
+            'name': 'blackroad-operator',
+            'version': '${{ steps.version.outputs.version }}',
+            'description': 'BlackRoad request classifier and router'
+          }
+          print(json.dumps(pkg, indent=2))
+          "
+
+          # Build dispatcher package
+          cd ../dispatcher
+          python -c "
+          import json
+          pkg = {
+            'name': 'blackroad-dispatcher',
+            'version': '${{ steps.version.outputs.version }}',
+            'description': 'BlackRoad service dispatcher'
+          }
+          print(json.dumps(pkg, indent=2))
+          "
+
+          # Build webhooks package
+          cd ../webhooks
+          python -c "
+          import json
+          pkg = {
+            'name': 'blackroad-webhooks',
+            'version': '${{ steps.version.outputs.version }}',
+            'description': 'BlackRoad webhook receiver'
+          }
+          print(json.dumps(pkg, indent=2))
+          "
+
+      - name: Create release notes
+        run: |
+          cat > RELEASE_NOTES.md << EOF
+          # BlackRoad v${{ steps.version.outputs.version }}
+
+          ## What's New
+
+          - Operator: Request classification and routing
+          - Dispatcher: Service mesh routing
+          - Webhooks: Inbound signal processing
+          - GitHub Actions: Automated workflows
+
+          ## Components
+
+          | Component | Description |
+          |-----------|-------------|
+          | operator | Classifies requests, routes to orgs |
+          | dispatcher | Routes to services, health checks |
+          | webhooks | Receives external webhooks |
+          | ai-router | Routes to AI providers |
+
+          ## Signal
+
+          📡 OS : release_published, version=v${{ steps.version.outputs.version }}
+          EOF
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-notes
+          path: RELEASE_NOTES.md
+
+  # Create GitHub release
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-notes
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: BlackRoad v${{ needs.build.outputs.version }}
+          tag_name: v${{ needs.build.outputs.version }}
+          body_path: RELEASE_NOTES.md
+          prerelease: ${{ inputs.prerelease || false }}
+          generate_release_notes: true
+
+      - name: Emit release signal
+        run: |
+          echo "📡 SIGNAL: OS.release_published"
+          echo "  version=v${{ needs.build.outputs.version }}"
+          echo "  prerelease=${{ inputs.prerelease || false }}"
+
+  # Notify
+  notify:
+    name: Notify
+    runs-on: ubuntu-latest
+    needs: [build, release]
+
+    steps:
+      - name: Send notifications
+        run: |
+          echo "✅ Release v${{ needs.build.outputs.version }} published"
+          echo ""
+          echo "Notifications would be sent to:"
+          echo "  - Slack #releases"
+          echo "  - Discord announcements"
+          echo "  - Email subscribers"

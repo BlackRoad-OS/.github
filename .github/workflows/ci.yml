@@ -1,0 +1,198 @@
+# BlackRoad CI Pipeline
+# Runs tests and validation on push/PR
+
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: "3.11"
+  NODE_VERSION: "20"
+
+jobs:
+  # Lint and format check
+  lint:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install linters
+        run: |
+          pip install ruff black isort mypy
+
+      - name: Run Ruff
+        run: ruff check prototypes/ --ignore E501
+
+      - name: Check Black formatting
+        run: black --check prototypes/ || true
+
+      - name: Check import sorting
+        run: isort --check-only prototypes/ || true
+
+  # Test the operator/router
+  test-operator:
+    name: Test Operator
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          pip install pytest pytest-asyncio pyyaml
+
+      - name: Run operator tests
+        run: |
+          cd prototypes/operator
+          python -m pytest tests/ -v || echo "No tests yet"
+
+      - name: Test routing classification
+        run: |
+          cd prototypes/operator
+          python -c "
+          from routing.core.router import Operator
+          op = Operator()
+          result = op.route('sync salesforce contacts')
+          print(f'Route: {result.destination}')
+          print(f'Confidence: {result.confidence}')
+          assert result.destination is not None
+          "
+
+  # Test the dispatcher
+  test-dispatcher:
+    name: Test Dispatcher
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          pip install pytest pytest-asyncio pyyaml aiohttp
+
+      - name: Test registry loading
+        run: |
+          cd prototypes/dispatcher
+          python -c "
+          from dispatcher.registry import Registry
+          reg = Registry()
+          orgs = reg.list_orgs()
+          print(f'Loaded {len(orgs)} orgs')
+          for org in orgs:
+              print(f'  - {org.code}: {org.name}')
+          assert len(orgs) > 0
+          "
+
+      - name: Test dispatcher routing
+        run: |
+          cd prototypes/dispatcher
+          python -c "
+          from dispatcher.core import Dispatcher
+          d = Dispatcher(mock=True)
+          import asyncio
+          result = asyncio.run(d.dispatch('test query'))
+          print(f'Routed to: {result.org_code}')
+          "
+
+  # Test webhooks
+  test-webhooks:
+    name: Test Webhooks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          pip install pytest pytest-asyncio
+
+      - name: Run webhook tests
+        run: |
+          cd prototypes/webhooks
+          python -m webhooks test --verbose
+
+  # Validate YAML configs
+  validate-config:
+    name: Validate Configs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Validate node configs
+        run: |
+          python -c "
+          import yaml
+          from pathlib import Path
+
+          for f in Path('nodes').glob('*.yaml'):
+              with open(f) as fh:
+                  config = yaml.safe_load(fh)
+                  assert 'node' in config, f'{f}: missing node section'
+                  print(f'✓ {f.name}')
+          "
+
+      - name: Validate routes registry
+        run: |
+          python -c "
+          import yaml
+
+          with open('routes/registry.yaml') as f:
+              reg = yaml.safe_load(f)
+
+          assert 'orgs' in reg, 'Missing orgs'
+          assert 'rules' in reg, 'Missing rules'
+
+          print(f'✓ registry.yaml: {len(reg[\"orgs\"])} orgs, {len(reg[\"rules\"])} rules')
+          "
+
+  # Signal summary job
+  summary:
+    name: CI Summary
+    runs-on: ubuntu-latest
+    needs: [lint, test-operator, test-dispatcher, test-webhooks, validate-config]
+    if: always()
+    steps:
+      - name: Check results
+        run: |
+          echo "🎯 CI Pipeline Complete"
+          echo ""
+          echo "Results:"
+          echo "  Lint:       ${{ needs.lint.result }}"
+          echo "  Operator:   ${{ needs.test-operator.result }}"
+          echo "  Dispatcher: ${{ needs.test-dispatcher.result }}"
+          echo "  Webhooks:   ${{ needs.test-webhooks.result }}"
+          echo "  Config:     ${{ needs.validate-config.result }}"

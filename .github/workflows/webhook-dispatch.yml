@@ -1,0 +1,103 @@
+# Webhook dispatch workflow
+# Receives repository_dispatch events and routes them
+
+name: Webhook Dispatch
+
+on:
+  repository_dispatch:
+    types:
+      - webhook
+      - github
+      - stripe
+      - salesforce
+      - cloudflare
+      - slack
+      - figma
+
+jobs:
+  dispatch:
+    name: Dispatch Webhook
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Process webhook
+        env:
+          WEBHOOK_TYPE: ${{ github.event.action }}
+          WEBHOOK_PAYLOAD: ${{ toJson(github.event.client_payload) }}
+        run: |
+          echo "📥 Webhook received"
+          echo "  Type: $WEBHOOK_TYPE"
+          echo ""
+
+          cd prototypes/webhooks
+          python -c "
+          import os
+          import json
+          from webhooks import process_webhook
+
+          webhook_type = os.environ['WEBHOOK_TYPE']
+          payload = json.loads(os.environ['WEBHOOK_PAYLOAD'])
+
+          # Build headers based on webhook type
+          headers = {}
+          if webhook_type == 'github':
+              headers['X-GitHub-Event'] = payload.get('event', 'push')
+          elif webhook_type == 'stripe':
+              headers['Stripe-Signature'] = 't=0,v1=test'
+          elif webhook_type == 'slack':
+              headers['X-Slack-Signature'] = 'v0=test'
+              headers['X-Slack-Request-Timestamp'] = '0'
+
+          # Process
+          result = process_webhook(headers, json.dumps(payload).encode())
+
+          if result.success:
+              print(f'Signal: {result.signal.format()}')
+          else:
+              print(f'Error: {result.error}')
+          "
+
+      - name: Route to org
+        env:
+          WEBHOOK_PAYLOAD: ${{ toJson(github.event.client_payload) }}
+        run: |
+          echo "🎯 Routing signal..."
+
+          # Extract target org from payload
+          TARGET_ORG=$(echo "$WEBHOOK_PAYLOAD" | python -c "import sys,json; d=json.load(sys.stdin); print(d.get('target_org', 'OS'))")
+
+          echo "  Target: $TARGET_ORG"
+
+          # Dispatch to appropriate workflow based on org
+          case "$TARGET_ORG" in
+            "FND")
+              echo "  -> Foundation: CRM/Finance handling"
+              ;;
+            "CLD")
+              echo "  -> Cloud: Infrastructure handling"
+              ;;
+            "AI")
+              echo "  -> AI: Intelligence handling"
+              ;;
+            *)
+              echo "  -> OS: General handling"
+              ;;
+          esac
+
+      - name: Log signal
+        run: |
+          echo ""
+          echo "📡 Signal logged"
+          echo "  Timestamp: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          echo "  Event: ${{ github.event.action }}"
+          echo "  Run: ${{ github.run_id }}"
