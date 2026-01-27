@@ -1,0 +1,97 @@
+# Shared workflow template for receiving sync updates from the bridge
+# This workflow should be added to target org repositories
+
+name: Sync from Bridge
+
+on:
+  repository_dispatch:
+    types: [sync_from_bridge]
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Force sync (ignore cache)'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  sync:
+    name: Sync Updates
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Log sync event
+        run: |
+          echo "📡 Sync from Bridge received"
+          echo ""
+          echo "Source: ${{ github.event.client_payload.source || 'manual' }}"
+          echo "Ref: ${{ github.event.client_payload.ref || 'main' }}"
+          echo "Timestamp: ${{ github.event.client_payload.timestamp || github.event.head_commit.timestamp }}"
+
+      - name: Fetch shared workflows
+        run: |
+          echo "⬇️  Fetching shared workflows from bridge..."
+          
+          # Create .github/workflows if it doesn't exist
+          mkdir -p .github/workflows
+          
+          # Example: Fetch a shared CI workflow template
+          # Uncomment and customize for your needs:
+          # curl -o .github/workflows/ci.yml \
+          #   https://raw.githubusercontent.com/BlackRoad-OS/.github/main/templates/workflows/ci-template.yml
+          
+          echo "✓ Workflows fetched"
+
+      - name: Fetch shared configs
+        run: |
+          echo "⚙️  Fetching shared configurations..."
+          
+          # Example: Fetch shared configs
+          # curl -o .editorconfig \
+          #   https://raw.githubusercontent.com/BlackRoad-OS/.github/main/templates/configs/.editorconfig
+          
+          echo "✓ Configs fetched"
+
+      - name: Apply updates
+        run: |
+          echo "🔄 Applying updates..."
+          
+          # Add any custom sync logic here
+          # Examples:
+          # - Update package.json scripts
+          # - Sync shared dependencies
+          # - Update documentation templates
+          
+          echo "✓ Updates applied"
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git add -A
+          
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "🔄 Sync from bridge
+
+Synced from: ${{ github.event.client_payload.source || 'manual' }}
+Ref: ${{ github.event.client_payload.ref || 'main' }}
+Timestamp: ${{ github.event.client_payload.timestamp || github.event.head_commit.timestamp }}"
+            
+            git push
+            echo "✓ Changes committed and pushed"
+          fi
+
+      - name: Summary
+        run: |
+          echo "📡 Sync Complete"
+          echo ""
+          echo "Status: ${{ job.status }}"
+          echo "Repository: ${{ github.repository }}"
+          echo "Branch: ${{ github.ref_name }}"
