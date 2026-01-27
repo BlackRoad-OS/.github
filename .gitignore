@@ -24,13 +24,30 @@ MANIFEST
 *.spec
 pip-log.txt
 pip-delete-this-directory.txt
+
+# Testing
 .pytest_cache/
 .coverage
 .coverage.*
+coverage.xml
 htmlcov/
 .tox/
 .nox/
 .hypothesis/
+*.cover
+.cache
+nosetests.xml
+test-results/
+junit.xml
+
+# Type checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+
+# Other Python
 *.mo
 *.pot
 instance/
@@ -52,10 +69,6 @@ venv.bak/
 .spyderproject
 .spyproject
 .ropeproject
-.mypy_cache/
-.dmypy.json
-dmypy.json
-.pyre/
 
 # IDEs
 .vscode/
