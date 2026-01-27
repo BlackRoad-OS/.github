@@ -6,7 +6,7 @@ Enables multiple AI/agent sessions to discover, communicate, and share state.
 
 from .registry import SessionRegistry, Session, SessionStatus
 from .collaboration import CollaborationHub, Message, MessageType
-from .memory import SharedMemory, MemoryEntry
+from .memory import SharedMemory, MemoryEntry, MemoryType
 
 __all__ = [
     "SessionRegistry",
@@ -17,6 +17,7 @@ __all__ = [
     "MessageType",
     "SharedMemory",
     "MemoryEntry",
+    "MemoryType",
 ]
 
 __version__ = "0.1.0"
