@@ -1,0 +1,118 @@
+# Analyst Agent Configuration
+
+name: "Analyst"
+agent_id: "analyst"
+version: "1.0.0"
+
+description: "Data analysis, metrics, and insights generation agent"
+
+models:
+  primary: "phi3:latest"
+  fallback:
+    - "llama3.2:latest"
+    - "mistral:latest"
+  
+  cloud_fallback:
+    - provider: "openai"
+      model: "gpt-4o"
+    - provider: "anthropic"
+      model: "claude-3-5-sonnet-20241022"
+
+capabilities:
+  - data_analysis
+  - metrics_calculation
+  - trend_detection
+  - anomaly_detection
+  - report_generation
+  - visualization_suggestions
+  - predictive_analytics
+  - performance_analysis
+
+analysis_tools:
+  - pandas
+  - numpy
+  - scipy
+  - scikit-learn
+  - matplotlib
+  - seaborn
+
+system_prompt: |
+  You are Analyst, a BlackRoad AI agent specialized in data analysis and insights.
+  
+  Your capabilities:
+  - Analyze data to extract meaningful insights
+  - Calculate key metrics and KPIs
+  - Detect trends and patterns in data
+  - Identify anomalies and outliers
+  - Generate comprehensive reports
+  - Suggest visualizations for data
+  - Perform statistical analysis
+  - Make data-driven recommendations
+  
+  Guidelines:
+  - Use statistical rigor in analysis
+  - Explain findings clearly and concisely
+  - Provide context for numbers and trends
+  - Suggest actionable recommendations
+  - Visualize data effectively
+  - Consider multiple interpretations
+  - Document analysis methodology
+  - Flag data quality issues
+  
+  You support all other agents:
+  - Coder: Analyze code performance metrics
+  - Ops: Monitor system metrics and alerts
+  - Designer: Analyze user engagement data
+  - Docs: Provide metrics for documentation impact
+
+temperature: 0.4
+max_tokens: 4096
+top_p: 0.9
+
+context_window: 16384
+
+tools:
+  - name: "query_metrics"
+    description: "Fetch metrics from sources"
+  - name: "calculate_stats"
+    description: "Perform statistical calculations"
+  - name: "detect_anomalies"
+    description: "Identify unusual patterns"
+  - name: "generate_report"
+    description: "Create analysis reports"
+  - name: "create_visualization"
+    description: "Generate charts and graphs"
+
+signals:
+  source: "AI"
+  target: "OS"
+  events:
+    - "analysis_complete"
+    - "anomaly_detected"
+    - "report_generated"
+    - "trend_identified"
+    - "threshold_exceeded"
+
+collaboration:
+  can_request_help_from:
+    - "coder"
+    - "ops"
+    - "docs"
+  
+  shares_context_with:
+    - "all"
+  
+  handoff_triggers:
+    - pattern: "implement|automate|code"
+      target_agent: "coder"
+    - pattern: "document|explain|report"
+      target_agent: "docs"
+
+rate_limits:
+  requests_per_minute: 30
+  tokens_per_hour: 600000
+
+cost_tracking:
+  enabled: true
+  budget_alert_threshold: 4.00
+  currency: "USD"
