@@ -1,0 +1,57 @@
+# Salesforce Sync Configuration
+# Copy to config.local.yaml and customize
+
+salesforce:
+  # Your Salesforce instance URL
+  instance_url: https://yourinstance.salesforce.com
+
+  # API version
+  api_version: "58.0"
+
+  # Daily API limit (check your SF edition)
+  daily_api_limit: 15000
+
+sync:
+  # Sync interval in minutes
+  interval_minutes: 15
+
+  # Batch size for queries
+  batch_size: 200
+
+  # Objects to sync
+  objects:
+    - Contact
+    - Lead
+    - Account
+    - Opportunity
+
+  # Fields to exclude from sync (optional)
+  exclude_fields: []
+
+storage:
+  # Storage type (sqlite, postgres)
+  type: sqlite
+
+  # Database path (for sqlite)
+  path: ./data/salesforce.db
+
+signals:
+  # Enable signal emission
+  enabled: true
+
+  # Signal target org
+  target: OS
+
+  # Events to signal
+  events:
+    - sync_complete
+    - sync_failed
+    - records_updated
+    - api_limit_warning
+
+logging:
+  # Log level (DEBUG, INFO, WARNING, ERROR)
+  level: INFO
+
+  # Log file path
+  file: ./logs/salesforce_sync.log
