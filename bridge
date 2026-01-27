@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#
+# bridge - The BlackRoad Control Plane CLI
+#
+# Usage:
+#   ./bridge status      # Quick status
+#   ./bridge dashboard   # Full dashboard
+#   ./bridge route "query"  # Route a query
+#   ./bridge orgs        # List organizations
+#   ./bridge templates   # List templates
+#   ./bridge             # Interactive mode
+#
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+export PYTHONPATH="$SCRIPT_DIR/prototypes/operator:$SCRIPT_DIR/prototypes/metrics:$SCRIPT_DIR/prototypes/explorer:$SCRIPT_DIR/prototypes/control-plane"
+
+cd "$SCRIPT_DIR"
+
+python -m control_plane "$@"

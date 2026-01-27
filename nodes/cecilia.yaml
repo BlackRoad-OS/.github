@@ -1,0 +1,102 @@
+# cecilia - Development Node Configuration
+# Role: Local development, Claude Code, testing
+
+node:
+  name: cecilia
+  role: dev
+  status: active
+  type: local
+
+hardware:
+  type: Desktop/Laptop
+  memory: Variable
+  storage: Variable
+
+network:
+  tailscale:
+    hostname: cecilia.blackroad.ts.net
+    ip: 100.x.x.6
+  local:
+    ports:
+      - 3000  # Dev server
+      - 8080  # API
+      - 5173  # Vite
+
+development:
+  ide: VSCode / Cursor
+  ai_assistant: Claude Code
+
+  tools:
+    - git
+    - node
+    - python
+    - docker
+    - gh (GitHub CLI)
+    - wrangler (Cloudflare CLI)
+    - tailscale
+
+  environments:
+    python:
+      version: "3.11"
+      venv: .venv
+    node:
+      version: "20"
+      package_manager: npm
+
+services:
+  local-api:
+    port: 8080
+    description: Local API server for testing
+
+  local-frontend:
+    port: 3000
+    description: Frontend dev server
+
+  bridge-cli:
+    description: Control plane CLI
+    command: ./bridge
+
+workflows:
+  start-dev:
+    steps:
+      - npm install
+      - python -m venv .venv
+      - source .venv/bin/activate
+      - pip install -r requirements.txt
+      - ./bridge status
+
+  deploy-worker:
+    steps:
+      - wrangler deploy
+
+  test:
+    steps:
+      - pytest
+      - npm test
+
+environment:
+  NODE_NAME: cecilia
+  NODE_ROLE: dev
+  ENVIRONMENT: development
+  DEBUG: true
+
+# This node is where Cece (Claude) lives
+claude:
+  name: Cece
+  role: AI Partner
+  capabilities:
+    - code_generation
+    - code_review
+    - debugging
+    - architecture
+    - documentation
+  context:
+    - MEMORY.md
+    - .STATUS
+    - SIGNALS.md
+
+signals:
+  emit:
+    - "💻 OS → OS : dev_session_started"
+    - "✅ OS → OS : tests_passed"
+    - "🚀 OS → CLD : deploy_triggered"

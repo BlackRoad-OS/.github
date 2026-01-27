@@ -1,0 +1,102 @@
+# shellfish - Gateway Node Configuration
+# Role: Edge routing, CDN, external API gateway
+
+node:
+  name: shellfish
+  role: gateway
+  status: planned
+  type: cloud
+
+platform:
+  provider: Cloudflare
+  services:
+    - Workers
+    - KV
+    - D1
+    - R2
+    - AI
+
+network:
+  domains:
+    - api.blackroad.ai
+    - app.blackroad.ai
+    - cdn.blackroad.ai
+
+workers:
+  blackroad-api:
+    routes:
+      - pattern: "api.blackroad.ai/*"
+    bindings:
+      kv:
+        - name: CACHE
+          id: xxx
+      d1:
+        - name: DB
+          database_name: blackroad
+      r2:
+        - name: STORAGE
+          bucket_name: blackroad-assets
+      ai:
+        - name: AI
+
+  blackroad-router:
+    routes:
+      - pattern: "app.blackroad.ai/*"
+    bindings:
+      service:
+        - name: ORIGIN
+          service: blackroad-tunnel
+
+tunnels:
+  blackroad-primary:
+    origin: lucidia.blackroad.ts.net
+    routes:
+      - hostname: api.blackroad.ai
+        path: /v1/*
+        service: http://lucidia:8080
+
+  blackroad-storage:
+    origin: aria.blackroad.ts.net
+    routes:
+      - hostname: storage.blackroad.ai
+        service: http://aria:9000
+
+kv_namespaces:
+  CACHE:
+    description: API response cache
+    ttl_default: 3600
+  SESSIONS:
+    description: User sessions
+    ttl_default: 86400
+  RATE_LIMITS:
+    description: Rate limiting counters
+    ttl_default: 60
+
+d1_databases:
+  blackroad:
+    description: Edge database
+    tables:
+      - users
+      - sessions
+      - api_keys
+      - audit_log
+
+r2_buckets:
+  blackroad-assets:
+    description: Static assets
+    public: true
+    cors: true
+  blackroad-uploads:
+    description: User uploads
+    public: false
+
+environment:
+  NODE_NAME: shellfish
+  NODE_ROLE: gateway
+  ENVIRONMENT: production
+
+signals:
+  emit:
+    - "🌐 CLD → OS : request_routed, path=${path}, edge=${colo}"
+    - "⚠️ CLD → OS : rate_limited, ip=${ip}"
+    - "📊 CLD → OS : traffic_report, requests=${count}, p50=${p50}ms"
