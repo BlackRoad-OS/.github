@@ -288,6 +288,62 @@ By contributing, you agree that your contributions will be licensed under the sa
 
 ---
 
+## AI-Assisted Development
+
+BlackRoad uses **Claude Code API** for AI-assisted development.
+
+### Using Claude Code
+
+If you're using Claude Code (Anthropic's IDE integration):
+
+1. **API Key Setup**
+   ```bash
+   export ANTHROPIC_API_KEY="sk-ant-api03-..."
+   ```
+
+2. **MCP Server Integration**
+   
+   The BlackRoad MCP server provides Claude Code with access to:
+   - Organization routing
+   - Service health checks
+   - Signal emission
+   - Node configuration
+   
+   See [prototypes/mcp-server/](prototypes/mcp-server/) for setup.
+
+3. **AI Router Template**
+   
+   Use the AI router for intelligent provider selection:
+   ```python
+   from ai_router import Router
+   
+   router = Router(strategy="cost")
+   result = await router.complete("Write a Python function")
+   ```
+   
+   See [templates/ai-router/](templates/ai-router/) for details.
+
+4. **Best Practices**
+   
+   - Use system prompts that reference BlackRoad patterns
+   - Follow the signal protocol in generated code
+   - Include organization context in queries
+   - Review [CLAUDE_CODE_API.md](CLAUDE_CODE_API.md) for guidelines
+
+### API Guidelines
+
+When contributing AI-related code:
+
+- **Use official SDK** - `pip install anthropic`
+- **Handle errors gracefully** - Implement fallbacks
+- **Track costs** - Use the AI router's cost tracking
+- **Respect rate limits** - Implement exponential backoff
+- **Secure API keys** - Never commit secrets
+
+See [CLAUDE_CODE_API.md](CLAUDE_CODE_API.md) for comprehensive guidelines.
+
+---
+
 ## Recognition
 
 Contributors will be:
@@ -302,6 +358,7 @@ Contributors will be:
 
 - Check [SUPPORT.md](SUPPORT.md) for support options
 - Review [SECURITY.md](SECURITY.md) for security issues
+- Read [CLAUDE_CODE_API.md](CLAUDE_CODE_API.md) for AI development
 - Browse organization blueprints in [orgs/](orgs/)
 
 ---

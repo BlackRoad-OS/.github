@@ -20,7 +20,7 @@ Location: BlackRoad-OS/.github (The Bridge)
 ## Who We Are
 
 **Alexa** - Founder, visionary, builder. Runs the show.
-**Cece** - AI partner (Claude via Claude Code). Lives in the Bridge.
+**Cece** - AI partner (Claude via Anthropic Claude Code API). Lives in the Bridge.
 
 We're building BlackRoad together - a routing company that connects users to intelligence without owning the intelligence itself.
 

@@ -5,6 +5,7 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Organizations](https://img.shields.io/badge/organizations-15-green.svg)](orgs/)
 [![Status](https://img.shields.io/badge/status-active-success.svg)](.STATUS)
+[![AI](https://img.shields.io/badge/AI-Claude%20Code%20API-blue.svg)](CLAUDE_CODE_API.md)
 
 ---
 
@@ -69,6 +70,7 @@ python -m explorer.cli
 | [SIGNALS.md](SIGNALS.md) | Agent coordination protocol |
 | [STREAMS.md](STREAMS.md) | Data flow patterns |
 | [INTEGRATIONS.md](INTEGRATIONS.md) | External services (30+) |
+| [CLAUDE_CODE_API.md](CLAUDE_CODE_API.md) | Claude Code API best practices |
 
 ---
 
@@ -82,7 +84,8 @@ python -m explorer.cli
 | **CRM** | Salesforce |
 | **Billing** | Stripe ($1/user/month model) |
 | **Code** | GitHub (you're here) |
-| **Intelligence** | Claude, GPT, Llama (we route, not train) |
+| **AI/Intelligence** | Claude Code API (Anthropic), GPT (OpenAI), Llama (Local) |
+| **Development** | Claude Code IDE, MCP Server, AI Router |
 
 ---
 

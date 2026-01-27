@@ -21,6 +21,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Dependabot configuration
   - FUNDING.yml placeholder
   - .gitignore file
+- Claude Code API documentation and integration
+  - CLAUDE_CODE_API.md - Comprehensive best practices guide
+  - Updated INTEGRATIONS.md with detailed Claude API information
+  - Updated MEMORY.md to explicitly reference Claude Code API
+  - Added Claude Code API badge to README.md
+  - Enhanced AI Router template with Claude Code API reference
+  - Added AI-assisted development section to CONTRIBUTING.md
+  - Updated INDEX.md with Claude Code API documentation link
 
 ---
 
