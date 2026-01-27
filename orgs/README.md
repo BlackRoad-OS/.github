@@ -8,10 +8,11 @@
 
 ```
 BlackRoad-OS/.github/orgs/
-├── BlackRoad-AI/        ← Blueprint for AI org
-├── BlackRoad-Cloud/     ← Blueprint for Cloud org
-├── BlackRoad-Labs/      ← Blueprint for Labs org
-└── ...                  ← All 15 orgs have blueprints here
+├── BlackRoad-OS/       ← Meta! The Bridge blueprints itself
+├── BlackRoad-AI/       ← Blueprint for AI org
+├── BlackRoad-Cloud/    ← Blueprint for Cloud org
+├── BlackRoad-Labs/     ← Blueprint for Labs org
+└── ...                 ← All 15 orgs have blueprints here
 ```
 
 When a new org spins up:
