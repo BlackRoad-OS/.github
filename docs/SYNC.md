@@ -213,11 +213,20 @@ When making changes that affect other orgs:
 
 ## Security
 
-- Use `GITHUB_TOKEN` for same-org dispatches
-- Use PAT with minimal scope for cross-org dispatches
-- Validate all payloads in target repos
-- Never sync secrets or credentials
-- Use dry-run mode when testing
+- Uses repository dispatch for safe cross-repo communication
+- Supports dry-run mode to test without dispatching
+- No secrets or credentials are synced
+- Target repos must explicitly set up receiver workflows
+
+### Cross-Organization Dispatches
+
+For syncing to repositories in different GitHub organizations:
+
+1. Create a Personal Access Token (PAT) with `repo` scope
+2. Add it as a repository secret named `DISPATCH_TOKEN`
+3. The workflow will use `DISPATCH_TOKEN` if available, falling back to `GITHUB_TOKEN` for same-org repos
+
+**Note**: `GITHUB_TOKEN` only has permissions within the current organization, so cross-org dispatches require a PAT.
 
 ## Troubleshooting
 

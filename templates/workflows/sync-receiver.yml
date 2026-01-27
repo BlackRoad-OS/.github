@@ -1,5 +1,13 @@
 # Shared workflow template for receiving sync updates from the bridge
 # This workflow should be added to target org repositories
+#
+# ⚠️  IMPORTANT NOTES:
+# 1. This template commits directly to the default branch. For production use,
+#    consider creating a PR instead to allow review of changes.
+# 2. The GITHUB_TOKEN may not have permissions to push to protected branches.
+#    If needed, use a PAT with appropriate permissions or configure branch
+#    protection to allow github-actions bot to push.
+# 3. Customize the sync logic in steps below based on your needs.
 
 name: Sync from Bridge
 
@@ -41,7 +49,8 @@ jobs:
           
           # Example: Fetch a shared CI workflow template
           # Uncomment and customize for your needs:
-          # curl -o .github/workflows/ci.yml \
+          # curl -fsSL -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          #   -o .github/workflows/ci.yml \
           #   https://raw.githubusercontent.com/BlackRoad-OS/.github/main/templates/workflows/ci-template.yml
           
           echo "✓ Workflows fetched"
@@ -50,8 +59,9 @@ jobs:
         run: |
           echo "⚙️  Fetching shared configurations..."
           
-          # Example: Fetch shared configs
-          # curl -o .editorconfig \
+          # Example: Fetch shared configs with authentication
+          # curl -fsSL -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          #   -o .editorconfig \
           #   https://raw.githubusercontent.com/BlackRoad-OS/.github/main/templates/configs/.editorconfig
           
           echo "✓ Configs fetched"
