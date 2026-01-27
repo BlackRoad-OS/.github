@@ -44,13 +44,13 @@ orgs/[OrgName]/
 | BlackRoad-AI | `AI` | ✔️ | 💤 |
 | BlackRoad-Cloud | `CLD` | ✔️ | 💤 |
 | BlackRoad-Labs | `LAB` | ✔️ | 💤 |
-| BlackRoad-Security | `SEC` | 💤 | 💤 |
-| BlackRoad-Foundation | `FND` | 💤 | 💤 |
-| BlackRoad-Media | `MED` | 💤 | 💤 |
+| BlackRoad-Security | `SEC` | ✔️ | 💤 |
+| BlackRoad-Foundation | `FND` | ✔️ | 💤 |
+| BlackRoad-Media | `MED` | ✔️ | 💤 |
 | BlackRoad-Hardware | `HW` | ✔️ | 💤 |
+| BlackRoad-Interactive | `INT` | ✔️ | 💤 |
 | BlackRoad-Education | `EDU` | 💤 | 💤 |
 | BlackRoad-Gov | `GOV` | 💤 | 💤 |
-| BlackRoad-Interactive | `INT` | 💤 | 💤 |
 | BlackRoad-Archive | `ARC` | 💤 | 💤 |
 | BlackRoad-Studio | `STU` | 💤 | 💤 |
 | BlackRoad-Ventures | `VEN` | 💤 | 💤 |
