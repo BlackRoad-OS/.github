@@ -255,8 +255,19 @@ def cmd_interactive(args):
                         config = result.get("config", {})
                         node = config.get("node", {})
                         print(f"  {node.get('name', arg)}: {node.get('role', 'unknown')}")
+                elif action == "help":
+                    print("  Available commands:")
+                    print("    route <query>        - Route a query to an org")
+                    print("    dispatch <query>     - Dispatch to a service")
+                    print("    orgs                 - List organizations")
+                    print("    routes [org]         - List routes")
+                    print("    health [org]         - Check health")
+                    print("    signals              - Get recent signals")
+                    print("    node <name>          - Get node config")
+                    print("    help                 - Show this help")
+                    print("    quit                 - Exit")
                 else:
-                    print(f"  Unknown command: {action}")
+                    print(f"  Unknown command: {action}. Type 'help' for available commands.")
 
             except (EOFError, KeyboardInterrupt):
                 print("\n  Goodbye!")
