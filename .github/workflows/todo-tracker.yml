@@ -1,0 +1,91 @@
+# BlackRoad TODO Tracker
+# Scans codebase for TODO/FIXME comments and creates issues
+
+name: TODO Tracker
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  scan-todos:
+    name: Scan TODOs
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scan for TODO comments
+        id: scan
+        run: |
+          echo "## TODO Scan Results" > todo-report.md
+          echo "" >> todo-report.md
+          echo "| File | Line | Comment |" >> todo-report.md
+          echo "|------|------|---------|" >> todo-report.md
+
+          count=0
+
+          # Scan Python files
+          for file in $(find prototypes/ templates/ -name "*.py" 2>/dev/null); do
+            while IFS= read -r line; do
+              lineno=$(echo "$line" | cut -d: -f1)
+              text=$(echo "$line" | cut -d: -f2- | sed 's/^.*TODO[: ]*//' | sed 's/^.*FIXME[: ]*//')
+              echo "| \`$file\` | L$lineno | $text |" >> todo-report.md
+              count=$((count + 1))
+            done < <(grep -n "TODO\|FIXME" "$file" 2>/dev/null || true)
+          done
+
+          # Scan YAML files
+          for file in $(find . -name "*.yaml" -o -name "*.yml" | grep -v node_modules | grep -v .git); do
+            while IFS= read -r line; do
+              lineno=$(echo "$line" | cut -d: -f1)
+              text=$(echo "$line" | cut -d: -f2- | sed 's/^.*TODO[: ]*//' | sed 's/^.*FIXME[: ]*//')
+              echo "| \`$file\` | L$lineno | $text |" >> todo-report.md
+              count=$((count + 1))
+            done < <(grep -n "TODO\|FIXME" "$file" 2>/dev/null || true)
+          done
+
+          # Scan JS/TS files
+          for file in $(find prototypes/ templates/ -name "*.js" -o -name "*.ts" 2>/dev/null); do
+            while IFS= read -r line; do
+              lineno=$(echo "$line" | cut -d: -f1)
+              text=$(echo "$line" | cut -d: -f2- | sed 's/^.*TODO[: ]*//' | sed 's/^.*FIXME[: ]*//')
+              echo "| \`$file\` | L$lineno | $text |" >> todo-report.md
+              count=$((count + 1))
+            done < <(grep -n "TODO\|FIXME" "$file" 2>/dev/null || true)
+          done
+
+          echo "" >> todo-report.md
+          echo "**Total: $count TODO/FIXME comments found**" >> todo-report.md
+
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+
+          cat todo-report.md
+
+      - name: Post scan summary
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('todo-report.md', 'utf8');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: report
+            });
+
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: todo-report
+          path: todo-report.md
+          retention-days: 30

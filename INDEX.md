@@ -27,6 +27,7 @@ The core of The Bridge - start here.
 | [STREAMS.md](STREAMS.md) | Data flow patterns | Upstream/Instream/Downstream |
 | [REPO_MAP.md](REPO_MAP.md) | Ecosystem overview | All orgs, all nodes |
 | [BLACKROAD_ARCHITECTURE.md](BLACKROAD_ARCHITECTURE.md) | The vision | Why we exist |
+| [TODO.md](TODO.md) | Task board | What needs doing |
 
 ---
 
