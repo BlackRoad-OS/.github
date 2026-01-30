@@ -1,5 +1,7 @@
 # Stripe Billing
 
+> **Integration Guide** — architectural reference for future implementation. Code snippets below are illustrative, not runnable.
+
 > **Payments, subscriptions, invoices. The $1/user/month engine.**
 
 ```

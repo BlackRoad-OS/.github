@@ -1,5 +1,7 @@
 # Cloudflare Workers
 
+> **Integration Guide** — architectural reference for future implementation. Code snippets below are illustrative, not runnable.
+
 > **Edge compute. 300+ locations. Milliseconds from users.**
 
 ```

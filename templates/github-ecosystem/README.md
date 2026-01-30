@@ -1,5 +1,7 @@
 # GitHub Ecosystem
 
+> **Integration Guide** — architectural reference for future implementation. Code snippets below are illustrative, not runnable.
+
 > **Actions, Projects, Wiki, Codespaces, Discussions. The full suite.**
 
 ```

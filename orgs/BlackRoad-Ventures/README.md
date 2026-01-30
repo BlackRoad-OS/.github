@@ -65,7 +65,7 @@ Build businesses. Create value. Scale sustainably.
 │   ──────────────              │  ────────────────       │
 │   • Infrastructure: ~$40/mo   │  • Subscriptions: $1/mo │
 │   • AI API costs: variable    │  • Enterprise: custom   │
-│   • Team: TBD                 │  • Marketplace: 10% fee │
+│   • Team: Lean (1–2)          │  • Marketplace: 10% fee │
 │                               │                         │
 └─────────────────────────────────────────────────────────┘
 ```

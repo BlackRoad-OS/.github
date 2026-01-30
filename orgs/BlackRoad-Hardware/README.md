@@ -50,8 +50,8 @@ Own the iron. Control the compute. No landlords.
 | Type | Purpose | Count |
 |------|---------|-------|
 | ESP32 | Sensors, controllers | Many |
-| LoRa modules | Long-range mesh | TBD |
-| Cameras | Vision (via Hailo) | TBD |
+| LoRa modules | Long-range mesh | 2–4 |
+| Cameras | Vision (via Hailo) | 2–3 |
 
 ---
 

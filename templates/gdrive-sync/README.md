@@ -1,5 +1,7 @@
 # Google Drive Sync
 
+> **Integration Guide** — architectural reference for future implementation. Code snippets below are illustrative, not runnable.
+
 > **Docs, sheets, files. Your knowledge base in the cloud.**
 
 ```

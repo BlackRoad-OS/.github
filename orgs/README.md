@@ -31,7 +31,6 @@ Each org blueprint contains:
 orgs/[OrgName]/
 ├── README.md           ← What this org does
 ├── REPOS.md            ← What repos should exist
-├── STRUCTURE.md        ← Directory/file structure specs
 └── SIGNALS.md          ← Org-specific signal handlers
 ```
 

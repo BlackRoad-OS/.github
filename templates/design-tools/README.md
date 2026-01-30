@@ -1,5 +1,7 @@
 # Design Tools Integration
 
+> **Integration Guide** — architectural reference for future implementation. Code snippets below are illustrative, not runnable.
+
 > **Figma, Canva, and the visual layer of BlackRoad.**
 
 ```
