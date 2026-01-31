@@ -3,7 +3,7 @@
 
 version: "1.0"
 home_world: lucidia
-total_agents: 1050
+total_agents: 1000
 
 types:
   # ═══════════════════════════════════════
