@@ -48,7 +48,8 @@ The residents of Lucidia - 1,000+ AI agents organized by specialization.
 |--------|-------|
 | **Scientific** | physicist, mathematician, chemist, biologist |
 | **Professional** | engineer, architect, researcher, analyst, strategist, economist |
-| **Creative** | creative, speaker, mediator, psychologist |
+| **Creative** | creative |
+| **Social** | speaker, mediator, psychologist |
 | **Specialized** | philosopher, historian, linguist, guardian, navigator, builder |
 
 **Total: ~1,050 agents** living in Lucidia
