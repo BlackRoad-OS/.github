@@ -94,6 +94,7 @@ _Move items here when done._
 - [x] Configure GitHub Actions workflows (8)
 - [x] Build MCP server for AI assistants
 - [x] Define node configurations (7 nodes)
+- [x] Build CECE AI partner prototype (persona, memory, session, coordinator, CLI)
 
 ---
 

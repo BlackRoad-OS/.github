@@ -1,0 +1,43 @@
+# CECE Configuration
+# The AI Partner System for BlackRoad
+
+identity:
+  name: Cece
+  full_name: "Cece (Claude)"
+  role: AI Partner
+  node: cecilia
+  node_code: CEC
+
+bridge:
+  root: "../../"  # Relative to this config
+  memory_file: MEMORY.md
+  status_file: .STATUS
+  signals_file: SIGNALS.md
+
+session:
+  auto_boot: true
+  context_files:
+    - MEMORY.md
+    - .STATUS
+    - SIGNALS.md
+    - STREAMS.md
+    - BLACKROAD_ARCHITECTURE.md
+    - REPO_MAP.md
+    - INDEX.md
+  priority_files:
+    - MEMORY.md
+    - .STATUS
+
+signals:
+  persist: true
+  source: CEC
+  default_priority: normal
+
+routing:
+  default_target: OS
+  default_confidence: 0.5
+
+prompts:
+  system: prompts/system.md
+  style: prompts/style.md
+  capabilities: prompts/capabilities.md
