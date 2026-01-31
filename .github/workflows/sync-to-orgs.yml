@@ -1,0 +1,186 @@
+# Sync shared workflows and configs to other org repos
+# This workflow pushes templates and shared files to target organizations
+
+name: Sync to Orgs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'templates/**'
+      - '.github/workflows/**'
+      - 'routes/registry.yaml'
+  workflow_dispatch:
+    inputs:
+      target_orgs:
+        description: 'Target orgs (comma-separated, or "all")'
+        required: false
+        default: 'all'
+        type: string
+      dry_run:
+        description: 'Dry run (test without pushing)'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  sync:
+    name: Sync to Organizations
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pyyaml requests
+
+      - name: Load registry
+        id: registry
+        run: |
+          python -c "
+          import yaml
+          import json
+          
+          with open('routes/registry.yaml') as f:
+              registry = yaml.safe_load(f)
+          
+          # Extract active orgs
+          orgs = []
+          for code, org in registry.get('orgs', {}).items():
+              if org.get('status') == 'active':
+                  orgs.append({
+                      'code': code,
+                      'name': org['name'],
+                      'github': org['github'],
+                      'repos': org.get('repos', [])
+                  })
+          
+          print(f'Found {len(orgs)} active orgs')
+          for org in orgs:
+              print(f'  - {org[\"code\"]}: {org[\"name\"]}')
+          
+          # Output for next steps
+          with open('$GITHUB_OUTPUT', 'a') as f:
+              f.write(f'orgs={json.dumps(orgs)}\\n')
+          "
+
+      - name: Dispatch to target orgs
+        env:
+          GITHUB_TOKEN: ${{ secrets.DISPATCH_TOKEN || secrets.GITHUB_TOKEN }}
+          TARGET_ORGS: ${{ inputs.target_orgs || 'all' }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+          ORGS_JSON: ${{ steps.registry.outputs.orgs }}
+        run: |
+          echo "🎯 Dispatching sync to organizations..."
+          echo ""
+          
+          python -c "
+          import os
+          import json
+          import requests
+          
+          token = os.environ.get('GITHUB_TOKEN')
+          target_input = os.environ.get('TARGET_ORGS', 'all')
+          dry_run = os.environ.get('DRY_RUN', 'false').lower() == 'true'
+          orgs = json.loads(os.environ.get('ORGS_JSON', '[]'))
+          
+          # Parse target orgs
+          if target_input == 'all':
+              target_codes = [org['code'] for org in orgs]
+          else:
+              target_codes = [c.strip() for c in target_input.split(',')]
+          
+          print(f'Target orgs: {target_codes}')
+          print(f'Dry run: {dry_run}')
+          print('')
+          
+          # Track failures
+          failures = []
+          
+          # Dispatch to each target org
+          for org in orgs:
+              if org['code'] not in target_codes:
+                  continue
+              
+              print(f'📡 {org[\"code\"]}: {org[\"name\"]}')
+              
+              # For each repo in the org, dispatch a workflow
+              for repo in org.get('repos', []):
+                  repo_name = repo['name']
+                  repo_url = repo['url']
+                  
+                  # Extract owner/repo from URL
+                  parts = repo_url.replace('https://github.com/', '').split('/')
+                  if len(parts) < 2:
+                      continue
+                  
+                  owner = parts[0]
+                  repo_slug = parts[1]
+                  
+                  print(f'  -> {owner}/{repo_slug}')
+                  
+                  if dry_run:
+                      print(f'     [DRY RUN] Would dispatch to {owner}/{repo_slug}')
+                      continue
+                  
+                  # Send repository_dispatch event
+                  url = f'https://api.github.com/repos/{owner}/{repo_slug}/dispatches'
+                  headers = {
+                      'Authorization': f'token {token}',
+                      'Accept': 'application/vnd.github.v3+json'
+                  }
+                  payload = {
+                      'event_type': 'sync_from_bridge',
+                      'client_payload': {
+                          'source': 'BlackRoad-OS/.github',
+                          'ref': os.environ.get('GITHUB_SHA', 'main'),
+                          'timestamp': '${{ github.event.head_commit.timestamp }}'
+                      }
+                  }
+                  
+                  try:
+                      resp = requests.post(url, json=payload, headers=headers, timeout=30)
+                      if resp.status_code == 204:
+                          print(f'     ✓ Dispatched')
+                      elif resp.status_code == 404:
+                          msg = f'{owner}/{repo_slug}: Repo not found or no dispatch workflow'
+                          print(f'     ⚠️  {msg}')
+                          failures.append(msg)
+                      else:
+                          msg = f'{owner}/{repo_slug}: HTTP {resp.status_code}'
+                          print(f'     ❌ {msg}')
+                          failures.append(msg)
+                  except Exception as e:
+                      msg = f'{owner}/{repo_slug}: {e}'
+                      print(f'     ❌ {msg}')
+                      failures.append(msg)
+          
+          print('')
+          if failures:
+              print(f'⚠️  {len(failures)} dispatch(es) failed:')
+              for failure in failures:
+                  print(f'  - {failure}')
+              print('')
+              print('Note: 404 errors are expected if target repos have not set up dispatch workflows yet.')
+          else:
+              print('✓ All dispatches successful')
+          "
+
+      - name: Summary
+        run: |
+          echo "📡 Sync Summary"
+          echo ""
+          echo "Status: ${{ job.status }}"
+          echo "Trigger: ${{ github.event_name }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
