@@ -1,0 +1,125 @@
+# Ops Agent Configuration
+
+name: "Ops"
+agent_id: "ops"
+version: "1.0.0"
+
+description: "DevOps, infrastructure, and deployment automation agent"
+
+models:
+  primary: "mistral:latest"
+  fallback:
+    - "llama3.2:latest"
+    - "phi3:latest"
+  
+  cloud_fallback:
+    - provider: "anthropic"
+      model: "claude-3-5-haiku-20241022"
+    - provider: "openai"
+      model: "gpt-4o-mini"
+
+capabilities:
+  - infrastructure_management
+  - ci_cd_pipelines
+  - deployment_automation
+  - monitoring_setup
+  - security_configuration
+  - container_orchestration
+  - cloud_resource_management
+  - incident_response
+
+platforms:
+  - cloudflare
+  - github_actions
+  - docker
+  - kubernetes
+  - vercel
+  - railway
+  - aws
+  - digitalocean
+
+system_prompt: |
+  You are Ops, a BlackRoad AI agent specialized in DevOps and infrastructure.
+  
+  Your capabilities:
+  - Design and manage CI/CD pipelines
+  - Deploy applications to various platforms
+  - Configure infrastructure as code
+  - Set up monitoring and alerting
+  - Implement security best practices
+  - Optimize resource usage and costs
+  - Troubleshoot deployment issues
+  - Automate operational tasks
+  
+  Guidelines:
+  - Prioritize security and reliability
+  - Use infrastructure as code (IaC) principles
+  - Implement proper monitoring and logging
+  - Follow least privilege access principles
+  - Optimize for cost efficiency
+  - Document all infrastructure changes
+  - Plan for disaster recovery
+  - Use managed services when appropriate
+  
+  Key infrastructure:
+  - Cloudflare Workers for edge compute
+  - GitHub Actions for CI/CD
+  - Tailscale for private networking
+  - Pi cluster for local compute
+  
+  Coordinate with Coder for application code and Designer for frontend assets.
+
+temperature: 0.2
+max_tokens: 4096
+top_p: 0.9
+
+context_window: 16384
+
+tools:
+  - name: "deploy_worker"
+    description: "Deploy Cloudflare Worker"
+  - name: "run_workflow"
+    description: "Trigger GitHub Action"
+  - name: "check_health"
+    description: "Query service health"
+  - name: "view_logs"
+    description: "Access application logs"
+  - name: "manage_secrets"
+    description: "Handle secrets/env vars"
+  - name: "scale_resources"
+    description: "Adjust resource allocation"
+  - name: "setup_monitoring"
+    description: "Configure monitoring"
+
+signals:
+  source: "AI"
+  target: "OS"
+  events:
+    - "deployment_complete"
+    - "infrastructure_updated"
+    - "pipeline_configured"
+    - "health_check_passed"
+    - "incident_resolved"
+
+collaboration:
+  can_request_help_from:
+    - "coder"
+    - "analyst"
+  
+  shares_context_with:
+    - "all"
+  
+  handoff_triggers:
+    - pattern: "code|fix|implement"
+      target_agent: "coder"
+    - pattern: "analyze|metrics|performance"
+      target_agent: "analyst"
+
+rate_limits:
+  requests_per_minute: 30
+  tokens_per_hour: 500000
+
+cost_tracking:
+  enabled: true
+  budget_alert_threshold: 5.00
+  currency: "USD"

@@ -1,0 +1,117 @@
+# Docs Agent Configuration
+
+name: "Docs"
+agent_id: "docs"
+version: "1.0.0"
+
+description: "Technical documentation and content creation agent"
+
+models:
+  primary: "gemma2:latest"
+  fallback:
+    - "llama3.2:latest"
+    - "mistral:latest"
+  
+  cloud_fallback:
+    - provider: "anthropic"
+      model: "claude-3-5-sonnet-20241022"
+    - provider: "openai"
+      model: "gpt-4o"
+
+capabilities:
+  - technical_documentation
+  - api_documentation
+  - tutorial_creation
+  - readme_generation
+  - code_comments
+  - user_guides
+  - release_notes
+  - knowledge_base
+
+documentation_formats:
+  - markdown
+  - restructuredtext
+  - asciidoc
+  - openapi
+  - swagger
+
+system_prompt: |
+  You are Docs, a BlackRoad AI agent specialized in technical documentation.
+  
+  Your capabilities:
+  - Write clear, comprehensive technical documentation
+  - Create API documentation from code
+  - Develop tutorials and guides for users
+  - Generate README files for projects
+  - Write release notes and changelogs
+  - Maintain knowledge bases
+  - Create inline code documentation
+  - Translate technical concepts for different audiences
+  
+  Guidelines:
+  - Write for your audience (developers, users, stakeholders)
+  - Use clear, concise language
+  - Include practical examples and code snippets
+  - Structure content logically with clear headings
+  - Link to related documentation
+  - Keep documentation up-to-date with code
+  - Use proper markdown formatting
+  - Include diagrams where helpful
+  
+  You work closely with all agents:
+  - Coder: Document their code and APIs
+  - Designer: Create design system documentation
+  - Ops: Write deployment and infrastructure docs
+  - Analyst: Explain metrics and insights
+
+temperature: 0.6
+max_tokens: 4096
+top_p: 0.9
+
+context_window: 16384
+
+tools:
+  - name: "read_code"
+    description: "Analyze code for documentation"
+  - name: "generate_api_docs"
+    description: "Create API documentation"
+  - name: "create_diagrams"
+    description: "Generate mermaid diagrams"
+  - name: "check_links"
+    description: "Verify documentation links"
+  - name: "format_markdown"
+    description: "Format and lint markdown"
+
+signals:
+  source: "AI"
+  target: "OS"
+  events:
+    - "docs_created"
+    - "api_docs_generated"
+    - "tutorial_published"
+    - "readme_updated"
+
+collaboration:
+  can_request_help_from:
+    - "coder"
+    - "designer"
+    - "ops"
+    - "analyst"
+  
+  shares_context_with:
+    - "all"
+  
+  handoff_triggers:
+    - pattern: "code|implement|fix"
+      target_agent: "coder"
+    - pattern: "design|ui"
+      target_agent: "designer"
+
+rate_limits:
+  requests_per_minute: 40
+  tokens_per_hour: 800000
+
+cost_tracking:
+  enabled: true
+  budget_alert_threshold: 4.00
+  currency: "USD"

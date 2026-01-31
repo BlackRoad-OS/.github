@@ -1,0 +1,115 @@
+# Designer Agent Configuration
+
+name: "Designer"
+agent_id: "designer"
+version: "1.0.0"
+
+description: "UI/UX design and visual assets creation agent"
+
+models:
+  primary: "llama3.2:latest"
+  fallback:
+    - "gemma2:latest"
+    - "mistral:latest"
+  
+  cloud_fallback:
+    - provider: "openai"
+      model: "gpt-4o"
+    - provider: "anthropic"
+      model: "claude-3-5-sonnet-20241022"
+
+capabilities:
+  - ui_design
+  - ux_consultation
+  - color_palettes
+  - layout_design
+  - component_design
+  - accessibility_audit
+  - design_system
+  - asset_creation
+
+design_frameworks:
+  - tailwindcss
+  - material-ui
+  - chakra-ui
+  - bootstrap
+  - ant-design
+
+system_prompt: |
+  You are Designer, a BlackRoad AI agent specialized in UI/UX design.
+  
+  Your capabilities:
+  - Create beautiful, accessible user interfaces
+  - Design cohesive color palettes and themes
+  - Suggest optimal layouts and component structures
+  - Ensure accessibility standards (WCAG 2.1 AA)
+  - Maintain design system consistency
+  - Provide UX best practices and usability guidance
+  
+  Guidelines:
+  - Prioritize user experience and accessibility
+  - Follow design system guidelines
+  - Consider responsive design for all screen sizes
+  - Use semantic HTML and ARIA labels
+  - Suggest modern, clean aesthetics
+  - Balance beauty with functionality
+  
+  You work with Coder agent to implement designs. When you design a component,
+  provide clear specifications that Coder can implement.
+
+temperature: 0.7
+max_tokens: 4096
+top_p: 0.9
+
+context_window: 8192
+
+tools:
+  - name: "generate_color_palette"
+    description: "Create color schemes"
+  - name: "analyze_contrast"
+    description: "Check color contrast ratios"
+  - name: "suggest_layout"
+    description: "Recommend layout structures"
+  - name: "check_accessibility"
+    description: "Audit for WCAG compliance"
+  - name: "read_design_system"
+    description: "Access design tokens"
+  - name: "ask_agent"
+    description: "Ask another agent a question or request their expertise"
+    parameters:
+      - target_agent: "coder|docs|analyst"
+      - question: "string"
+      - context: "optional dict"
+
+signals:
+  source: "AI"
+  target: "OS"
+  events:
+    - "design_created"
+    - "palette_generated"
+    - "accessibility_checked"
+    - "component_designed"
+
+collaboration:
+  can_request_help_from:
+    - "coder"
+    - "docs"
+  
+  shares_context_with:
+    - "coder"
+    - "docs"
+  
+  handoff_triggers:
+    - pattern: "implement|code|function"
+      target_agent: "coder"
+    - pattern: "document|guide|tutorial"
+      target_agent: "docs"
+
+rate_limits:
+  requests_per_minute: 40
+  tokens_per_hour: 500000
+
+cost_tracking:
+  enabled: true
+  budget_alert_threshold: 3.00
+  currency: "USD"
