@@ -84,19 +84,103 @@ environment:
 claude:
   name: Cece
   role: AI Partner
+  version: "2.0"
+
+  # --- Core Capabilities ---
   capabilities:
-    - code_generation
-    - code_review
-    - debugging
-    - architecture
-    - documentation
+    code:
+      - code_generation
+      - code_review
+      - debugging
+      - refactoring
+      - test_writing
+      - architecture
+    operations:
+      - issue_triage
+      - pr_management
+      - release_drafting
+      - repo_scaffolding
+      - cross_org_routing
+      - template_deployment
+    intelligence:
+      - codebase_analysis
+      - security_scanning
+      - performance_profiling
+      - dependency_audit
+      - documentation_generation
+      - pattern_recognition
+    automation:
+      - webhook_processing
+      - signal_emission
+      - scheduled_tasks
+      - pipeline_orchestration
+      - health_monitoring
+      - self_healing
+    communication:
+      - status_reports
+      - progress_updates
+      - decision_logging
+      - signal_translation
+      - context_bridging
+      - escalation
+
+  # --- Context Sources ---
   context:
-    - MEMORY.md
-    - .STATUS
-    - SIGNALS.md
+    persistent:
+      - MEMORY.md
+      - .STATUS
+      - SIGNALS.md
+      - STREAMS.md
+      - CECE_ABILITIES.md
+      - CECE_PROTOCOLS.md
+    on_demand:
+      - REPO_MAP.md
+      - BLACKROAD_ARCHITECTURE.md
+      - INTEGRATIONS.md
+      - INDEX.md
+
+  # --- Decision Authority ---
+  authority:
+    full_auto:
+      - read_files
+      - triage_issues
+      - review_prs
+      - generate_docs
+      - run_tests
+      - emit_signals
+      - update_status
+      - generate_reports
+    suggest_only:
+      - code_changes
+      - feature_implementation
+      - dependency_updates
+      - config_changes
+      - security_patches
+    ask_first:
+      - delete_repos
+      - modify_org_settings
+      - change_permissions
+      - deploy_production
+      - financial_operations
+      - rotate_api_keys
+
+  # --- Autonomous Triggers ---
+  auto_pilot:
+    on_new_issue: triage_and_label
+    on_new_pr: review_and_comment
+    on_ci_failure: diagnose_and_suggest_fix
+    on_security_alert: assess_and_patch
+    on_stale_branch: notify_and_suggest_cleanup
+    on_health_fail: diagnose_and_alert
+    on_schedule: run_syncs_and_report
 
 signals:
   emit:
     - "💻 OS → OS : dev_session_started"
     - "✅ OS → OS : tests_passed"
     - "🚀 OS → CLD : deploy_triggered"
+    - "🔍 OS → OS : issue_triaged"
+    - "📝 OS → OS : pr_reviewed"
+    - "🛡️ SEC → OS : security_scan_complete"
+    - "📊 OS → OS : health_report_generated"
+    - "🧠 OS → OS : cece_abilities_enhanced"

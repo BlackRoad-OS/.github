@@ -1,0 +1,176 @@
+# Cece Automation Workflow
+# Triggers Cece's autonomous capabilities on ecosystem events
+
+name: Cece Auto
+
+on:
+  issues:
+    types: [opened, labeled]
+  pull_request:
+    types: [opened, synchronize, ready_for_review]
+  schedule:
+    - cron: '0 8 * * *'   # Daily health check at 8 AM UTC
+  workflow_dispatch:
+    inputs:
+      task:
+        description: 'Task to run (triage, health, scan, report)'
+        required: true
+        default: 'health'
+      target:
+        description: 'Target org code (OS, AI, CLD, etc.) or "all"'
+        required: false
+        default: 'all'
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  # ── Issue Triage ──────────────────────────────────────────
+  triage-issue:
+    if: github.event_name == 'issues' && github.event.action == 'opened'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Triage Issue
+        env:
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          cd prototypes/cece-engine
+          python -c "
+          import json
+          import os
+          from engine import CeceEngine
+
+          engine = CeceEngine()
+          result = engine.process({
+              'type': 'issue',
+              'id': os.environ['ISSUE_NUMBER'],
+              'title': os.environ.get('ISSUE_TITLE', ''),
+              'body': os.environ.get('ISSUE_BODY', ''),
+              'source': 'github',
+          })
+
+          print(result.output)
+          for sig in result.signals_emitted:
+              print(f'Signal: {sig}')
+
+          # Output for subsequent steps
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write(f'org={result.task.org}\n')
+              f.write(f'priority={result.task.priority.name}\n')
+              f.write(f'labels={json.dumps(result.task.labels)}\n')
+          "
+
+  # ── PR Review Trigger ────────────────────────────────────
+  review-pr:
+    if: github.event_name == 'pull_request' && github.event.action == 'opened'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Analyze PR
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          cd prototypes/cece-engine
+          python -c "
+          import os
+          from engine import CeceEngine
+
+          engine = CeceEngine()
+          result = engine.process({
+              'type': 'pull_request',
+              'id': os.environ['PR_NUMBER'],
+              'title': os.environ.get('PR_TITLE', ''),
+              'body': os.environ.get('PR_BODY', ''),
+              'source': 'github',
+          })
+          print(result.output)
+          for sig in result.signals_emitted:
+              print(f'Signal: {sig}')
+          "
+
+  # ── Daily Health Check ───────────────────────────────────
+  daily-health:
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.task == 'health')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Health Check
+        run: |
+          cd prototypes/cece-engine
+          python -c "
+          from engine import CeceEngine
+
+          engine = CeceEngine()
+
+          # Process health check as scheduled task
+          result = engine.process({
+              'type': 'scheduled',
+              'title': 'Daily ecosystem health check',
+              'body': 'Automated daily check of all org statuses',
+              'source': 'cron',
+          })
+          print(result.output)
+
+          # Print engine status
+          import json
+          print(json.dumps(engine.get_status(), indent=2))
+          "
+
+  # ── Manual Task Dispatch ─────────────────────────────────
+  manual-dispatch:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.task != 'health'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Task
+        env:
+          TASK_TYPE: ${{ github.event.inputs.task }}
+          TARGET_ORG: ${{ github.event.inputs.target }}
+        run: |
+          cd prototypes/cece-engine
+          python -c "
+          import os
+          from engine import CeceEngine
+
+          engine = CeceEngine()
+          result = engine.process({
+              'type': 'command',
+              'title': f'{os.environ[\"TASK_TYPE\"]} - {os.environ[\"TARGET_ORG\"]}',
+              'body': f'Manual dispatch: {os.environ[\"TASK_TYPE\"]} targeting {os.environ[\"TARGET_ORG\"]}',
+              'source': 'workflow_dispatch',
+          })
+          print(result.output)
+          for sig in result.signals_emitted:
+              print(f'Signal: {sig}')
+          "
