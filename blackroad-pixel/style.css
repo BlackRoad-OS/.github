@@ -573,6 +573,26 @@ body {
   background: linear-gradient(135deg, #2a2a1a, #4a4a2a);
 }
 
+.thumb-item[data-scene="cloudflare"] {
+  background: linear-gradient(135deg, #3a2a0a, #6a4a10);
+}
+
+.thumb-item[data-scene="github"] {
+  background: linear-gradient(135deg, #1a1a2a, #2a2a3a);
+}
+
+.thumb-item[data-scene="googleplex"] {
+  background: linear-gradient(135deg, #2a4a1a, #4a7a2a);
+}
+
+.thumb-item[data-scene="anthropic"] {
+  background: linear-gradient(135deg, #1a1520, #2a2035);
+}
+
+.thumb-item[data-scene="blackroad"] {
+  background: linear-gradient(135deg, #2a1040, #5a2080);
+}
+
 .thumb-label {
   position: absolute;
   bottom: 0;

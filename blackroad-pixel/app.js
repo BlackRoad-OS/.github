@@ -59,7 +59,12 @@ document.addEventListener('DOMContentLoaded', () => {
     tavern: 'PIXEL TAVERN',
     skyport: 'SKY PORT',
     canyon: 'CYBER CANYON',
-    fortress: 'THE FORTRESS'
+    fortress: 'THE FORTRESS',
+    cloudflare: 'CLOUDFLARE HQ',
+    github: 'GITHUB HQ',
+    googleplex: 'GOOGLEPLEX',
+    anthropic: 'ANTHROPIC HQ',
+    blackroad: 'BLACKROAD HQ'
   };
 
   const sceneGradients = {
@@ -92,7 +97,12 @@ document.addEventListener('DOMContentLoaded', () => {
     tavern: 'linear-gradient(180deg, #1a0a00 0%, #3a2a10 40%, #6a4a20 100%)',
     skyport: 'linear-gradient(180deg, #0a1020 0%, #1a3050 40%, #3a5080 100%)',
     canyon: 'linear-gradient(180deg, #1a0800 0%, #4a2010 40%, #7a3820 100%)',
-    fortress: 'linear-gradient(180deg, #10100a 0%, #2a2a1a 40%, #4a4a2a 100%)'
+    fortress: 'linear-gradient(180deg, #10100a 0%, #2a2a1a 40%, #4a4a2a 100%)',
+    cloudflare: 'linear-gradient(180deg, #1a0d00 0%, #3a2a0a 40%, #6a4a10 100%)',
+    github: 'linear-gradient(180deg, #0a0a10 0%, #1a1a2a 40%, #2a2a3a 100%)',
+    googleplex: 'linear-gradient(180deg, #0a1a0a 0%, #2a4a1a 40%, #4a7a2a 100%)',
+    anthropic: 'linear-gradient(180deg, #0d0a10 0%, #1a1520 40%, #2a2035 100%)',
+    blackroad: 'linear-gradient(180deg, #0d0510 0%, #2a1040 40%, #5a2080 100%)'
   };
 
   thumbItems.forEach(item => {
