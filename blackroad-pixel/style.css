@@ -533,6 +533,26 @@ body {
   background: linear-gradient(135deg, #0a2a4a, #1a4a7a);
 }
 
+.thumb-item[data-scene="arena"] {
+  background: linear-gradient(135deg, #4a1a0a, #8a3a1a);
+}
+
+.thumb-item[data-scene="shrine"] {
+  background: linear-gradient(135deg, #2a1050, #5a2a8a);
+}
+
+.thumb-item[data-scene="outpost"] {
+  background: linear-gradient(135deg, #1a3a2a, #2a5a4a);
+}
+
+.thumb-item[data-scene="harbor"] {
+  background: linear-gradient(135deg, #0a2040, #1a3a6a);
+}
+
+.thumb-item[data-scene="citadel"] {
+  background: linear-gradient(135deg, #3a2010, #6a4020);
+}
+
 .thumb-label {
   position: absolute;
   bottom: 0;
