@@ -12,6 +12,7 @@ from typing import Optional, Dict, Any, List
 
 from .registry import Registry, Org, Service
 from .client import ServiceClient, ServiceResponse, ServiceStatus, MockServiceClient
+from .rate_limiter import RateLimiter
 
 # Add operator to path for classification
 BRIDGE_ROOT = Path(__file__).parent.parent.parent.parent
@@ -73,6 +74,8 @@ class Dispatcher:
         registry: Optional[Registry] = None,
         client: Optional[ServiceClient] = None,
         mock: bool = False,
+        rate_limiter: Optional[RateLimiter] = None,
+        rate_limit: bool = True,
     ):
         """
         Initialize the dispatcher.
@@ -81,6 +84,8 @@ class Dispatcher:
             registry: Routing registry (auto-loaded if None)
             client: Service client (created if None)
             mock: Use mock client (for testing)
+            rate_limiter: Custom rate limiter (auto-created if None and rate_limit=True)
+            rate_limit: Enable rate limiting (default True)
         """
         self.registry = registry or Registry()
 
@@ -88,6 +93,11 @@ class Dispatcher:
             self.client = MockServiceClient()
         else:
             self.client = client or ServiceClient()
+
+        if rate_limiter:
+            self.rate_limiter = rate_limiter
+        else:
+            self.rate_limiter = RateLimiter(enabled=rate_limit)
 
         self._operator = None
         self._history: List[DispatchResult] = []
@@ -121,6 +131,23 @@ class Dispatcher:
             DispatchResult with response
         """
         start_time = datetime.now()
+
+        # Step 0: Rate limit check
+        allowed, limit_info = self.rate_limiter.check(key=None)
+        if not allowed:
+            result = DispatchResult(
+                success=False,
+                org="",
+                org_code="",
+                service="",
+                endpoint="",
+                error=f"Rate limited ({limit_info['limited_by']}). Retry after {limit_info['retry_after']:.1f}s",
+                latency_ms=0,
+                signal=f"🚫 RATE LIMITED : retry_after={limit_info['retry_after']:.1f}s",
+            )
+            self._history.append(result)
+            print(f"  {result.signal}")
+            return result
 
         # Step 1: Classify the request
         classification = None
@@ -225,6 +252,23 @@ class Dispatcher:
             DispatchResult with response
         """
         start_time = datetime.now()
+
+        # Rate limit check (keyed by org)
+        allowed, limit_info = self.rate_limiter.check(key=org_code)
+        if not allowed:
+            result = DispatchResult(
+                success=False,
+                org="",
+                org_code=org_code,
+                service=service_name or "",
+                endpoint="",
+                error=f"Rate limited ({limit_info['limited_by']}). Retry after {limit_info['retry_after']:.1f}s",
+                latency_ms=0,
+                signal=f"🚫 RATE LIMITED [{org_code}] : retry_after={limit_info['retry_after']:.1f}s",
+            )
+            self._history.append(result)
+            print(f"  {result.signal}")
+            return result
 
         org = self.registry.get_org(org_code)
         if not org:

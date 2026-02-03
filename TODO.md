@@ -19,7 +19,7 @@
 - [ ] Deploy operator v2 with confidence-weighted routing
 - [ ] Set up Tailscale mesh between all Pi nodes
 - [ ] Implement health check aggregation across nodes
-- [ ] Add rate limiting to dispatcher
+- [x] Add rate limiting to dispatcher
 - [ ] Create operator CLI packaging (pip install)
 
 ## Intelligence Layer (AI)
@@ -94,6 +94,7 @@ _Move items here when done._
 - [x] Configure GitHub Actions workflows (8)
 - [x] Build MCP server for AI assistants
 - [x] Define node configurations (7 nodes)
+- [x] Add rate limiting to dispatcher
 
 ---
 

@@ -16,6 +16,7 @@ __version__ = "0.1.0"
 from .core import Dispatcher, DispatchResult
 from .registry import Registry, Org, Service
 from .client import ServiceClient
+from .rate_limiter import RateLimiter
 
 __all__ = [
     "Dispatcher",
@@ -24,4 +25,5 @@ __all__ = [
     "Org",
     "Service",
     "ServiceClient",
+    "RateLimiter",
 ]
