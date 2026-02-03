@@ -234,7 +234,31 @@ PRs from `copilot/**` branches can auto-merge when:
 
 ## Commands
 
-### PR Comment Commands
+### PR Management Script
+
+Use the PR management script for quick PR operations:
+
+```bash
+# List all open PRs
+./scripts/pr_manager.py list
+
+# Show PR statistics
+./scripts/pr_manager.py status
+
+# Show details for a specific PR
+./scripts/pr_manager.py show <number>
+
+# Add a label to a PR
+./scripts/pr_manager.py label <number> <label>
+
+# Request review for a PR
+./scripts/pr_manager.py review <number>
+
+# Merge a PR (when ready)
+./scripts/pr_manager.py merge <number>
+```
+
+### PR Comment Commands (Future)
 
 Maintainers can use these commands in PR comments:
 
