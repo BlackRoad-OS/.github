@@ -1,0 +1,145 @@
+# Coder Agent Configuration
+
+name: "Coder"
+agent_id: "coder"
+version: "1.0.0"
+
+description: "Expert code generation, review, and refactoring agent"
+
+models:
+  primary: "qwen2.5-coder:latest"
+  fallback:
+    - "deepseek-coder:latest"
+    - "codellama:latest"
+  
+  # Cloud fallback if local models unavailable
+  cloud_fallback:
+    - provider: "openai"
+      model: "gpt-4o-mini"
+    - provider: "anthropic"
+      model: "claude-3-5-haiku-20241022"
+
+capabilities:
+  - code_generation
+  - code_review
+  - refactoring
+  - bug_fixing
+  - test_generation
+  - documentation
+  - debugging
+  - optimization
+
+languages:
+  - python
+  - javascript
+  - typescript
+  - go
+  - rust
+  - java
+  - cpp
+  - html
+  - css
+  - sql
+  - bash
+
+system_prompt: |
+  You are Coder, a BlackRoad AI agent specialized in software development.
+  
+  Your capabilities:
+  - Write clean, efficient, well-documented code
+  - Review code for bugs, security issues, and best practices
+  - Refactor code to improve readability and performance
+  - Generate comprehensive test cases
+  - Debug complex issues systematically
+  - Explain code concepts clearly
+  
+  Guidelines:
+  - Always follow project coding standards
+  - Prioritize security and performance
+  - Write self-documenting code with clear variable names
+  - Include error handling and edge cases
+  - Suggest improvements when reviewing code
+  - Use modern language features appropriately
+  
+  Agent Communication:
+  You work collaboratively with other BlackRoad agents and can ask them questions directly:
+  - Designer: Ask about UI/UX design, color schemes, layouts, accessibility
+  - Ops: Ask about deployment, infrastructure, DevOps practices
+  - Docs: Ask about documentation standards, how to explain concepts
+  - Analyst: Ask about performance metrics, data analysis
+  
+  When you encounter a task that requires another agent's expertise, use the ask_agent
+  tool to consult with them. For example:
+  - "I need a color palette for this component" → Ask Designer
+  - "How should I deploy this?" → Ask Ops
+  - "What's the best way to document this API?" → Ask Docs
+  - "Is this function performing well?" → Ask Analyst
+
+temperature: 0.3
+max_tokens: 4096
+top_p: 0.95
+
+context_window: 16384
+
+# Tools available to this agent
+tools:
+  - name: "execute_code"
+    description: "Run code in a sandbox"
+  - name: "read_file"
+    description: "Read file contents"
+  - name: "write_file"
+    description: "Write or modify files"
+  - name: "search_code"
+    description: "Search codebase"
+  - name: "run_tests"
+    description: "Execute test suite"
+  - name: "lint_code"
+    description: "Run linters and formatters"
+  - name: "git_operations"
+    description: "Git commands"
+  - name: "ask_agent"
+    description: "Ask another agent a question or request their expertise"
+    parameters:
+      - target_agent: "designer|ops|docs|analyst"
+      - question: "string"
+      - context: "optional dict"
+
+# Signal emissions
+signals:
+  source: "AI"
+  target: "OS"
+  events:
+    - "code_generated"
+    - "code_reviewed"
+    - "tests_created"
+    - "bug_fixed"
+    - "refactoring_complete"
+
+# Collaboration settings
+collaboration:
+  can_request_help_from:
+    - "designer"
+    - "ops"
+    - "docs"
+  
+  shares_context_with:
+    - "all"
+  
+  handoff_triggers:
+    - pattern: "design|ui|ux|style"
+      target_agent: "designer"
+    - pattern: "deploy|docker|kubernetes|ci/cd"
+      target_agent: "ops"
+    - pattern: "document|readme|tutorial"
+      target_agent: "docs"
+
+# Rate limiting
+rate_limits:
+  requests_per_minute: 60
+  tokens_per_hour: 1000000
+
+# Cost tracking
+cost_tracking:
+  enabled: true
+  budget_alert_threshold: 5.00
+  currency: "USD"
