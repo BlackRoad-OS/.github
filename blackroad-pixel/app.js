@@ -79,7 +79,12 @@ document.addEventListener('DOMContentLoaded', () => {
     terrace: 'THE TERRACE',
     foundry: 'IRON FOUNDRY',
     bridge: 'COMMAND BRIDGE',
-    atrium: 'THE ATRIUM'
+    atrium: 'THE ATRIUM',
+    hangar: 'STAR HANGAR',
+    sanctum: 'THE SANCTUM',
+    market: 'NIGHT MARKET',
+    watchtower: 'WATCHTOWER',
+    cavern: 'DEEP CAVERN'
   };
 
   const sceneGradients = {
@@ -132,7 +137,12 @@ document.addEventListener('DOMContentLoaded', () => {
     terrace: 'linear-gradient(180deg, #0a100d 0%, #1a3020 40%, #2a5035 100%)',
     foundry: 'linear-gradient(180deg, #100805 0%, #302010 40%, #503818 100%)',
     bridge: 'linear-gradient(180deg, #050810 0%, #101830 40%, #1a2850 100%)',
-    atrium: 'linear-gradient(180deg, #0d100a 0%, #203018 40%, #355028 100%)'
+    atrium: 'linear-gradient(180deg, #0d100a 0%, #203018 40%, #355028 100%)',
+    hangar: 'linear-gradient(180deg, #08080d 0%, #181828 40%, #282848 100%)',
+    sanctum: 'linear-gradient(180deg, #100510 0%, #281028 40%, #481848 100%)',
+    market: 'linear-gradient(180deg, #0d0a05 0%, #302818 40%, #504030 100%)',
+    watchtower: 'linear-gradient(180deg, #0a0d10 0%, #182030 40%, #283850 100%)',
+    cavern: 'linear-gradient(180deg, #050808 0%, #101818 40%, #1a2828 100%)'
   };
 
   thumbItems.forEach(item => {

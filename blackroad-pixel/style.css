@@ -653,6 +653,26 @@ body {
   background: linear-gradient(135deg, #203018, #355028);
 }
 
+.thumb-item[data-scene="hangar"] {
+  background: linear-gradient(135deg, #181828, #282848);
+}
+
+.thumb-item[data-scene="sanctum"] {
+  background: linear-gradient(135deg, #281028, #481848);
+}
+
+.thumb-item[data-scene="market"] {
+  background: linear-gradient(135deg, #302818, #504030);
+}
+
+.thumb-item[data-scene="watchtower"] {
+  background: linear-gradient(135deg, #182030, #283850);
+}
+
+.thumb-item[data-scene="cavern"] {
+  background: linear-gradient(135deg, #101818, #1a2828);
+}
+
 .thumb-label {
   position: absolute;
   bottom: 0;
