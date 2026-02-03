@@ -593,6 +593,26 @@ body {
   background: linear-gradient(135deg, #2a1040, #5a2080);
 }
 
+.thumb-item[data-scene="reactor"] {
+  background: linear-gradient(135deg, #004a1a, #008a2a);
+}
+
+.thumb-item[data-scene="bazaar"] {
+  background: linear-gradient(135deg, #4a3010, #7a5020);
+}
+
+.thumb-item[data-scene="temple"] {
+  background: linear-gradient(135deg, #301020, #5a2040);
+}
+
+.thumb-item[data-scene="orbital"] {
+  background: linear-gradient(135deg, #001a3a, #003060);
+}
+
+.thumb-item[data-scene="nexus"] {
+  background: linear-gradient(135deg, #1a1a30, #2a2a50);
+}
+
 .thumb-label {
   position: absolute;
   bottom: 0;

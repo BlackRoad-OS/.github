@@ -64,7 +64,12 @@ document.addEventListener('DOMContentLoaded', () => {
     github: 'GITHUB HQ',
     googleplex: 'GOOGLEPLEX',
     anthropic: 'ANTHROPIC HQ',
-    blackroad: 'BLACKROAD HQ'
+    blackroad: 'BLACKROAD HQ',
+    reactor: 'NEON REACTOR',
+    bazaar: 'PIXEL BAZAAR',
+    temple: 'THE TEMPLE',
+    orbital: 'ORBITAL STATION',
+    nexus: 'THE NEXUS'
   };
 
   const sceneGradients = {
@@ -102,7 +107,12 @@ document.addEventListener('DOMContentLoaded', () => {
     github: 'linear-gradient(180deg, #0a0a10 0%, #1a1a2a 40%, #2a2a3a 100%)',
     googleplex: 'linear-gradient(180deg, #0a1a0a 0%, #2a4a1a 40%, #4a7a2a 100%)',
     anthropic: 'linear-gradient(180deg, #0d0a10 0%, #1a1520 40%, #2a2035 100%)',
-    blackroad: 'linear-gradient(180deg, #0d0510 0%, #2a1040 40%, #5a2080 100%)'
+    blackroad: 'linear-gradient(180deg, #0d0510 0%, #2a1040 40%, #5a2080 100%)',
+    reactor: 'linear-gradient(180deg, #001a0a 0%, #004a1a 40%, #008a2a 100%)',
+    bazaar: 'linear-gradient(180deg, #1a1000 0%, #4a3010 40%, #7a5020 100%)',
+    temple: 'linear-gradient(180deg, #10050a 0%, #301020 40%, #5a2040 100%)',
+    orbital: 'linear-gradient(180deg, #000a1a 0%, #001a3a 40%, #003060 100%)',
+    nexus: 'linear-gradient(180deg, #0a0a0d 0%, #1a1a30 40%, #2a2a50 100%)'
   };
 
   thumbItems.forEach(item => {
