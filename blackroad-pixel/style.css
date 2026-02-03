@@ -613,6 +613,26 @@ body {
   background: linear-gradient(135deg, #1a1a30, #2a2a50);
 }
 
+.thumb-item[data-scene="library"] {
+  background: linear-gradient(135deg, #2a2010, #4a3a20);
+}
+
+.thumb-item[data-scene="plaza"] {
+  background: linear-gradient(135deg, #1a2a4a, #2a4a7a);
+}
+
+.thumb-item[data-scene="clinic"] {
+  background: linear-gradient(135deg, #1a3030, #2a5050);
+}
+
+.thumb-item[data-scene="depot"] {
+  background: linear-gradient(135deg, #2a2a18, #4a4a28);
+}
+
+.thumb-item[data-scene="quarters"] {
+  background: linear-gradient(135deg, #201830, #3a2850);
+}
+
 .thumb-label {
   position: absolute;
   bottom: 0;

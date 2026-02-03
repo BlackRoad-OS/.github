@@ -69,7 +69,12 @@ document.addEventListener('DOMContentLoaded', () => {
     bazaar: 'PIXEL BAZAAR',
     temple: 'THE TEMPLE',
     orbital: 'ORBITAL STATION',
-    nexus: 'THE NEXUS'
+    nexus: 'THE NEXUS',
+    library: 'THE LIBRARY',
+    plaza: 'CENTRAL PLAZA',
+    clinic: 'MED CLINIC',
+    depot: 'SUPPLY DEPOT',
+    quarters: 'CREW QUARTERS'
   };
 
   const sceneGradients = {
@@ -112,7 +117,12 @@ document.addEventListener('DOMContentLoaded', () => {
     bazaar: 'linear-gradient(180deg, #1a1000 0%, #4a3010 40%, #7a5020 100%)',
     temple: 'linear-gradient(180deg, #10050a 0%, #301020 40%, #5a2040 100%)',
     orbital: 'linear-gradient(180deg, #000a1a 0%, #001a3a 40%, #003060 100%)',
-    nexus: 'linear-gradient(180deg, #0a0a0d 0%, #1a1a30 40%, #2a2a50 100%)'
+    nexus: 'linear-gradient(180deg, #0a0a0d 0%, #1a1a30 40%, #2a2a50 100%)',
+    library: 'linear-gradient(180deg, #0d0a05 0%, #2a2010 40%, #4a3a20 100%)',
+    plaza: 'linear-gradient(180deg, #0a0d1a 0%, #1a2a4a 40%, #2a4a7a 100%)',
+    clinic: 'linear-gradient(180deg, #0a1010 0%, #1a3030 40%, #2a5050 100%)',
+    depot: 'linear-gradient(180deg, #0d0d08 0%, #2a2a18 40%, #4a4a28 100%)',
+    quarters: 'linear-gradient(180deg, #0a080d 0%, #201830 40%, #3a2850 100%)'
   };
 
   thumbItems.forEach(item => {
