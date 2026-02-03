@@ -1,0 +1,312 @@
+# PR Handler - Comprehensive Pull Request Management
+# Handles incoming PRs with intelligent triage, labeling, and status tracking
+
+name: PR Handler
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened, ready_for_review]
+  pull_request_review:
+    types: [submitted]
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to handle'
+        required: false
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  analyze-pr:
+    name: Analyze PR
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    outputs:
+      is_wip: ${{ steps.analyze.outputs.is_wip }}
+      pr_type: ${{ steps.analyze.outputs.pr_type }}
+      needs_review: ${{ steps.analyze.outputs.needs_review }}
+      can_auto_merge: ${{ steps.analyze.outputs.can_auto_merge }}
+      org_scope: ${{ steps.analyze.outputs.org_scope }}
+      
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Analyze PR metadata
+        id: analyze
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request || 
+                      await github.rest.pulls.get({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        pull_number: context.payload.inputs?.pr_number || context.issue.number
+                      }).then(r => r.data);
+            
+            // Check if WIP
+            const isWIP = pr.title.includes('[WIP]') || pr.title.includes('WIP:') || pr.draft;
+            core.setOutput('is_wip', isWIP);
+            
+            // Determine PR type based on title and files
+            let prType = 'other';
+            const title = pr.title.toLowerCase();
+            if (title.includes('workflow') || title.includes('ci') || title.includes('github actions')) {
+              prType = 'workflow';
+            } else if (title.includes('doc') || title.includes('wiki') || title.includes('readme')) {
+              prType = 'documentation';
+            } else if (title.includes('test') || title.includes('ci/cd')) {
+              prType = 'testing';
+            } else if (title.includes('infrastructure') || title.includes('setup')) {
+              prType = 'infrastructure';
+            } else if (title.includes('agent') || title.includes('ai') || title.includes('claude')) {
+              prType = 'ai-feature';
+            } else if (title.includes('collaboration') || title.includes('memory')) {
+              prType = 'core-feature';
+            }
+            core.setOutput('pr_type', prType);
+            
+            // Determine org scope
+            const orgPatterns = [
+              'BlackRoad-OS', 'BlackRoad-AI', 'BlackRoad-Cloud', 'BlackRoad-Hardware',
+              'BlackRoad-Security', 'BlackRoad-Labs', 'BlackRoad-Foundation',
+              'BlackRoad-Media', 'BlackRoad-Studio', 'BlackRoad-Interactive',
+              'BlackRoad-Education', 'BlackRoad-Gov', 'BlackRoad-Archive',
+              'BlackRoad-Ventures', 'Blackbox-Enterprises'
+            ];
+            const body = pr.body || '';
+            const orgsFound = orgPatterns.filter(org => 
+              title.includes(org) || body.includes(org)
+            );
+            core.setOutput('org_scope', orgsFound.join(',') || 'all');
+            
+            // Check if needs review
+            const needsReview = !isWIP && pr.requested_reviewers.length === 0;
+            core.setOutput('needs_review', needsReview);
+            
+            // Check if can auto-merge (copilot branches with checks passed)
+            const canAutoMerge = pr.head.ref.startsWith('copilot/') && 
+                                !isWIP && 
+                                pr.mergeable_state === 'clean';
+            core.setOutput('can_auto_merge', canAutoMerge);
+            
+            return {
+              number: pr.number,
+              isWIP,
+              prType,
+              orgScope: orgsFound.join(',') || 'all',
+              needsReview,
+              canAutoMerge
+            };
+  
+  label-pr:
+    name: Label PR
+    runs-on: ubuntu-latest
+    needs: analyze-pr
+    steps:
+      - name: Apply labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prType = '${{ needs.analyze-pr.outputs.pr_type }}';
+            const isWIP = '${{ needs.analyze-pr.outputs.is_wip }}' === 'true';
+            const orgScope = '${{ needs.analyze-pr.outputs.org_scope }}';
+            
+            const labels = [];
+            
+            // Type labels
+            const typeLabels = {
+              'workflow': 'workflows',
+              'documentation': 'documentation',
+              'testing': 'testing',
+              'infrastructure': 'infrastructure',
+              'ai-feature': 'ai-enhancement',
+              'core-feature': 'enhancement'
+            };
+            if (typeLabels[prType]) {
+              labels.push(typeLabels[prType]);
+            }
+            
+            // Status labels
+            if (isWIP) {
+              labels.push('work-in-progress');
+            } else {
+              labels.push('ready-for-review');
+            }
+            
+            // Org scope labels
+            if (orgScope && orgScope !== 'all') {
+              const orgs = orgScope.split(',');
+              if (orgs.length > 3) {
+                labels.push('multi-org');
+              } else {
+                orgs.forEach(org => {
+                  const code = org.split('-').pop();
+                  labels.push(`org:${code.toLowerCase()}`);
+                });
+              }
+            }
+            
+            // Apply labels
+            if (labels.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: labels
+              });
+            }
+  
+  comment-on-pr:
+    name: Comment on PR
+    runs-on: ubuntu-latest
+    needs: analyze-pr
+    if: needs.analyze-pr.outputs.needs_review == 'true'
+    steps:
+      - name: Add helpful comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prType = '${{ needs.analyze-pr.outputs.pr_type }}';
+            const isWIP = '${{ needs.analyze-pr.outputs.is_wip }}' === 'true';
+            
+            let comment = '## 🤖 PR Handler Analysis\n\n';
+            comment += `**Type:** ${prType}\n`;
+            comment += `**Status:** ${isWIP ? 'Work in Progress' : 'Ready for Review'}\n\n`;
+            
+            if (!isWIP) {
+              comment += '### Next Steps\n';
+              comment += '- [ ] Code review by maintainers\n';
+              comment += '- [ ] CI checks pass\n';
+              comment += '- [ ] Resolve any review comments\n';
+              comment += '- [ ] Ready to merge\n\n';
+            }
+            
+            // Type-specific guidance
+            const guidance = {
+              'workflow': '⚠️ **Workflow changes** require careful review for security and permissions.',
+              'documentation': '📚 **Documentation** - Ensure accuracy and completeness.',
+              'testing': '🧪 **Testing changes** - Verify test coverage and quality.',
+              'infrastructure': '🏗️ **Infrastructure** - Review for production readiness.',
+              'ai-feature': '🤖 **AI Feature** - Test thoroughly with different scenarios.',
+              'core-feature': '⭐ **Core Feature** - Requires comprehensive review and testing.'
+            };
+            
+            if (guidance[prType]) {
+              comment += `### ℹ️ ${guidance[prType]}\n\n`;
+            }
+            
+            comment += '---\n';
+            comment += '*Automated by BlackRoad PR Handler*';
+            
+            // Check if comment already exists
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const existing = comments.data.find(c => 
+              c.body.includes('PR Handler Analysis') && 
+              c.user.type === 'Bot'
+            );
+            
+            if (!existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: comment
+              });
+            }
+  
+  request-reviewers:
+    name: Request Reviewers
+    runs-on: ubuntu-latest
+    needs: analyze-pr
+    if: needs.analyze-pr.outputs.needs_review == 'true' && needs.analyze-pr.outputs.is_wip == 'false'
+    steps:
+      - name: Assign reviewers
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Request review from repository owner
+            try {
+              await github.rest.pulls.requestReviewers({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.issue.number,
+                reviewers: ['blackboxprogramming']
+              });
+            } catch (error) {
+              console.log('Could not request reviewers:', error.message);
+            }
+  
+  check-merge-readiness:
+    name: Check Merge Readiness
+    runs-on: ubuntu-latest
+    needs: analyze-pr
+    if: needs.analyze-pr.outputs.can_auto_merge == 'true'
+    steps:
+      - name: Check if ready to merge
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            
+            // Check CI status
+            const checks = await github.rest.checks.listForRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: pr.head.sha
+            });
+            
+            const allPassed = checks.data.check_runs.every(check => 
+              check.conclusion === 'success' || check.conclusion === 'skipped'
+            );
+            
+            if (allPassed && pr.mergeable) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: '✅ **This PR is ready to merge!**\n\nAll checks have passed and the PR is mergeable. A maintainer can merge this PR.'
+              });
+            }
+  
+  update-pr-status:
+    name: Update PR Status
+    runs-on: ubuntu-latest
+    needs: [analyze-pr, label-pr, comment-on-pr]
+    if: always()
+    steps:
+      - name: Update status
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prType = '${{ needs.analyze-pr.outputs.pr_type }}';
+            const isWIP = '${{ needs.analyze-pr.outputs.is_wip }}' === 'true';
+            
+            console.log('PR Analysis Complete:');
+            console.log('  Type:', prType);
+            console.log('  WIP:', isWIP);
+            console.log('  Labels:', '${{ needs.label-pr.result }}');
+            console.log('  Comment:', '${{ needs.comment-on-pr.result }}');
+            
+            // Update summary
+            core.summary
+              .addHeading('PR Handler Summary')
+              .addTable([
+                [{data: 'Property', header: true}, {data: 'Value', header: true}],
+                ['PR Type', prType],
+                ['Status', isWIP ? '🚧 Work in Progress' : '✅ Ready for Review'],
+                ['Labels Applied', '${{ needs.label-pr.result }}'],
+                ['Comment Added', '${{ needs.comment-on-pr.result }}']
+              ])
+              .write();
