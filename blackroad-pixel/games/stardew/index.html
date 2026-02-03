@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlackRoad Harvest - Pixel Farm</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#1a1a2e;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:'Press Start 2P',monospace;overflow:hidden}
+#game-wrapper{position:relative;width:800px;height:600px;border:3px solid #2a2a4a;border-radius:8px;overflow:hidden;box-shadow:0 0 40px rgba(74,144,217,0.2)}
+canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges;cursor:crosshair}
+#ui-overlay{position:absolute;top:0;left:0;width:100%;pointer-events:none;z-index:10}
+#top-bar{display:flex;justify-content:space-between;padding:8px 12px;background:rgba(0,0,0,0.7);pointer-events:auto}
+#top-bar span{font-size:8px;color:#e0e0e0}
+.bar-label{color:#8888aa!important;font-size:7px!important}
+#energy-bar,#money-display,#day-display,#time-display,#season-display{display:flex;align-items:center;gap:4px}
+#energy-fill{width:80px;height:8px;background:#333;border-radius:4px;overflow:hidden;border:1px solid #555}
+#energy-fill-inner{height:100%;background:linear-gradient(90deg,#7ed321,#4caf50);transition:width 0.3s}
+#inventory-bar{position:absolute;bottom:0;left:0;width:100%;background:rgba(0,0,0,0.8);display:flex;justify-content:center;gap:4px;padding:8px;pointer-events:auto}
+.inv-slot{width:48px;height:48px;background:rgba(255,255,255,0.08);border:2px solid #2a2a4a;border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;transition:all 0.15s}
+.inv-slot:hover{border-color:#00d4ff;background:rgba(0,212,255,0.1)}
+.inv-slot.selected{border-color:#ff6b9d;box-shadow:0 0 8px rgba(255,107,157,0.4)}
+.inv-slot .item-icon{font-size:20px;line-height:1}
+.inv-slot .item-count{font-size:6px;color:#ccc;position:absolute;bottom:2px;right:4px}
+#tooltip{position:absolute;background:rgba(0,0,0,0.9);border:1px solid #ff6b9d;border-radius:4px;padding:6px 10px;font-size:7px;color:#e0e0e0;pointer-events:none;display:none;z-index:20;white-space:nowrap}
+#shop-modal{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a1a2e;border:3px solid #ff6b9d;border-radius:8px;padding:16px;display:none;z-index:30;pointer-events:auto;min-width:300px}
+#shop-modal h3{font-size:10px;color:#ff6b9d;margin-bottom:12px;text-align:center}
+.shop-item{display:flex;align-items:center;justify-content:space-between;padding:6px 8px;background:rgba(255,255,255,0.05);border-radius:4px;margin-bottom:4px;cursor:pointer;transition:background 0.15s}
+.shop-item:hover{background:rgba(255,107,157,0.15)}
+.shop-item span{font-size:8px;color:#e0e0e0}
+.shop-item .price{color:#f5a623}
+#shop-close{font-size:8px;color:#ff6b9d;background:none;border:1px solid #ff6b9d;padding:4px 12px;border-radius:4px;cursor:pointer;margin-top:8px;display:block;margin-left:auto;margin-right:auto}
+#shop-close:hover{background:rgba(255,107,157,0.2)}
+#msg-box{position:absolute;bottom:70px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.85);border:2px solid #4a90d9;border-radius:6px;padding:8px 16px;font-size:8px;color:#e0e0e0;display:none;z-index:15;pointer-events:none;text-align:center;max-width:400px}
+#title-screen{position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(180deg,#0d1b2a 0%,#1b4332 40%,#2d6a4f 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:50}
+#title-screen h1{font-size:16px;color:#7ed321;text-shadow:0 0 20px rgba(126,211,33,0.5);margin-bottom:8px}
+#title-screen h2{font-size:8px;color:#f5a623;margin-bottom:30px}
+#title-screen p{font-size:7px;color:#8888aa;margin-bottom:4px}
+#start-btn{font-family:'Press Start 2P',monospace;font-size:10px;color:#fff;background:linear-gradient(135deg,#ff6b9d,#c44dff);border:none;padding:12px 32px;border-radius:6px;cursor:pointer;margin-top:20px;transition:transform 0.15s}
+#start-btn:hover{transform:scale(1.05)}
+.pixel-tree{position:absolute;font-size:40px;opacity:0.3}
+</style>
+</head>
+<body>
+<div id="game-wrapper">
+  <canvas id="game" width="800" height="600"></canvas>
+  <div id="ui-overlay">
+    <div id="top-bar">
+      <div id="season-display"><span class="bar-label">SEASON:</span><span id="season-text">SPRING</span></div>
+      <div id="day-display"><span class="bar-label">DAY:</span><span id="day-text">1</span></div>
+      <div id="time-display"><span class="bar-label">TIME:</span><span id="time-text">6:00 AM</span></div>
+      <div id="energy-bar"><span class="bar-label">ENERGY:</span><div id="energy-fill"><div id="energy-fill-inner" style="width:100%"></div></div></div>
+      <div id="money-display"><span style="color:#f5a623">$</span><span id="money-text">500</span></div>
+    </div>
+    <div id="inventory-bar"></div>
+  </div>
+  <div id="tooltip"></div>
+  <div id="msg-box"></div>
+  <div id="shop-modal">
+    <h3>BLACKROAD SEED SHOP</h3>
+    <div id="shop-items"></div>
+    <button id="shop-close">CLOSE [ESC]</button>
+  </div>
+  <div id="title-screen">
+    <h1>BLACKROAD HARVEST</h1>
+    <h2>A Pixel Farming World</h2>
+    <p>WASD / Arrows - Move</p>
+    <p>SPACE - Use Tool / Interact</p>
+    <p>1-8 - Select Item</p>
+    <p>E - Open Shop (near store)</p>
+    <button id="start-btn">START FARMING</button>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const W = 800, H = 600;
+const TILE = 32;
+const COLS = 25, ROWS = 19;
+
+// --- GAME STATE ---
+let gameStarted = false;
+let gameTime = 360; // minutes from midnight (6:00 AM)
+let day = 1;
+let season = 0; // 0=spring,1=summer,2=fall,3=winter
+const seasonNames = ['SPRING','SUMMER','FALL','WINTER'];
+const seasonColors = [
+  {sky:['#87CEEB','#4a90d9'],grass:'#4caf50',dirt:'#8B6914'},
+  {sky:['#FFD700','#ff8a65'],grass:'#2e7d32',dirt:'#a0855a'},
+  {sky:['#ff8a65','#d4553a'],grass:'#c49e3b',dirt:'#8B6914'},
+  {sky:['#b0c4de','#6a7b8b'],grass:'#e8e8e8',dirt:'#9e9e9e'}
+];
+let money = 500;
+let energy = 100;
+let maxEnergy = 100;
+
+// Player
+let player = {x:12*TILE,y:10*TILE,dir:0,frame:0,speed:3};
+let keys = {};
+let selectedSlot = 0;
+
+// Inventory: [{id,name,icon,count,type}]
+let inventory = [
+  {id:'hoe',name:'Hoe',icon:'\u26CF',count:1,type:'tool'},
+  {id:'water',name:'Watering Can',icon:'\uD83D\uDCA7',count:1,type:'tool'},
+  {id:'scythe',name:'Scythe',icon:'\u2694',count:1,type:'tool'},
+  {id:'turnip_seed',name:'Turnip Seeds',icon:'\uD83C\uDF31',count:8,type:'seed',crop:'turnip',growTime:4},
+  {id:'corn_seed',name:'Corn Seeds',icon:'\uD83C\uDF3D',count:4,type:'seed',crop:'corn',growTime:8},
+  null,null,null
+];
+
+// Shop items
+const shopItems = [
+  {id:'turnip_seed',name:'Turnip Seeds',icon:'\uD83C\uDF31',price:20,type:'seed',crop:'turnip',growTime:4},
+  {id:'corn_seed',name:'Corn Seeds',icon:'\uD83C\uDF3D',price:40,type:'seed',crop:'corn',growTime:8},
+  {id:'berry_seed',name:'Berry Seeds',icon:'\uD83C\uDF53',price:30,type:'seed',crop:'berry',growTime:6},
+  {id:'flower_seed',name:'Flower Seeds',icon:'\uD83C\uDF3B',price:50,type:'seed',crop:'flower',growTime:5},
+  {id:'melon_seed',name:'Melon Seeds',icon:'\uD83C\uDF48',price:60,type:'seed',crop:'melon',growTime:10},
+  {id:'energy_drink',name:'Energy Drink',icon:'\u26A1',price:100,type:'consumable',energy:40},
+];
+
+const cropData = {
+  turnip:{icon:'\uD83E\uDD55',sellPrice:60,stages:['\uD83C\uDF31','\uD83C\uDF3F','\uD83C\uDF3E','\uD83E\uDD55']},
+  corn:{icon:'\uD83C\uDF3D',sellPrice:100,stages:['\uD83C\uDF31','\uD83C\uDF3F','\uD83C\uDF3E','\uD83C\uDF3D']},
+  berry:{icon:'\uD83C\uDF53',sellPrice:80,stages:['\uD83C\uDF31','\uD83C\uDF3F','\uD83C\uDF38','\uD83C\uDF53']},
+  flower:{icon:'\uD83C\uDF3B',sellPrice:120,stages:['\uD83C\uDF31','\uD83C\uDF3F','\uD83C\uDF38','\uD83C\uDF3B']},
+  melon:{icon:'\uD83C\uDF48',sellPrice:150,stages:['\uD83C\uDF31','\uD83C\uDF3F','\uD83C\uDF3E','\uD83C\uDF48']}
+};
+
+// World map: 0=grass,1=dirt,2=water,3=path,4=building,5=fence,6=tree
+const map = [];
+const farmPlots = []; // {x,y,tilled,watered,crop,cropType,growDay,stage}
+const buildings = []; // {x,y,w,h,type,name}
+const trees = [];
+const decorations = [];
+
+function initWorld() {
+  // Fill map with grass
+  for(let r=0;r<ROWS;r++){
+    map[r]=[];
+    for(let c=0;c<COLS;c++) map[r][c]=0;
+  }
+  // Paths
+  for(let c=0;c<COLS;c++){map[9][c]=3;map[10][c]=3;}
+  for(let r=0;r<ROWS;r++){map[r][12]=3;map[r][13]=3;}
+
+  // Water pond
+  for(let r=2;r<5;r++) for(let c=19;c<23;c++) map[r][c]=2;
+
+  // Farm area (6x6 grid)
+  for(let r=3;r<8;r++) for(let c=2;c<8;c++){
+    farmPlots.push({x:c,y:r,tilled:false,watered:false,crop:null,cropType:null,growDay:0,stage:0});
+  }
+  // Second farm plot area
+  for(let r=3;r<8;r++) for(let c=9;c<12;c++){
+    farmPlots.push({x:c,y:r,tilled:false,watered:false,crop:null,cropType:null,growDay:0,stage:0});
+  }
+
+  // Buildings
+  buildings.push({x:14,y:1,w:4,h:3,type:'house',name:'YOUR HOUSE'});
+  buildings.push({x:19,y:7,w:3,h:3,type:'shop',name:'SEED SHOP'});
+  buildings.push({x:1,y:12,w:3,h:3,type:'barn',name:'BARN'});
+  buildings.push({x:20,y:13,w:4,h:3,type:'shipping',name:'SHIPPING BIN'});
+
+  // Trees
+  for(let i=0;i<12;i++){
+    let tx,ty;
+    do{tx=Math.floor(Math.random()*COLS);ty=Math.floor(Math.random()*ROWS)}
+    while(map[ty][tx]!==0||(tx>1&&tx<12&&ty>2&&ty<8)||(tx>13&&tx<18&&ty<5)||(tx>18&&tx<23&&ty>6&&ty<11));
+    trees.push({x:tx,y:ty});
+  }
+
+  // Fences around farm
+  for(let c=1;c<9;c++){map[2][c]=5;map[8][c]=5;}
+  for(let r=2;r<9;r++){map[r][1]=5;map[r][8]=5;}
+}
+
+// --- RENDERING ---
+function drawTile(c,r){
+  const x=c*TILE,y=r*TILE;
+  const sc=seasonColors[season];
+  switch(map[r][c]){
+    case 0: // grass
+      ctx.fillStyle=sc.grass;ctx.fillRect(x,y,TILE,TILE);
+      // grass detail
+      if((c+r)%3===0){ctx.fillStyle='rgba(0,0,0,0.1)';ctx.fillRect(x+4,y+20,2,8);ctx.fillRect(x+14,y+16,2,10);ctx.fillRect(x+24,y+22,2,6);}
+      break;
+    case 1: // dirt
+      ctx.fillStyle=sc.dirt;ctx.fillRect(x,y,TILE,TILE);break;
+    case 2: // water
+      ctx.fillStyle='#2196f3';ctx.fillRect(x,y,TILE,TILE);
+      ctx.fillStyle='rgba(255,255,255,0.15)';
+      ctx.fillRect(x+Math.sin(Date.now()/800+c)*6+10,y+8,8,2);
+      break;
+    case 3: // path
+      ctx.fillStyle='#d4a574';ctx.fillRect(x,y,TILE,TILE);
+      ctx.fillStyle='rgba(0,0,0,0.08)';
+      for(let i=0;i<3;i++) ctx.fillRect(x+Math.random()*28,y+Math.random()*28,4,4);
+      break;
+    case 5: // fence
+      ctx.fillStyle=sc.grass;ctx.fillRect(x,y,TILE,TILE);
+      ctx.fillStyle='#8B4513';ctx.fillRect(x+12,y,8,TILE);
+      ctx.fillStyle='#A0522D';ctx.fillRect(x+4,y+8,24,4);ctx.fillRect(x+4,y+22,24,4);
+      break;
+  }
+}
+
+function drawBuilding(b){
+  const x=b.x*TILE,y=b.y*TILE,w=b.w*TILE,h=b.h*TILE;
+  // Shadow
+  ctx.fillStyle='rgba(0,0,0,0.2)';ctx.fillRect(x+4,y+4,w,h);
+
+  if(b.type==='house'){
+    ctx.fillStyle='#6d4c41';ctx.fillRect(x,y+h*0.3,w,h*0.7);
+    ctx.fillStyle='#8d6e63';ctx.fillRect(x+4,y+h*0.34,w-8,h*0.62);
+    // Roof
+    ctx.fillStyle='#d32f2f';
+    ctx.beginPath();ctx.moveTo(x-8,y+h*0.3);ctx.lineTo(x+w/2,y);ctx.lineTo(x+w+8,y+h*0.3);ctx.fill();
+    ctx.fillStyle='#e53935';
+    ctx.beginPath();ctx.moveTo(x-4,y+h*0.3);ctx.lineTo(x+w/2,y+4);ctx.lineTo(x+w+4,y+h*0.3);ctx.fill();
+    // Door
+    ctx.fillStyle='#4e342e';ctx.fillRect(x+w/2-8,y+h-24,16,24);
+    ctx.fillStyle='#f5a623';ctx.fillRect(x+w/2+4,y+h-14,3,3);
+    // Windows
+    ctx.fillStyle='#fff9c4';ctx.fillRect(x+12,y+h*0.4,16,14);ctx.fillRect(x+w-28,y+h*0.4,16,14);
+    ctx.fillStyle='rgba(0,0,0,0.3)';ctx.fillRect(x+19,y+h*0.4,2,14);ctx.fillRect(x+w-21,y+h*0.4,2,14);
+  }else if(b.type==='shop'){
+    ctx.fillStyle='#5d4037';ctx.fillRect(x,y+h*0.2,w,h*0.8);
+    ctx.fillStyle='#795548';ctx.fillRect(x+4,y+h*0.24,w-8,h*0.72);
+    // Awning
+    ctx.fillStyle='#ff6b9d';ctx.fillRect(x-4,y+h*0.18,w+8,12);
+    ctx.fillStyle='#c44dff';
+    for(let i=0;i<w/8;i++) ctx.fillRect(x-4+i*16,y+h*0.18+8,8,4);
+    // Sign
+    ctx.fillStyle='#f5a623';ctx.font='7px "Press Start 2P"';ctx.fillText('SEEDS',x+w/2-20,y+h*0.16);
+    // Door
+    ctx.fillStyle='#3e2723';ctx.fillRect(x+w/2-10,y+h-24,20,24);
+  }else if(b.type==='barn'){
+    ctx.fillStyle='#c62828';ctx.fillRect(x,y+h*0.25,w,h*0.75);
+    ctx.fillStyle='#d32f2f';ctx.fillRect(x+4,y+h*0.29,w-8,h*0.67);
+    // Roof
+    ctx.fillStyle='#4e342e';ctx.fillRect(x-4,y+h*0.2,w+8,8);
+    // Door
+    ctx.fillStyle='#3e2723';ctx.fillRect(x+w/2-12,y+h-28,24,28);
+    ctx.fillStyle='#5d4037';ctx.fillRect(x+w/2-1,y+h-28,2,28);
+    // X
+    ctx.strokeStyle='#8d6e63';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(x+w/2-10,y+h-26);ctx.lineTo(x+w/2+10,y+h-4);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x+w/2+10,y+h-26);ctx.lineTo(x+w/2-10,y+h-4);ctx.stroke();
+  }else if(b.type==='shipping'){
+    ctx.fillStyle='#5d4037';ctx.fillRect(x,y+h*0.4,w,h*0.6);
+    ctx.fillStyle='#795548';ctx.fillRect(x+4,y+h*0.44,w-8,h*0.52);
+    ctx.fillStyle='#4e342e';ctx.fillRect(x,y+h*0.35,w,8);
+    ctx.fillStyle='#f5a623';ctx.font='6px "Press Start 2P"';ctx.fillText('SHIP',x+w/2-12,y+h*0.34);
+    // Bin opening
+    ctx.fillStyle='#3e2723';ctx.fillRect(x+8,y+h*0.48,w-16,h*0.2);
+  }
+}
+
+function drawTree(t){
+  const x=t.x*TILE+TILE/2,y=t.y*TILE;
+  // Trunk
+  ctx.fillStyle='#5d4037';ctx.fillRect(x-4,y+12,8,20);
+  ctx.fillStyle='#4e342e';ctx.fillRect(x-3,y+14,6,16);
+  // Leaves
+  const lc=season===2?'#c49e3b':season===3?'#90a4ae':'#2e7d32';
+  ctx.fillStyle=lc;
+  ctx.beginPath();ctx.arc(x,y+6,14,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=season===2?'#a08030':season===3?'#78909c':'#388e3c';
+  ctx.beginPath();ctx.arc(x-4,y+8,10,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(x+5,y+4,11,0,Math.PI*2);ctx.fill();
+}
+
+function drawFarmPlot(p){
+  const x=p.x*TILE,y=p.y*TILE;
+  if(p.tilled){
+    ctx.fillStyle=p.watered?'#5d4037':'#8B6914';
+    ctx.fillRect(x,y,TILE,TILE);
+    // Furrow lines
+    ctx.fillStyle='rgba(0,0,0,0.15)';
+    for(let i=0;i<4;i++) ctx.fillRect(x+2,y+4+i*7,TILE-4,2);
+
+    if(p.crop){
+      const cd=cropData[p.cropType];
+      const stageIdx=Math.min(p.stage,cd.stages.length-1);
+      ctx.font='20px serif';
+      ctx.textAlign='center';
+      ctx.fillText(cd.stages[stageIdx],x+TILE/2,y+TILE/2+6);
+      ctx.textAlign='left';
+    }
+  }
+  if(p.watered&&!p.crop){
+    ctx.fillStyle='rgba(33,150,243,0.15)';ctx.fillRect(x,y,TILE,TILE);
+  }
+}
+
+function drawPlayer(){
+  const x=player.x,y=player.y;
+  // Shadow
+  ctx.fillStyle='rgba(0,0,0,0.2)';
+  ctx.beginPath();ctx.ellipse(x+TILE/2,y+TILE-2,10,4,0,0,Math.PI*2);ctx.fill();
+
+  // Body
+  ctx.fillStyle='#ff6b9d';ctx.fillRect(x+8,y+10,16,14);
+  // Head
+  ctx.fillStyle='#ffcc80';ctx.fillRect(x+10,y+2,12,10);
+  // Hair
+  ctx.fillStyle='#5d4037';ctx.fillRect(x+9,y,14,5);ctx.fillRect(x+8,y+2,3,4);ctx.fillRect(x+21,y+2,3,4);
+  // Eyes
+  ctx.fillStyle='#1a1a2e';
+  if(player.dir===0){ctx.fillRect(x+13,y+5,2,2);ctx.fillRect(x+18,y+5,2,2);}
+  else if(player.dir===1){ctx.fillRect(x+17,y+5,3,2);}
+  else if(player.dir===3){ctx.fillRect(x+12,y+5,3,2);}
+  // Legs
+  const legOff=Math.sin(Date.now()/150)*2*(keys.w||keys.a||keys.s||keys.d||keys.ArrowUp||keys.ArrowDown||keys.ArrowLeft||keys.ArrowRight?1:0);
+  ctx.fillStyle='#1565c0';ctx.fillRect(x+10,y+24,5,8+legOff);ctx.fillRect(x+17,y+24,5,8-legOff);
+  // Boots
+  ctx.fillStyle='#4e342e';ctx.fillRect(x+9,y+30+legOff,7,3);ctx.fillRect(x+16,y+30-legOff,7,3);
+
+  // Tool display
+  const item=inventory[selectedSlot];
+  if(item){
+    ctx.font='12px serif';
+    ctx.fillText(item.icon,x+24,y+18);
+  }
+}
+
+function drawSky(){
+  const sc=seasonColors[season];
+  const timeRatio=Math.max(0,Math.min(1,(gameTime-300)/840));
+  let skyAlpha=1;
+  if(gameTime>1140) skyAlpha=Math.max(0.2,1-(gameTime-1140)/180); // sunset
+  if(gameTime<360) skyAlpha=0.2;
+
+  const grd=ctx.createLinearGradient(0,0,0,H);
+  grd.addColorStop(0,sc.sky[0]);grd.addColorStop(1,sc.sky[1]);
+  ctx.fillStyle=grd;ctx.fillRect(0,0,W,H);
+
+  // Night overlay
+  if(gameTime>1200||gameTime<360){
+    ctx.fillStyle=`rgba(10,10,30,${gameTime>1200?Math.min(0.6,(gameTime-1200)/240):0.6})`;
+    ctx.fillRect(0,0,W,H);
+    // Stars
+    if(gameTime>1260||gameTime<300){
+      ctx.fillStyle='rgba(255,255,255,0.6)';
+      for(let i=0;i<20;i++){
+        const sx=(i*137+day*53)%W,sy=(i*89+day*31)%200;
+        ctx.fillRect(sx,sy,2,2);
+      }
+    }
+  }
+
+  // Sun/moon
+  const sunX=W*0.1+W*0.8*((gameTime-360)/960);
+  const sunY=50+Math.sin((gameTime-360)/960*Math.PI)*-20+20;
+  if(gameTime>360&&gameTime<1320){
+    ctx.fillStyle='#FFD700';ctx.beginPath();ctx.arc(sunX,sunY,12,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='rgba(255,215,0,0.2)';ctx.beginPath();ctx.arc(sunX,sunY,20,0,Math.PI*2);ctx.fill();
+  }
+}
+
+function drawHUD(){
+  document.getElementById('season-text').textContent=seasonNames[season];
+  document.getElementById('day-text').textContent=day;
+  const hours=Math.floor(gameTime/60);
+  const mins=gameTime%60;
+  const ampm=hours>=12?'PM':'AM';
+  const h12=hours>12?hours-12:(hours===0?12:hours);
+  document.getElementById('time-text').textContent=`${h12}:${mins.toString().padStart(2,'0')} ${ampm}`;
+  document.getElementById('energy-fill-inner').style.width=(energy/maxEnergy*100)+'%';
+  document.getElementById('money-text').textContent=money;
+
+  // Inventory slots
+  const bar=document.getElementById('inventory-bar');
+  if(bar.children.length===0){
+    for(let i=0;i<8;i++){
+      const slot=document.createElement('div');
+      slot.className='inv-slot'+(i===selectedSlot?' selected':'');
+      slot.onclick=()=>{selectedSlot=i;updateInvUI()};
+      bar.appendChild(slot);
+    }
+  }
+  updateInvUI();
+}
+
+function updateInvUI(){
+  const slots=document.querySelectorAll('.inv-slot');
+  slots.forEach((s,i)=>{
+    s.className='inv-slot'+(i===selectedSlot?' selected':'');
+    const item=inventory[i];
+    if(item){
+      s.innerHTML=`<span class="item-icon">${item.icon}</span>${item.count>1?`<span class="item-count">${item.count}</span>`:''}`;
+    }else{
+      s.innerHTML='';
+    }
+  });
+}
+
+// --- GAME LOGIC ---
+function movePlayer(){
+  let dx=0,dy=0;
+  if(keys.w||keys.ArrowUp){dy=-player.speed;player.dir=2;}
+  if(keys.s||keys.ArrowDown){dy=player.speed;player.dir=0;}
+  if(keys.a||keys.ArrowLeft){dx=-player.speed;player.dir=3;}
+  if(keys.d||keys.ArrowRight){dx=player.speed;player.dir=1;}
+
+  const nx=player.x+dx,ny=player.y+dy;
+  const col=Math.floor((nx+TILE/2)/TILE),row=Math.floor((ny+TILE/2)/TILE);
+
+  if(col>=0&&col<COLS&&row>=0&&row<ROWS){
+    // Check building collision
+    let blocked=false;
+    for(const b of buildings){
+      if(col>=b.x&&col<b.x+b.w&&row>=b.y&&row<b.y+b.h) blocked=true;
+    }
+    if(map[row]&&map[row][col]===2) blocked=true;
+    if(!blocked){player.x=nx;player.y=ny;}
+  }
+}
+
+function useTool(){
+  if(energy<=0){showMsg("You're too tired!");return;}
+  const item=inventory[selectedSlot];
+  if(!item)return;
+
+  const col=Math.floor((player.x+TILE/2)/TILE);
+  const row=Math.floor((player.y+TILE/2)/TILE);
+  // Adjust for facing direction
+  let tc=col,tr=row;
+  if(player.dir===0)tr++;
+  if(player.dir===2)tr--;
+  if(player.dir===1)tc++;
+  if(player.dir===3)tc--;
+
+  const plot=farmPlots.find(p=>p.x===tc&&p.y===tr);
+
+  if(item.id==='hoe'&&plot&&!plot.tilled){
+    plot.tilled=true;energy-=2;showMsg('Tilled the soil!');
+  }else if(item.id==='water'&&plot&&plot.tilled){
+    plot.watered=true;energy-=1;showMsg('Watered!');
+  }else if(item.type==='seed'&&plot&&plot.tilled&&!plot.crop){
+    plot.crop=true;plot.cropType=item.crop;plot.growDay=day;plot.stage=0;
+    item.count--;
+    if(item.count<=0) inventory[selectedSlot]=null;
+    energy-=1;showMsg(`Planted ${item.name}!`);
+  }else if(item.id==='scythe'&&plot&&plot.crop){
+    const cd=cropData[plot.cropType];
+    if(plot.stage>=cd.stages.length-1){
+      // Harvest!
+      const harvestItem={id:plot.cropType,name:plot.cropType.charAt(0).toUpperCase()+plot.cropType.slice(1),icon:cd.icon,count:1,type:'crop',sellPrice:cd.sellPrice};
+      addToInventory(harvestItem);
+      plot.crop=null;plot.cropType=null;plot.stage=0;plot.tilled=false;plot.watered=false;
+      energy-=2;showMsg(`Harvested ${harvestItem.name}! ($${cd.sellPrice})`);
+    }else{
+      showMsg('Not ready yet!');
+    }
+  }
+
+  // Ship crops at shipping bin
+  for(const b of buildings){
+    if(b.type==='shipping'){
+      if(tc>=b.x&&tc<b.x+b.w&&tr>=b.y&&tr<b.y+b.h){
+        if(item.type==='crop'){
+          money+=item.sellPrice*item.count;
+          showMsg(`Sold ${item.count}x ${item.name} for $${item.sellPrice*item.count}!`);
+          inventory[selectedSlot]=null;
+        }
+      }
+    }
+  }
+
+  // Consumable
+  if(item.type==='consumable'&&item.id==='energy_drink'){
+    energy=Math.min(maxEnergy,energy+item.energy);
+    item.count--;
+    if(item.count<=0) inventory[selectedSlot]=null;
+    showMsg('Energy restored!');
+  }
+}
+
+function addToInventory(item){
+  // Try to stack
+  for(let i=0;i<8;i++){
+    if(inventory[i]&&inventory[i].id===item.id){
+      inventory[i].count+=item.count;return;
+    }
+  }
+  // Find empty slot
+  for(let i=0;i<8;i++){
+    if(!inventory[i]){inventory[i]={...item};return;}
+  }
+  showMsg('Inventory full!');
+}
+
+function advanceTime(){
+  gameTime+=0.3; // ~1 game min per real second
+  if(gameTime>=1440){
+    // New day
+    gameTime=360;day++;
+    if(day>28){day=1;season=(season+1)%4;}
+    energy=maxEnergy;
+    // Grow crops
+    farmPlots.forEach(p=>{
+      if(p.crop&&p.watered){
+        const cd=cropData[p.cropType];
+        if(p.stage<cd.stages.length-1) p.stage++;
+      }
+      p.watered=false;
+    });
+    showMsg(`Day ${day} of ${seasonNames[season]}. Good morning!`);
+  }
+}
+
+let msgTimer=0;
+function showMsg(text){
+  const box=document.getElementById('msg-box');
+  box.textContent=text;box.style.display='block';
+  msgTimer=120;
+}
+
+// --- SHOP ---
+let shopOpen=false;
+function openShop(){
+  shopOpen=true;
+  const modal=document.getElementById('shop-modal');
+  modal.style.display='block';
+  const itemsDiv=document.getElementById('shop-items');
+  itemsDiv.innerHTML='';
+  shopItems.forEach(si=>{
+    const div=document.createElement('div');
+    div.className='shop-item';
+    div.innerHTML=`<span>${si.icon} ${si.name}</span><span class="price">$${si.price}</span>`;
+    div.onclick=()=>buyItem(si);
+    itemsDiv.appendChild(div);
+  });
+}
+function closeShop(){shopOpen=false;document.getElementById('shop-modal').style.display='none';}
+function buyItem(si){
+  if(money>=si.price){
+    money-=si.price;
+    addToInventory({id:si.id,name:si.name,icon:si.icon,count:1,type:si.type,crop:si.crop,growTime:si.growTime,sellPrice:si.sellPrice,energy:si.energy});
+    showMsg(`Bought ${si.name}!`);
+  }else{
+    showMsg('Not enough money!');
+  }
+}
+
+// --- MAIN LOOP ---
+function gameLoop(){
+  if(!gameStarted){requestAnimationFrame(gameLoop);return;}
+
+  movePlayer();
+  advanceTime();
+
+  // Draw
+  drawSky();
+
+  // Draw tiles
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) drawTile(c,r);
+
+  // Farm plots
+  farmPlots.forEach(drawFarmPlot);
+
+  // Trees
+  trees.forEach(drawTree);
+
+  // Buildings
+  buildings.forEach(drawBuilding);
+
+  // Player
+  drawPlayer();
+
+  // Building labels near player
+  buildings.forEach(b=>{
+    const px=Math.floor((player.x+TILE/2)/TILE),py=Math.floor((player.y+TILE/2)/TILE);
+    if(Math.abs(px-(b.x+b.w/2))<3&&Math.abs(py-(b.y+b.h))<2){
+      ctx.fillStyle='rgba(0,0,0,0.7)';
+      ctx.fillRect(b.x*TILE,b.y*TILE-14,b.w*TILE,14);
+      ctx.fillStyle='#ff6b9d';ctx.font='7px "Press Start 2P"';
+      ctx.fillText(b.name,b.x*TILE+4,b.y*TILE-4);
+    }
+  });
+
+  // HUD
+  drawHUD();
+
+  // Message timer
+  if(msgTimer>0){msgTimer--;if(msgTimer===0)document.getElementById('msg-box').style.display='none';}
+
+  requestAnimationFrame(gameLoop);
+}
+
+// --- INPUT ---
+document.addEventListener('keydown',e=>{
+  keys[e.key.toLowerCase()]=true;keys[e.key]=true;
+  if(e.key===' '&&gameStarted&&!shopOpen){e.preventDefault();useTool();}
+  if(e.key==='e'||e.key==='E'){
+    if(shopOpen){closeShop();}
+    else{
+      // Check near shop
+      const px=Math.floor((player.x+TILE/2)/TILE),py=Math.floor((player.y+TILE/2)/TILE);
+      for(const b of buildings){
+        if(b.type==='shop'&&Math.abs(px-(b.x+b.w/2))<3&&Math.abs(py-(b.y+b.h))<2) openShop();
+      }
+    }
+  }
+  if(e.key==='Escape') closeShop();
+  // Number keys for inventory
+  const num=parseInt(e.key);
+  if(num>=1&&num<=8){selectedSlot=num-1;updateInvUI();}
+});
+document.addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false;keys[e.key]=false;});
+
+// Start
+document.getElementById('start-btn').addEventListener('click',()=>{
+  document.getElementById('title-screen').style.display='none';
+  gameStarted=true;
+});
+document.getElementById('shop-close').addEventListener('click',closeShop);
+
+initWorld();
+gameLoop();
+</script>
+</body>
+</html>

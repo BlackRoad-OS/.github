@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlackRoad Creatures - Pixel RPG</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d0d1a;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:'Press Start 2P',monospace;overflow:hidden}
+#game-wrapper{position:relative;width:800px;height:600px;border:3px solid #2a2a4a;border-radius:8px;overflow:hidden;box-shadow:0 0 40px rgba(144,19,254,0.2)}
+canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
+#battle-ui{position:absolute;top:0;left:0;width:100%;height:100%;display:none;z-index:20}
+#battle-bg{width:100%;height:100%;position:absolute}
+#enemy-info{position:absolute;top:20px;left:30px;background:rgba(0,0,0,0.8);border:2px solid #4a90d9;border-radius:8px;padding:10px 16px;min-width:220px}
+#player-info{position:absolute;bottom:160px;right:30px;background:rgba(0,0,0,0.8);border:2px solid #7ed321;border-radius:8px;padding:10px 16px;min-width:220px}
+.creature-name{font-size:10px;color:#fff;margin-bottom:6px}
+.creature-lv{font-size:8px;color:#f5a623;float:right}
+.hp-bar-outer{width:160px;height:10px;background:#333;border-radius:5px;border:1px solid #555;overflow:hidden}
+.hp-bar-inner{height:100%;background:linear-gradient(90deg,#7ed321,#4caf50);transition:width 0.5s}
+.hp-bar-inner.low{background:linear-gradient(90deg,#f44336,#e53935)}
+.hp-bar-inner.med{background:linear-gradient(90deg,#f5a623,#ff8f00)}
+.hp-text{font-size:7px;color:#aaa;margin-top:2px;text-align:right}
+#battle-menu{position:absolute;bottom:0;left:0;width:100%;height:150px;background:rgba(0,0,0,0.9);border-top:3px solid #ff6b9d;display:flex}
+#battle-text{flex:1;padding:16px 20px;font-size:9px;color:#e0e0e0;line-height:1.8;overflow-y:auto}
+#battle-actions{width:240px;display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:12px;border-left:2px solid #2a2a4a}
+.battle-btn{font-family:'Press Start 2P',monospace;font-size:8px;color:#fff;border:2px solid #2a2a4a;border-radius:6px;cursor:pointer;padding:8px;transition:all 0.15s;text-align:center}
+.battle-btn:hover{transform:scale(1.03);border-color:#ff6b9d}
+.battle-btn.fight{background:linear-gradient(135deg,#d32f2f,#b71c1c)}
+.battle-btn.bag{background:linear-gradient(135deg,#f5a623,#e65100)}
+.battle-btn.creatures{background:linear-gradient(135deg,#4caf50,#2e7d32)}
+.battle-btn.run{background:linear-gradient(135deg,#1565c0,#0d47a1)}
+#moves-panel{position:absolute;bottom:0;left:0;width:100%;height:150px;background:rgba(0,0,0,0.95);border-top:3px solid #c44dff;display:none;grid-template-columns:1fr 1fr;gap:8px;padding:16px}
+.move-btn{font-family:'Press Start 2P',monospace;font-size:8px;color:#fff;border:2px solid #444;border-radius:6px;cursor:pointer;padding:10px;transition:all 0.15s}
+.move-btn:hover{border-color:#c44dff;transform:scale(1.02)}
+.move-btn .move-type{font-size:6px;opacity:0.7;margin-top:4px}
+.type-fire{background:linear-gradient(135deg,#d32f2f,#b71c1c)}
+.type-water{background:linear-gradient(135deg,#1565c0,#0d47a1)}
+.type-grass{background:linear-gradient(135deg,#2e7d32,#1b5e20)}
+.type-electric{background:linear-gradient(135deg,#f5a623,#e65100)}
+.type-dark{background:linear-gradient(135deg,#4a148c,#311b92)}
+.type-normal{background:linear-gradient(135deg,#616161,#424242)}
+.type-cyber{background:linear-gradient(135deg,#00838f,#006064)}
+.type-psychic{background:linear-gradient(135deg,#ad1457,#880e4f)}
+#overworld-hud{position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.7);border:1px solid #2a2a4a;border-radius:6px;padding:8px 12px;z-index:10}
+#overworld-hud span{font-size:7px;color:#aaa;display:block;margin-bottom:4px}
+#party-display{position:absolute;top:8px;left:8px;z-index:10;display:flex;gap:4px}
+.party-icon{width:32px;height:32px;background:rgba(0,0,0,0.7);border:1px solid #2a2a4a;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.party-icon.fainted{opacity:0.3}
+#title-screen{position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(180deg,#0d0d1a 0%,#1a0a3d 40%,#2a1050 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:50}
+#title-screen h1{font-size:16px;color:#c44dff;text-shadow:0 0 20px rgba(196,77,255,0.5);margin-bottom:8px}
+#title-screen h2{font-size:8px;color:#00d4ff;margin-bottom:30px}
+#title-screen p{font-size:7px;color:#8888aa;margin-bottom:4px}
+#start-btn{font-family:'Press Start 2P',monospace;font-size:10px;color:#fff;background:linear-gradient(135deg,#c44dff,#9013fe);border:none;padding:12px 32px;border-radius:6px;cursor:pointer;margin-top:20px;transition:transform 0.15s}
+#start-btn:hover{transform:scale(1.05)}
+#catch-anim{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:40px;display:none;z-index:25;animation:shake 0.5s ease-in-out}
+@keyframes shake{0%,100%{transform:translate(-50%,-50%) rotate(0)}25%{transform:translate(-50%,-50%) rotate(-15deg)}75%{transform:translate(-50%,-50%) rotate(15deg)}}
+</style>
+</head>
+<body>
+<div id="game-wrapper">
+  <canvas id="game" width="800" height="600"></canvas>
+  <div id="overworld-hud">
+    <span id="location-text">NEON TOWN</span>
+    <span id="step-text">Steps: 0</span>
+  </div>
+  <div id="party-display"></div>
+
+  <div id="battle-ui">
+    <canvas id="battle-bg" width="800" height="600"></canvas>
+    <div id="enemy-info">
+      <div class="creature-name">???<span class="creature-lv">Lv 5</span></div>
+      <div class="hp-bar-outer"><div class="hp-bar-inner" id="enemy-hp" style="width:100%"></div></div>
+      <div class="hp-text" id="enemy-hp-text">??/??</div>
+    </div>
+    <div id="player-info">
+      <div class="creature-name" id="player-creature-name">???<span class="creature-lv" id="player-lv">Lv 5</span></div>
+      <div class="hp-bar-outer"><div class="hp-bar-inner" id="player-hp" style="width:100%"></div></div>
+      <div class="hp-text" id="player-hp-text">??/??</div>
+      <div style="font-size:7px;color:#4a90d9;margin-top:4px">EXP: <span id="player-exp">0</span></div>
+    </div>
+    <div id="battle-menu">
+      <div id="battle-text">A wild creature appeared!</div>
+      <div id="battle-actions">
+        <button class="battle-btn fight" onclick="showMoves()">FIGHT</button>
+        <button class="battle-btn bag" onclick="useBall()">CATCH</button>
+        <button class="battle-btn creatures" onclick="showPartyInBattle()">PARTY</button>
+        <button class="battle-btn run" onclick="tryRun()">RUN</button>
+      </div>
+    </div>
+    <div id="moves-panel"></div>
+    <div id="catch-anim"></div>
+  </div>
+
+  <div id="title-screen">
+    <h1>BLACKROAD CREATURES</h1>
+    <h2>Gotta Route 'Em All</h2>
+    <p>WASD / Arrows - Move</p>
+    <p>Walk in tall grass for encounters</p>
+    <p>Collect and battle creatures!</p>
+    <button id="start-btn">BEGIN JOURNEY</button>
+  </div>
+</div>
+
+<script>
+const canvas=document.getElementById('game');const ctx=canvas.getContext('2d');
+const bcanvas=document.getElementById('battle-bg');const bctx=bcanvas.getContext('2d');
+const W=800,H=600,TILE=32;
+
+// --- CREATURE DATABASE ---
+const creatureDB=[
+  {id:0,name:'Pyrobyte',type:'fire',icon:'\uD83D\uDD25',baseHp:45,baseAtk:52,baseDef:40,baseSpd:60,
+   moves:[{name:'Ember',type:'fire',power:40,acc:100},{name:'Tackle',type:'normal',power:40,acc:100},{name:'Fire Spin',type:'fire',power:55,acc:85},{name:'Flame Burst',type:'fire',power:70,acc:90}]},
+  {id:1,name:'Aquanode',type:'water',icon:'\uD83D\uDCA7',baseHp:50,baseAtk:46,baseDef:50,baseSpd:48,
+   moves:[{name:'Water Gun',type:'water',power:40,acc:100},{name:'Tackle',type:'normal',power:40,acc:100},{name:'Bubble Beam',type:'water',power:60,acc:100},{name:'Hydro Pump',type:'water',power:80,acc:80}]},
+  {id:2,name:'Chlorobit',type:'grass',icon:'\uD83C\uDF3F',baseHp:48,baseAtk:48,baseDef:52,baseSpd:45,
+   moves:[{name:'Vine Whip',type:'grass',power:42,acc:100},{name:'Tackle',type:'normal',power:40,acc:100},{name:'Razor Leaf',type:'grass',power:55,acc:95},{name:'Solar Beam',type:'grass',power:85,acc:90}]},
+  {id:3,name:'Voltpulse',type:'electric',icon:'\u26A1',baseHp:40,baseAtk:55,baseDef:35,baseSpd:70,
+   moves:[{name:'Spark',type:'electric',power:40,acc:100},{name:'Quick Attack',type:'normal',power:40,acc:100},{name:'Thunderbolt',type:'electric',power:65,acc:100},{name:'Thunder',type:'electric',power:90,acc:70}]},
+  {id:4,name:'Shadowram',type:'dark',icon:'\uD83C\uDF11',baseHp:55,baseAtk:60,baseDef:45,baseSpd:50,
+   moves:[{name:'Bite',type:'dark',power:45,acc:100},{name:'Tackle',type:'normal',power:40,acc:100},{name:'Shadow Claw',type:'dark',power:60,acc:95},{name:'Dark Pulse',type:'dark',power:75,acc:90}]},
+  {id:5,name:'Cyphera',type:'cyber',icon:'\uD83E\uDD16',baseHp:52,baseAtk:50,baseDef:55,baseSpd:55,
+   moves:[{name:'Data Spike',type:'cyber',power:45,acc:100},{name:'Tackle',type:'normal',power:40,acc:100},{name:'Code Burst',type:'cyber',power:60,acc:95},{name:'System Crash',type:'cyber',power:80,acc:85}]},
+  {id:6,name:'Psylink',type:'psychic',icon:'\uD83D\uDD2E',baseHp:42,baseAtk:58,baseDef:38,baseSpd:65,
+   moves:[{name:'Confusion',type:'psychic',power:42,acc:100},{name:'Tackle',type:'normal',power:40,acc:100},{name:'Psybeam',type:'psychic',power:60,acc:100},{name:'Psychic',type:'psychic',power:80,acc:90}]},
+  {id:7,name:'Terrashell',type:'normal',icon:'\uD83D\uDC22',baseHp:65,baseAtk:40,baseDef:65,baseSpd:25,
+   moves:[{name:'Tackle',type:'normal',power:40,acc:100},{name:'Headbutt',type:'normal',power:55,acc:100},{name:'Body Slam',type:'normal',power:70,acc:95},{name:'Hyper Beam',type:'normal',power:90,acc:80}]},
+];
+
+const typeChart={
+  fire:{grass:2,water:0.5,fire:0.5,cyber:2},
+  water:{fire:2,grass:0.5,water:0.5,electric:0.5},
+  grass:{water:2,fire:0.5,grass:0.5,electric:2},
+  electric:{water:2,grass:0.5,electric:0.5},
+  dark:{psychic:2,dark:0.5,normal:1.2},
+  cyber:{psychic:2,normal:1.5,cyber:0.5},
+  psychic:{dark:0.5,cyber:0.5,psychic:0.5},
+  normal:{}
+};
+
+function getEffectiveness(atkType,defType){
+  return(typeChart[atkType]&&typeChart[atkType][defType])||1;
+}
+
+function makeCreature(dbId,level){
+  const base=creatureDB[dbId];
+  const hp=Math.floor(base.baseHp*(1+level*0.1));
+  return{
+    ...base,level,
+    maxHp:hp,hp,
+    atk:Math.floor(base.baseAtk*(1+level*0.08)),
+    def:Math.floor(base.baseDef*(1+level*0.08)),
+    spd:Math.floor(base.baseSpd*(1+level*0.06)),
+    exp:0,expNext:level*25+50,
+    availMoves:base.moves.slice(0,Math.min(4,1+Math.floor(level/5)))
+  };
+}
+
+// --- GAME STATE ---
+let gameStarted=false;
+let state='overworld'; // overworld, battle
+let steps=0;
+let party=[makeCreature(5,5)]; // Start with Cyphera
+let catchBalls=5;
+let battleEnemy=null;
+let battleTurn='player';
+let battleAnim=0;
+let battleMsg='';
+let battleMsgQueue=[];
+
+// Overworld map
+const MCOLS=40,MROWS=30;
+let mapData=[];
+let player={x:20,y:15,dir:0,moving:false};
+let camera={x:0,y:0};
+
+// Map tiles: 0=grass,1=tall_grass,2=path,3=water,4=building,5=tree,6=ledge,7=sign
+function initMap(){
+  for(let r=0;r<MROWS;r++){
+    mapData[r]=[];
+    for(let c=0;c<MCOLS;c++){
+      mapData[r][c]=0; // grass
+    }
+  }
+  // Paths (routes)
+  for(let c=5;c<35;c++){mapData[15][c]=2;mapData[16][c]=2;}
+  for(let r=5;r<25;r++){mapData[r][20]=2;mapData[r][21]=2;}
+
+  // Town area (center)
+  for(let r=12;r<19;r++) for(let c=17;c<25;c++) mapData[r][c]=2;
+  // Buildings in town
+  mapData[12][18]=4;mapData[12][19]=4;mapData[13][18]=4;mapData[13][19]=4; // Lab
+  mapData[12][22]=4;mapData[12][23]=4;mapData[13][22]=4;mapData[13][23]=4; // Center
+  mapData[17][18]=4;mapData[17][19]=4;mapData[18][18]=4;mapData[18][19]=4; // Shop
+
+  // Tall grass patches (encounter zones)
+  for(let r=6;r<12;r++) for(let c=8;c<16;c++) if(Math.random()>0.25) mapData[r][c]=1;
+  for(let r=20;r<26;r++) for(let c=8;c<16;c++) if(Math.random()>0.25) mapData[r][c]=1;
+  for(let r=6;r<12;r++) for(let c=25;c<34;c++) if(Math.random()>0.3) mapData[r][c]=1;
+  for(let r=20;r<26;r++) for(let c=25;c<34;c++) if(Math.random()>0.2) mapData[r][c]=1;
+
+  // Water
+  for(let r=2;r<5;r++) for(let c=2;c<7;c++) mapData[r][c]=3;
+  for(let r=26;r<29;r++) for(let c=32;c<38;c++) mapData[r][c]=3;
+
+  // Trees (border)
+  for(let c=0;c<MCOLS;c++){mapData[0][c]=5;mapData[MROWS-1][c]=5;}
+  for(let r=0;r<MROWS;r++){mapData[r][0]=5;mapData[r][MCOLS-1]=5;}
+  // Scattered trees
+  for(let i=0;i<30;i++){
+    const tx=2+Math.floor(Math.random()*(MCOLS-4));
+    const ty=2+Math.floor(Math.random()*(MROWS-4));
+    if(mapData[ty][tx]===0&&!(tx>16&&tx<25&&ty>11&&ty<20)) mapData[ty][tx]=5;
+  }
+
+  // Signs
+  mapData[14][17]=7;mapData[14][24]=7;
+}
+
+// Encounter zones by location
+function getWildCreature(){
+  const px=player.x,py=player.y;
+  let pool,lvRange;
+  if(py<15){pool=[0,1,2,6];lvRange=[3,7];} // North routes
+  else if(py>16){pool=[3,4,5,7];lvRange=[4,8];} // South routes
+  else{pool=[0,1,2,3,4,5,6,7];lvRange=[5,10];} // Everywhere rare
+  const id=pool[Math.floor(Math.random()*pool.length)];
+  const lv=lvRange[0]+Math.floor(Math.random()*(lvRange[1]-lvRange[0]+1));
+  return makeCreature(id,lv);
+}
+
+// --- OVERWORLD RENDERING ---
+function drawOverworld(){
+  // Camera
+  camera.x=player.x*TILE-W/2+TILE/2;
+  camera.y=player.y*TILE-H/2+TILE/2;
+  camera.x=Math.max(0,Math.min(camera.x,MCOLS*TILE-W));
+  camera.y=Math.max(0,Math.min(camera.y,MROWS*TILE-H));
+
+  // Sky
+  ctx.fillStyle='#87CEEB';ctx.fillRect(0,0,W,H);
+
+  const startC=Math.floor(camera.x/TILE);
+  const startR=Math.floor(camera.y/TILE);
+  const endC=Math.min(MCOLS,startC+Math.ceil(W/TILE)+2);
+  const endR=Math.min(MROWS,startR+Math.ceil(H/TILE)+2);
+
+  for(let r=startR;r<endR;r++){
+    for(let c=startC;c<endC;c++){
+      const sx=c*TILE-camera.x,sy=r*TILE-camera.y;
+      const tile=mapData[r]?mapData[r][c]:0;
+      switch(tile){
+        case 0: // grass
+          ctx.fillStyle='#4caf50';ctx.fillRect(sx,sy,TILE,TILE);
+          ctx.fillStyle='#43a047';
+          if((c+r)%2===0) ctx.fillRect(sx+8,sy+12,2,6);
+          break;
+        case 1: // tall grass
+          ctx.fillStyle='#388e3c';ctx.fillRect(sx,sy,TILE,TILE);
+          ctx.fillStyle='#2e7d32';
+          for(let i=0;i<5;i++){
+            const gx=sx+4+i*6,gy=sy+4;
+            ctx.fillRect(gx,gy,3,TILE-8);
+            ctx.fillRect(gx-1,gy,5,2);
+          }
+          break;
+        case 2: // path
+          ctx.fillStyle='#d4a574';ctx.fillRect(sx,sy,TILE,TILE);
+          ctx.fillStyle='rgba(0,0,0,0.05)';
+          ctx.fillRect(sx+4,sy+4,4,4);ctx.fillRect(sx+20,sy+16,4,4);
+          break;
+        case 3: // water
+          ctx.fillStyle='#1976d2';ctx.fillRect(sx,sy,TILE,TILE);
+          ctx.fillStyle='rgba(255,255,255,0.15)';
+          ctx.fillRect(sx+Math.sin(Date.now()/600+c)*4+12,sy+10,10,2);
+          ctx.fillRect(sx+Math.cos(Date.now()/800+r)*6+8,sy+22,8,2);
+          break;
+        case 4: // building
+          ctx.fillStyle='#d4a574';ctx.fillRect(sx,sy,TILE,TILE);
+          ctx.fillStyle='#795548';ctx.fillRect(sx,sy,TILE,TILE);
+          ctx.fillStyle='#8d6e63';ctx.fillRect(sx+2,sy+2,TILE-4,TILE-4);
+          ctx.fillStyle='#fff9c4';ctx.fillRect(sx+10,sy+8,12,10);
+          ctx.fillStyle='rgba(0,0,0,0.2)';ctx.fillRect(sx+15,sy+8,2,10);
+          break;
+        case 5: // tree
+          ctx.fillStyle='#4caf50';ctx.fillRect(sx,sy,TILE,TILE);
+          ctx.fillStyle='#5d4037';ctx.fillRect(sx+12,sy+18,8,14);
+          ctx.fillStyle='#2e7d32';
+          ctx.beginPath();ctx.arc(sx+16,sy+12,12,0,Math.PI*2);ctx.fill();
+          ctx.fillStyle='#388e3c';
+          ctx.beginPath();ctx.arc(sx+12,sy+14,8,0,Math.PI*2);ctx.fill();
+          break;
+        case 7: // sign
+          ctx.fillStyle='#d4a574';ctx.fillRect(sx,sy,TILE,TILE);
+          ctx.fillStyle='#5d4037';ctx.fillRect(sx+13,sy+16,6,16);
+          ctx.fillStyle='#795548';ctx.fillRect(sx+6,sy+6,20,14);
+          ctx.fillStyle='#e0e0e0';ctx.font='6px "Press Start 2P"';ctx.fillText('!',sx+14,sy+16);
+          break;
+      }
+    }
+  }
+
+  // Draw player
+  const px=player.x*TILE-camera.x,py=player.y*TILE-camera.y;
+  // Shadow
+  ctx.fillStyle='rgba(0,0,0,0.2)';
+  ctx.beginPath();ctx.ellipse(px+16,py+30,10,4,0,0,Math.PI*2);ctx.fill();
+  // Body
+  ctx.fillStyle='#c44dff';ctx.fillRect(px+8,py+10,16,14);
+  // Head
+  ctx.fillStyle='#ffcc80';ctx.fillRect(px+10,py+2,12,10);
+  // Hair
+  ctx.fillStyle='#212121';ctx.fillRect(px+9,py,14,5);
+  // Hat
+  ctx.fillStyle='#d32f2f';ctx.fillRect(px+7,py-2,18,5);ctx.fillRect(px+10,py-4,12,3);
+  // Eyes
+  ctx.fillStyle='#1a1a2e';
+  if(player.dir===0){ctx.fillRect(px+13,py+5,2,2);ctx.fillRect(px+18,py+5,2,2);}
+  else if(player.dir===1){ctx.fillRect(px+17,py+5,3,2);}
+  else if(player.dir===3){ctx.fillRect(px+12,py+5,3,2);}
+  else{ctx.fillRect(px+14,py+5,4,2);}
+  // Legs
+  ctx.fillStyle='#1565c0';ctx.fillRect(px+10,py+24,5,8);ctx.fillRect(px+17,py+24,5,8);
+
+  // Location detection
+  let loc='WILD ROUTE';
+  if(player.x>16&&player.x<25&&player.y>11&&player.y<20) loc='NEON TOWN';
+  else if(player.y<12) loc='NORTH ROUTE';
+  else if(player.y>18) loc='SOUTH ROUTE';
+  document.getElementById('location-text').textContent=loc;
+  document.getElementById('step-text').textContent=`Steps: ${steps} | Balls: ${catchBalls}`;
+}
+
+// --- BATTLE SYSTEM ---
+function startBattle(enemy){
+  battleEnemy=enemy;
+  state='battle';
+  battleTurn='player';
+  battleMsg='';
+  battleMsgQueue=[];
+  document.getElementById('battle-ui').style.display='block';
+  document.getElementById('moves-panel').style.display='none';
+  updateBattleUI();
+  setBattleText(`A wild ${enemy.name} (Lv ${enemy.level}) appeared!`);
+  drawBattleScene();
+}
+
+function drawBattleScene(){
+  // Background
+  const grd=bctx.createLinearGradient(0,0,0,H);
+  grd.addColorStop(0,'#1a0a3d');grd.addColorStop(0.5,'#2a1050');grd.addColorStop(1,'#0d0d1a');
+  bctx.fillStyle=grd;bctx.fillRect(0,0,W,H);
+
+  // Ground
+  bctx.fillStyle='#2e7d32';
+  bctx.beginPath();bctx.ellipse(600,280,120,30,0,0,Math.PI*2);bctx.fill(); // enemy platform
+  bctx.beginPath();bctx.ellipse(200,400,120,30,0,0,Math.PI*2);bctx.fill(); // player platform
+
+  // Enemy creature
+  if(battleEnemy&&battleEnemy.hp>0){
+    bctx.font='60px serif';bctx.textAlign='center';
+    bctx.fillText(battleEnemy.icon,600,270);
+    bctx.textAlign='left';
+  }
+
+  // Player creature
+  const pc=party[0];
+  if(pc&&pc.hp>0){
+    bctx.font='72px serif';bctx.textAlign='center';
+    bctx.fillText(pc.icon,200,385);
+    bctx.textAlign='left';
+  }
+
+  // Particles
+  bctx.fillStyle='rgba(196,77,255,0.1)';
+  for(let i=0;i<8;i++){
+    const px=Math.sin(Date.now()/1000+i)*300+400;
+    const py=Math.cos(Date.now()/800+i*2)*200+300;
+    bctx.beginPath();bctx.arc(px,py,3,0,Math.PI*2);bctx.fill();
+  }
+}
+
+function updateBattleUI(){
+  const pc=party[0];
+  const en=battleEnemy;
+  if(!pc||!en)return;
+
+  document.querySelector('#enemy-info .creature-name').innerHTML=`${en.icon} ${en.name}<span class="creature-lv">Lv ${en.level}</span>`;
+  const eHpPct=Math.max(0,en.hp/en.maxHp*100);
+  const eBar=document.getElementById('enemy-hp');
+  eBar.style.width=eHpPct+'%';
+  eBar.className='hp-bar-inner'+(eHpPct<25?' low':eHpPct<50?' med':'');
+  document.getElementById('enemy-hp-text').textContent=`${Math.max(0,en.hp)}/${en.maxHp}`;
+
+  document.getElementById('player-creature-name').innerHTML=`${pc.icon} ${pc.name}<span class="creature-lv" id="player-lv">Lv ${pc.level}</span>`;
+  const pHpPct=Math.max(0,pc.hp/pc.maxHp*100);
+  const pBar=document.getElementById('player-hp');
+  pBar.style.width=pHpPct+'%';
+  pBar.className='hp-bar-inner'+(pHpPct<25?' low':pHpPct<50?' med':'');
+  document.getElementById('player-hp-text').textContent=`${Math.max(0,pc.hp)}/${pc.maxHp}`;
+  document.getElementById('player-exp').textContent=`${pc.exp}/${pc.expNext}`;
+
+  // Party display
+  const pd=document.getElementById('party-display');
+  pd.innerHTML='';
+  party.forEach(p=>{
+    const d=document.createElement('div');
+    d.className='party-icon'+(p.hp<=0?' fainted':'');
+    d.textContent=p.icon;
+    pd.appendChild(d);
+  });
+}
+
+function setBattleText(text){
+  document.getElementById('battle-text').textContent=text;
+}
+
+function showMoves(){
+  const pc=party[0];
+  const panel=document.getElementById('moves-panel');
+  panel.style.display='grid';
+  panel.innerHTML='';
+  pc.availMoves.forEach((m,i)=>{
+    const btn=document.createElement('button');
+    btn.className=`move-btn type-${m.type}`;
+    btn.innerHTML=`${m.name}<div class="move-type">${m.type.toUpperCase()} | PWR: ${m.power}</div>`;
+    btn.onclick=()=>playerAttack(i);
+    panel.appendChild(btn);
+  });
+  // Back button
+  const back=document.createElement('button');
+  back.className='move-btn type-normal';
+  back.textContent='BACK';
+  back.onclick=()=>{panel.style.display='none';};
+  panel.appendChild(back);
+}
+
+function calcDamage(attacker,defender,move){
+  const eff=getEffectiveness(move.type,defender.type);
+  const base=((2*attacker.level/5+2)*move.power*attacker.atk/defender.def/50+2);
+  const rand=0.85+Math.random()*0.15;
+  const stab=move.type===attacker.type?1.5:1;
+  return{dmg:Math.max(1,Math.floor(base*rand*stab*eff)),eff};
+}
+
+async function playerAttack(moveIdx){
+  document.getElementById('moves-panel').style.display='none';
+  const pc=party[0];
+  const en=battleEnemy;
+  const move=pc.availMoves[moveIdx];
+
+  // Speed check
+  if(pc.spd>=en.spd){
+    await doAttack(pc,en,move,'player');
+    if(en.hp>0) await enemyTurn();
+  }else{
+    await enemyTurn();
+    if(pc.hp>0) await doAttack(pc,en,move,'player');
+  }
+  checkBattleEnd();
+}
+
+function doAttack(attacker,defender,move,who){
+  return new Promise(resolve=>{
+    const hit=Math.random()*100<move.acc;
+    if(!hit){
+      setBattleText(`${attacker.name}'s ${move.name} missed!`);
+      setTimeout(resolve,1200);return;
+    }
+    const{dmg,eff}=calcDamage(attacker,defender,move);
+    defender.hp=Math.max(0,defender.hp-dmg);
+    let effText='';
+    if(eff>1) effText=" It's super effective!";
+    if(eff<1) effText=" It's not very effective...";
+    setBattleText(`${attacker.name} used ${move.name}! (-${dmg} HP)${effText}`);
+    updateBattleUI();
+    drawBattleScene();
+    setTimeout(resolve,1500);
+  });
+}
+
+function enemyTurn(){
+  return new Promise(resolve=>{
+    const en=battleEnemy;
+    const pc=party[0];
+    const move=en.availMoves[Math.floor(Math.random()*en.availMoves.length)];
+    setTimeout(async()=>{
+      await doAttack(en,pc,move,'enemy');
+      updateBattleUI();
+      resolve();
+    },500);
+  });
+}
+
+function checkBattleEnd(){
+  const pc=party[0];
+  const en=battleEnemy;
+
+  if(en.hp<=0){
+    // Victory!
+    const expGain=en.level*15+20;
+    pc.exp+=expGain;
+    setBattleText(`${en.name} fainted! +${expGain} EXP!`);
+    // Level up check
+    while(pc.exp>=pc.expNext){
+      pc.exp-=pc.expNext;
+      pc.level++;
+      pc.maxHp=Math.floor(creatureDB[pc.id].baseHp*(1+pc.level*0.1));
+      pc.hp=pc.maxHp;
+      pc.atk=Math.floor(creatureDB[pc.id].baseAtk*(1+pc.level*0.08));
+      pc.def=Math.floor(creatureDB[pc.id].baseDef*(1+pc.level*0.08));
+      pc.spd=Math.floor(creatureDB[pc.id].baseSpd*(1+pc.level*0.06));
+      pc.expNext=pc.level*25+50;
+      pc.availMoves=creatureDB[pc.id].moves.slice(0,Math.min(4,1+Math.floor(pc.level/5)));
+      setTimeout(()=>setBattleText(`${pc.name} grew to level ${pc.level}!`),1500);
+    }
+    setTimeout(endBattle,2500);
+  }else if(pc.hp<=0){
+    setBattleText(`${pc.name} fainted!`);
+    // Check for next creature
+    const next=party.find(p=>p.hp>0);
+    if(next){
+      const idx=party.indexOf(next);
+      [party[0],party[idx]]=[party[idx],party[0]];
+      setTimeout(()=>{
+        setBattleText(`Go, ${party[0].name}!`);
+        updateBattleUI();drawBattleScene();
+      },1500);
+    }else{
+      setTimeout(()=>{
+        setBattleText('All your creatures fainted! You blacked out...');
+        setTimeout(()=>{
+          endBattle();
+          party.forEach(p=>{p.hp=Math.floor(p.maxHp*0.5);});
+          player.x=20;player.y=15;
+        },2000);
+      },1500);
+    }
+  }
+}
+
+function useBall(){
+  if(catchBalls<=0){setBattleText("No catch balls left!");return;}
+  catchBalls--;
+  const en=battleEnemy;
+  const catchRate=Math.max(5,50-en.level*2+(1-en.hp/en.maxHp)*40);
+  const caught=Math.random()*100<catchRate;
+
+  const anim=document.getElementById('catch-anim');
+  anim.textContent='\u26AA';anim.style.display='block';
+  setTimeout(()=>{
+    if(caught){
+      anim.textContent='\u2728';
+      setBattleText(`Gotcha! ${en.name} was caught!`);
+      if(party.length<6){
+        en.hp=en.maxHp;
+        party.push(en);
+      }
+      setTimeout(()=>{anim.style.display='none';endBattle();},1500);
+    }else{
+      anim.style.display='none';
+      setBattleText(`Oh no! ${en.name} broke free!`);
+      setTimeout(()=>enemyTurn().then(()=>checkBattleEnd()),1000);
+    }
+  },1200);
+}
+
+function tryRun(){
+  const chance=party[0].spd>battleEnemy.spd?80:50;
+  if(Math.random()*100<chance){
+    setBattleText('Got away safely!');
+    setTimeout(endBattle,1000);
+  }else{
+    setBattleText("Can't escape!");
+    setTimeout(()=>enemyTurn().then(()=>checkBattleEnd()),1000);
+  }
+}
+
+function showPartyInBattle(){
+  let text='YOUR PARTY:\n';
+  party.forEach((p,i)=>{
+    text+=`${i+1}. ${p.icon} ${p.name} Lv${p.level} HP:${p.hp}/${p.maxHp}${p.hp<=0?' [FAINTED]':''}\n`;
+  });
+  setBattleText(text);
+}
+
+function endBattle(){
+  state='overworld';
+  document.getElementById('battle-ui').style.display='none';
+  updateBattleUI();
+}
+
+// --- OVERWORLD MOVEMENT ---
+let moveCD=0;
+let keys={};
+function handleMovement(){
+  if(state!=='overworld'||moveCD>0){if(moveCD>0)moveCD--;return;}
+  let dx=0,dy=0;
+  if(keys.w||keys.ArrowUp){dy=-1;player.dir=2;}
+  else if(keys.s||keys.ArrowDown){dy=1;player.dir=0;}
+  else if(keys.a||keys.ArrowLeft){dx=-1;player.dir=3;}
+  else if(keys.d||keys.ArrowRight){dx=1;player.dir=1;}
+
+  if(dx===0&&dy===0)return;
+
+  const nx=player.x+dx,ny=player.y+dy;
+  if(nx<0||nx>=MCOLS||ny<0||ny>=MROWS)return;
+  const tile=mapData[ny][nx];
+  if(tile===5||tile===3||tile===4)return; // blocked
+
+  player.x=nx;player.y=ny;
+  steps++;moveCD=6;
+
+  // Wild encounter in tall grass
+  if(tile===1&&Math.random()<0.15){
+    const wild=getWildCreature();
+    setTimeout(()=>startBattle(wild),200);
+  }
+
+  // Heal at town center
+  if(nx>=22&&nx<=23&&ny>=12&&ny<=13){
+    party.forEach(p=>{p.hp=p.maxHp;});
+    catchBalls=Math.max(catchBalls,5);
+    setBattleText('');
+  }
+}
+
+// --- MAIN LOOP ---
+function gameLoop(){
+  if(!gameStarted){requestAnimationFrame(gameLoop);return;}
+
+  if(state==='overworld'){
+    handleMovement();
+    drawOverworld();
+  }else if(state==='battle'){
+    drawBattleScene();
+  }
+
+  requestAnimationFrame(gameLoop);
+}
+
+// --- INPUT ---
+document.addEventListener('keydown',e=>{
+  keys[e.key]=true;keys[e.key.toLowerCase()]=true;
+  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) e.preventDefault();
+});
+document.addEventListener('keyup',e=>{keys[e.key]=false;keys[e.key.toLowerCase()]=false;});
+
+document.getElementById('start-btn').addEventListener('click',()=>{
+  document.getElementById('title-screen').style.display='none';
+  gameStarted=true;
+});
+
+initMap();
+gameLoop();
+</script>
+</body>
+</html>
