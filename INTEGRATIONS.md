@@ -520,15 +520,80 @@ api:
 ```yaml
 service: Anthropic
 org: BlackRoad-AI (AI)
-purpose: Claude models
+purpose: Claude models via Anthropic API and Claude Code
 
 api:
   type: REST
-  auth: API Key
+  base_url: https://api.anthropic.com
+  auth: API Key (ANTHROPIC_API_KEY)
+  version: 2023-06-01
+  docs: https://docs.anthropic.com/
+  
   models:
-    - claude-3-opus
-    - claude-3-sonnet
-    - claude-3-haiku
+    # Latest Claude 4 models
+    - claude-sonnet-4-20250514      # Best balance
+    - claude-opus-4-20250514        # Most capable
+    
+    # Claude 3.5 models
+    - claude-3-5-sonnet-20241022    # Fast & capable
+    - claude-3-5-haiku-20241022     # Fast & affordable
+    
+    # Legacy Claude 3
+    - claude-3-opus-20240229
+    - claude-3-haiku-20240307
+  
+  capabilities:
+    - Text generation
+    - Code generation
+    - Vision (image understanding)
+    - 200K context window
+    - Function calling
+    - Streaming responses
+
+usage:
+  # Via Anthropic API
+  library: anthropic
+  install: pip install anthropic
+  example: |
+    from anthropic import Anthropic
+    client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+    message = client.messages.create(
+        model="claude-sonnet-4-20250514",
+        max_tokens=1024,
+        messages=[{"role": "user", "content": "Hello, Claude!"}]
+    )
+  
+  # Via Claude Code API (IDE integration)
+  ide: Claude Code (VS Code extension)
+  features:
+    - Inline code generation
+    - Chat interface
+    - Code explanation
+    - Refactoring assistance
+    - MCP server integration
+  
+integration_points:
+  - templates/ai-router/          # Multi-provider routing
+  - prototypes/mcp-server/        # MCP protocol server
+  - prototypes/operator/          # Query classification
+  - .github/workflows/            # CI/CD with AI assistance
+
+signals:
+  - "🧠 AI → OS : inference_start, provider=anthropic"
+  - "✅ AI → OS : inference_complete, latency_ms=450"
+  - "❌ AI → OS : inference_failed, error=rate_limit"
+  - "💰 AI → OS : cost_incurred, amount=$0.0032"
+
+cost:
+  claude-sonnet-4: $3/$15 per 1M tokens (input/output)
+  claude-opus-4: $15/$75 per 1M tokens
+  claude-3-5-sonnet: $3/$15 per 1M tokens
+  claude-3-5-haiku: $0.80/$4 per 1M tokens
+
+rate_limits:
+  tier_1: 50 requests/min, 40K tokens/min
+  tier_2: 1000 requests/min, 80K tokens/min
+  tier_3: 2000 requests/min, 160K tokens/min
 ```
 
 ### Replicate

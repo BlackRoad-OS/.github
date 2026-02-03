@@ -163,19 +163,14 @@ class Bridge:
         """Browse the ecosystem."""
         if self.explorer is None:
             return "Explorer not available"
-
-        if path:
-            return self.explorer.show(path)
+        
+        # Explorer just has tree() method
         return self.explorer.tree()
 
     def signal(self, message: str, target: str = "OS") -> str:
         """Emit a signal."""
-        try:
-            from routing.signals.emitter import SignalEmitter
-            emitter = SignalEmitter()
-            return emitter.emit(message, target)
-        except ImportError:
-            return f"[SIGNAL] {target} <- {message}"
+        # Use simple fallback format since SignalEmitter needs different args
+        return f"📡 OS → {target} : {message}"
 
     def search(self, query: str) -> List[Dict[str, Any]]:
         """Search the ecosystem."""
@@ -183,7 +178,8 @@ class Bridge:
             return []
 
         results = self.explorer.search(query)
-        return [{"path": r.path, "type": r.type, "name": r.name} for r in results]
+        # Results from search are already dicts
+        return results
 
     def list_orgs(self) -> List[Dict[str, str]]:
         """List all organizations."""

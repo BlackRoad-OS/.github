@@ -1,0 +1,123 @@
+name: 🏢 Organization Setup
+description: Set up a new repository in a BlackRoad organization
+title: "[Org Setup]: "
+labels: ["org:setup", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template to request setup of a new repository within a BlackRoad organization.
+
+  - type: dropdown
+    id: organization
+    attributes:
+      label: Target Organization
+      description: Which organization should this repository be created in?
+      options:
+        - BlackRoad-OS (Core Infrastructure)
+        - BlackRoad-AI (Intelligence Routing)
+        - BlackRoad-Cloud (Edge Compute)
+        - BlackRoad-Hardware (Pi Cluster / IoT)
+        - BlackRoad-Security (Auth / Secrets)
+        - BlackRoad-Labs (Experiments)
+        - BlackRoad-Foundation (CRM / Finance)
+        - BlackRoad-Ventures (Marketplace)
+        - Blackbox-Enterprises (Enterprise)
+        - BlackRoad-Media (Content)
+        - BlackRoad-Studio (Design)
+        - BlackRoad-Interactive (Metaverse)
+        - BlackRoad-Education (Learning)
+        - BlackRoad-Gov (Governance)
+        - BlackRoad-Archive (Storage)
+    validations:
+      required: true
+
+  - type: input
+    id: repo-name
+    attributes:
+      label: Repository Name
+      description: Proposed name for the new repository
+      placeholder: my-new-repo
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Repository Description
+      description: What will this repository contain?
+      placeholder: Brief description of the repository purpose
+    validations:
+      required: true
+
+  - type: dropdown
+    id: repo-type
+    attributes:
+      label: Repository Type
+      description: What type of repository is this?
+      options:
+        - Application / Service
+        - Library / Package
+        - Infrastructure / Config
+        - Documentation
+        - Template / Boilerplate
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: visibility
+    attributes:
+      label: Visibility
+      description: Should this repository be public or private?
+      options:
+        - Public
+        - Private
+    validations:
+      required: true
+
+  - type: textarea
+    id: tech-stack
+    attributes:
+      label: Technology Stack
+      description: What technologies will be used?
+      placeholder: |
+        - Language: Python 3.11
+        - Framework: FastAPI
+        - Database: PostgreSQL
+    validations:
+      required: false
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies & Integrations
+      description: What external services or other repositories will this depend on?
+      placeholder: |
+        - Depends on: BlackRoad-Cloud/workers
+        - Integrates with: Salesforce, Stripe
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: features
+    attributes:
+      label: Required Features
+      description: What should be set up in this repository?
+      options:
+        - label: CI/CD workflows
+        - label: Issue templates
+        - label: PR templates
+        - label: Code scanning
+        - label: Dependabot
+        - label: Documentation site
+        - label: Docker container
+        - label: API documentation
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Any other information about this repository
+    validations:
+      required: false
