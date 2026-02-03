@@ -1,0 +1,73 @@
+# CODEOWNERS file for BlackRoad OS
+# 
+# This file defines who owns and should review changes to different parts of the repository.
+# Lines are processed top to bottom, so the last matching pattern takes precedence.
+#
+# Format: <file-pattern> @owner-username @owner-username
+# 
+# Learn more: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners for everything in the repo
+# These owners will be requested for review when someone opens a PR
+* @BlackRoad-OS/maintainers
+
+# Core Bridge files - require approval from core team
+/.STATUS @BlackRoad-OS/core-team
+/MEMORY.md @BlackRoad-OS/core-team
+/INDEX.md @BlackRoad-OS/core-team
+/BLACKROAD_ARCHITECTURE.md @BlackRoad-OS/core-team
+/REPO_MAP.md @BlackRoad-OS/core-team
+/STREAMS.md @BlackRoad-OS/core-team
+/SIGNALS.md @BlackRoad-OS/core-team
+/INTEGRATIONS.md @BlackRoad-OS/core-team
+
+# Organization blueprints - org-specific owners
+/orgs/BlackRoad-OS/ @BlackRoad-OS/os-team
+/orgs/BlackRoad-AI/ @BlackRoad-OS/ai-team
+/orgs/BlackRoad-Cloud/ @BlackRoad-OS/cloud-team
+/orgs/BlackRoad-Hardware/ @BlackRoad-OS/hardware-team
+/orgs/BlackRoad-Security/ @BlackRoad-OS/security-team
+/orgs/BlackRoad-Labs/ @BlackRoad-OS/labs-team
+/orgs/BlackRoad-Foundation/ @BlackRoad-OS/foundation-team
+/orgs/BlackRoad-Ventures/ @BlackRoad-OS/ventures-team
+/orgs/Blackbox-Enterprises/ @BlackRoad-OS/blackbox-team
+/orgs/BlackRoad-Media/ @BlackRoad-OS/media-team
+/orgs/BlackRoad-Studio/ @BlackRoad-OS/studio-team
+/orgs/BlackRoad-Interactive/ @BlackRoad-OS/interactive-team
+/orgs/BlackRoad-Education/ @BlackRoad-OS/education-team
+/orgs/BlackRoad-Gov/ @BlackRoad-OS/gov-team
+/orgs/BlackRoad-Archive/ @BlackRoad-OS/archive-team
+
+# Prototypes - require review from prototype maintainers
+/prototypes/operator/ @BlackRoad-OS/ai-team
+/prototypes/metrics/ @BlackRoad-OS/os-team
+/prototypes/explorer/ @BlackRoad-OS/os-team
+
+# Templates - require review from relevant teams
+/templates/salesforce-sync/ @BlackRoad-OS/foundation-team
+/templates/stripe-billing/ @BlackRoad-OS/foundation-team
+/templates/cloudflare-workers/ @BlackRoad-OS/cloud-team
+/templates/gdrive-sync/ @BlackRoad-OS/archive-team
+/templates/github-ecosystem/ @BlackRoad-OS/os-team
+/templates/design-tools/ @BlackRoad-OS/studio-team
+
+# GitHub workflows - require DevOps approval
+/.github/workflows/ @BlackRoad-OS/devops-team @BlackRoad-OS/security-team
+
+# Security files - require security team approval
+/SECURITY.md @BlackRoad-OS/security-team
+/.github/dependabot.yml @BlackRoad-OS/security-team @BlackRoad-OS/devops-team
+
+# Community health files
+/CODE_OF_CONDUCT.md @BlackRoad-OS/core-team
+/CONTRIBUTING.md @BlackRoad-OS/core-team
+/SUPPORT.md @BlackRoad-OS/core-team
+
+# Profile and public-facing content
+/profile/ @BlackRoad-OS/media-team @BlackRoad-OS/core-team
+
+# Node configurations
+/nodes/ @BlackRoad-OS/hardware-team
+
+# Routes
+/routes/ @BlackRoad-OS/os-team

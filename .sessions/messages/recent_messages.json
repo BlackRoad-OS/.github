@@ -1,0 +1,104 @@
+{
+  "messages": [
+    {
+      "message_id": "118b89b5-db52-45c3-bbc8-1b1a612ed98e",
+      "type": "ping",
+      "from_session": "cece-001",
+      "to_session": "agent-002",
+      "subject": "Ping",
+      "body": "Are you there?",
+      "data": {},
+      "timestamp": "2026-01-27T21:11:11.491442",
+      "in_reply_to": null
+    },
+    {
+      "message_id": "8512000c-6978-4653-ad2e-5156acd7f827",
+      "type": "request",
+      "from_session": "cece-001",
+      "to_session": "agent-002",
+      "subject": "React component review",
+      "body": "Can you review this React component for me?",
+      "data": {
+        "component": "UserProfile.jsx",
+        "lines": 150
+      },
+      "timestamp": "2026-01-27T21:11:11.491598",
+      "in_reply_to": null
+    },
+    {
+      "message_id": "09715a4f-5515-40b2-9bff-f3a1af5133f6",
+      "type": "response",
+      "from_session": "agent-002",
+      "to_session": "cece-001",
+      "subject": "Re: React component review",
+      "body": "Sure! I'll review it now. Looks good overall, minor suggestions in comments.",
+      "data": {
+        "approved": true,
+        "suggestions": 3
+      },
+      "timestamp": "2026-01-27T21:11:11.491916",
+      "in_reply_to": "8512000c-6978-4653-ad2e-5156acd7f827"
+    },
+    {
+      "message_id": "0d4b48b4-baef-418a-95f0-8ded00a3a4d5",
+      "type": "broadcast",
+      "from_session": "cece-001",
+      "to_session": null,
+      "subject": "Deployment scheduled",
+      "body": "Production deployment scheduled for 2PM",
+      "data": {},
+      "timestamp": "2026-01-27T21:11:11.492219",
+      "in_reply_to": null
+    },
+    {
+      "message_id": "ae1af220-52c7-405e-9a7f-513c1d3a75da",
+      "type": "broadcast",
+      "from_session": "planner-001",
+      "to_session": null,
+      "subject": "Plan ready",
+      "body": "Implementation plan for user-auth is ready",
+      "data": {},
+      "timestamp": "2026-01-27T21:11:11.494572",
+      "in_reply_to": null
+    },
+    {
+      "message_id": "6cbcff50-bfac-4abc-be8d-aac39f58d5c6",
+      "type": "task_offer",
+      "from_session": "developer-001",
+      "to_session": "reviewer-001",
+      "subject": "Code review needed",
+      "body": "User auth implementation ready for review",
+      "data": {
+        "file": "auth.py",
+        "priority": "high"
+      },
+      "timestamp": "2026-01-27T21:11:11.495283",
+      "in_reply_to": null
+    },
+    {
+      "message_id": "a905a0f8-1d5e-40e3-a675-4b59755bccef",
+      "type": "task_accept",
+      "from_session": "reviewer-001",
+      "to_session": "developer-001",
+      "subject": "Starting review",
+      "body": "Will review the auth code now",
+      "data": {},
+      "timestamp": "2026-01-27T21:11:11.495524",
+      "in_reply_to": null
+    },
+    {
+      "message_id": "440db0cb-4a7a-4cc1-85b3-9955d82573cb",
+      "type": "response",
+      "from_session": "reviewer-001",
+      "to_session": "developer-001",
+      "subject": "Review complete",
+      "body": "Code looks great! LGTM with 2 minor suggestions.",
+      "data": {
+        "approved": true
+      },
+      "timestamp": "2026-01-27T21:11:11.496875",
+      "in_reply_to": null
+    }
+  ],
+  "updated_at": "2026-01-27T21:11:11.496938"
+}

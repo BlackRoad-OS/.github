@@ -9,6 +9,7 @@
 | Jump To | Description |
 |---------|-------------|
 | [🌉 Bridge Files](#bridge-files) | Core coordination files |
+| [🤖 Agents](#agents) | 1,000+ AI agents in Lucidia |
 | [🏢 Organizations](#organizations) | All 15 org blueprints |
 | [🔧 Prototypes](#prototypes) | Working code |
 | [📊 Metrics](#live-metrics) | Real-time KPIs |
@@ -27,7 +28,31 @@ The core of The Bridge - start here.
 | [STREAMS.md](STREAMS.md) | Data flow patterns | Upstream/Instream/Downstream |
 | [REPO_MAP.md](REPO_MAP.md) | Ecosystem overview | All orgs, all nodes |
 | [BLACKROAD_ARCHITECTURE.md](BLACKROAD_ARCHITECTURE.md) | The vision | Why we exist |
-| [TODO.md](TODO.md) | Task board | What needs doing |
+| [EMOJI_DICTIONARY.md](EMOJI_DICTIONARY.md) | Visual language | 🟢🟡🔴🤖📡 |
+
+---
+
+## Agents
+
+The residents of Lucidia - 1,000+ AI agents organized by specialization.
+
+| Resource | Purpose |
+|----------|---------|
+| [agents/README.md](agents/README.md) | Agent registry overview |
+| [agents/types.yaml](agents/types.yaml) | 20 agent type definitions |
+| [agents/ORCHESTRATION.md](agents/ORCHESTRATION.md) | Swarm coordination patterns |
+
+### Agent Types (20)
+
+| Domain | Types |
+|--------|-------|
+| **Scientific** | physicist, mathematician, chemist, biologist |
+| **Professional** | engineer, architect, researcher, analyst, strategist, economist |
+| **Creative** | creative |
+| **Social** | speaker, mediator, psychologist |
+| **Specialized** | philosopher, historian, linguist, guardian, navigator, builder |
+
+**Total: ~1,050 agents** living in Lucidia
 
 ---
 
