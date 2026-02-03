@@ -44,7 +44,12 @@ document.addEventListener('DOMContentLoaded', () => {
     dock: 'STAR DOCK',
     lab: 'NEON LAB',
     vault: 'THE VAULT',
-    garden: 'PIXEL GARDEN'
+    garden: 'PIXEL GARDEN',
+    bullpen: 'THE BULLPEN',
+    summit: 'THE SUMMIT',
+    campus: 'HQ CAMPUS',
+    metro: 'PIXEL METRO',
+    nation: 'THE NATION'
   };
 
   const sceneGradients = {
@@ -62,7 +67,12 @@ document.addEventListener('DOMContentLoaded', () => {
     dock: 'linear-gradient(180deg, #10051a 0%, #2a0a3d 40%, #5e1a6b 100%)',
     lab: 'linear-gradient(180deg, #051a10 0%, #0a3d2a 40%, #1a5e4a 100%)',
     vault: 'linear-gradient(180deg, #1a1905 0%, #3d3a0a 40%, #5e5510 100%)',
-    garden: 'linear-gradient(180deg, #1a050d 0%, #3d0a2a 40%, #6b1a5e 100%)'
+    garden: 'linear-gradient(180deg, #1a050d 0%, #3d0a2a 40%, #6b1a5e 100%)',
+    bullpen: 'linear-gradient(180deg, #1a1408 0%, #3d3020 40%, #6b5a3a 100%)',
+    summit: 'linear-gradient(180deg, #0a0f1a 0%, #1a2840 40%, #2a3d5e 100%)',
+    campus: 'linear-gradient(180deg, #0a1a0a 0%, #1a4a1a 40%, #2a7a3a 100%)',
+    metro: 'linear-gradient(180deg, #0a1a0d 0%, #1a3a2a 40%, #2a6a4a 100%)',
+    nation: 'linear-gradient(180deg, #051020 0%, #0a2a4a 40%, #1a4a7a 100%)'
   };
 
   thumbItems.forEach(item => {
