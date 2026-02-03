@@ -31,23 +31,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const sceneNames = {
     office: 'HQ OFFICE',
-    campus: 'BLACKROAD CAMPUS',
+    apartment: 'APARTMENT',
+    home: 'HOME',
+    dataport: 'DATA PORT',
+    farm: 'FARM',
+    town: 'TOWN',
     museum: 'SCIENCE MUSEUM',
     store: 'MEGA STORE',
     lounge: 'AGENT LOUNGE',
-    workshop: 'WORKSHOP',
-    map: 'WORLD MAP',
     cottage: 'PIXEL COTTAGE'
   };
 
   const sceneGradients = {
     office: 'linear-gradient(180deg, #1a1008 0%, #2a1a0a 40%, #3d2b1f 100%)',
-    campus: 'linear-gradient(180deg, #051a0d 0%, #0a2a1a 40%, #1a3d2b 100%)',
+    apartment: 'linear-gradient(180deg, #5a3a10 0%, #8b6914 40%, #c4956a 100%)',
+    home: 'linear-gradient(180deg, #6b5530 0%, #a0855a 40%, #d4b896 100%)',
+    dataport: 'linear-gradient(180deg, #051a3a 0%, #0a3a7a 40%, #1a6abf 100%)',
+    farm: 'linear-gradient(180deg, #0a3a0a 0%, #2a6b1a 40%, #5a9e3b 100%)',
+    town: 'linear-gradient(180deg, #1a4a0a 0%, #3a7a2a 40%, #6ab04a 100%)',
     museum: 'linear-gradient(180deg, #0a0a2a 0%, #1a1a3d 40%, #2b2b5e 100%)',
     store: 'linear-gradient(180deg, #1a0d05 0%, #3d2a1a 40%, #5e3b2b 100%)',
     lounge: 'linear-gradient(180deg, #050d1a 0%, #1a2a3d 40%, #2b3b5e 100%)',
-    workshop: 'linear-gradient(180deg, #1a1a05 0%, #2a2a0a 40%, #3d3d1a 100%)',
-    map: 'linear-gradient(180deg, #052a1a 0%, #0a3d2a 40%, #1a5e3b 100%)',
     cottage: 'linear-gradient(180deg, #0d1a05 0%, #2a3d0a 40%, #3b5e1a 100%)'
   };
 

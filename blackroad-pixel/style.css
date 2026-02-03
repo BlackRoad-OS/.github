@@ -457,8 +457,24 @@ body {
   background: linear-gradient(135deg, #2a1a0a, #3d2b1f);
 }
 
-.thumb-item[data-scene="campus"] {
-  background: linear-gradient(135deg, #0a2a1a, #1a3d2b);
+.thumb-item[data-scene="apartment"] {
+  background: linear-gradient(135deg, #8b6914, #c4956a);
+}
+
+.thumb-item[data-scene="home"] {
+  background: linear-gradient(135deg, #a0855a, #d4b896);
+}
+
+.thumb-item[data-scene="dataport"] {
+  background: linear-gradient(135deg, #0a3a7a, #1a6abf);
+}
+
+.thumb-item[data-scene="farm"] {
+  background: linear-gradient(135deg, #2a6b1a, #5a9e3b);
+}
+
+.thumb-item[data-scene="town"] {
+  background: linear-gradient(135deg, #3a7a2a, #6ab04a);
 }
 
 .thumb-item[data-scene="museum"] {
@@ -471,14 +487,6 @@ body {
 
 .thumb-item[data-scene="lounge"] {
   background: linear-gradient(135deg, #1a2a3d, #2b3b5e);
-}
-
-.thumb-item[data-scene="workshop"] {
-  background: linear-gradient(135deg, #2a2a0a, #3d3d1a);
-}
-
-.thumb-item[data-scene="map"] {
-  background: linear-gradient(135deg, #0a3d2a, #1a5e3b);
 }
 
 .thumb-item[data-scene="cottage"] {
