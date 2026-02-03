@@ -74,7 +74,12 @@ document.addEventListener('DOMContentLoaded', () => {
     plaza: 'CENTRAL PLAZA',
     clinic: 'MED CLINIC',
     depot: 'SUPPLY DEPOT',
-    quarters: 'CREW QUARTERS'
+    quarters: 'CREW QUARTERS',
+    arcade: 'PIXEL ARCADE',
+    terrace: 'THE TERRACE',
+    foundry: 'IRON FOUNDRY',
+    bridge: 'COMMAND BRIDGE',
+    atrium: 'THE ATRIUM'
   };
 
   const sceneGradients = {
@@ -122,7 +127,12 @@ document.addEventListener('DOMContentLoaded', () => {
     plaza: 'linear-gradient(180deg, #0a0d1a 0%, #1a2a4a 40%, #2a4a7a 100%)',
     clinic: 'linear-gradient(180deg, #0a1010 0%, #1a3030 40%, #2a5050 100%)',
     depot: 'linear-gradient(180deg, #0d0d08 0%, #2a2a18 40%, #4a4a28 100%)',
-    quarters: 'linear-gradient(180deg, #0a080d 0%, #201830 40%, #3a2850 100%)'
+    quarters: 'linear-gradient(180deg, #0a080d 0%, #201830 40%, #3a2850 100%)',
+    arcade: 'linear-gradient(180deg, #0d0510 0%, #301040 40%, #601a70 100%)',
+    terrace: 'linear-gradient(180deg, #0a100d 0%, #1a3020 40%, #2a5035 100%)',
+    foundry: 'linear-gradient(180deg, #100805 0%, #302010 40%, #503818 100%)',
+    bridge: 'linear-gradient(180deg, #050810 0%, #101830 40%, #1a2850 100%)',
+    atrium: 'linear-gradient(180deg, #0d100a 0%, #203018 40%, #355028 100%)'
   };
 
   thumbItems.forEach(item => {

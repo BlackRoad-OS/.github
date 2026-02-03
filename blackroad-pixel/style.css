@@ -633,6 +633,26 @@ body {
   background: linear-gradient(135deg, #201830, #3a2850);
 }
 
+.thumb-item[data-scene="arcade"] {
+  background: linear-gradient(135deg, #301040, #601a70);
+}
+
+.thumb-item[data-scene="terrace"] {
+  background: linear-gradient(135deg, #1a3020, #2a5035);
+}
+
+.thumb-item[data-scene="foundry"] {
+  background: linear-gradient(135deg, #302010, #503818);
+}
+
+.thumb-item[data-scene="bridge"] {
+  background: linear-gradient(135deg, #101830, #1a2850);
+}
+
+.thumb-item[data-scene="atrium"] {
+  background: linear-gradient(135deg, #203018, #355028);
+}
+
 .thumb-label {
   position: absolute;
   bottom: 0;
