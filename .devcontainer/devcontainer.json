@@ -1,0 +1,87 @@
+{
+  "name": "BlackRoad Agent Codespace",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11-bullseye",
+  
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    },
+    "ghcr.io/devcontainers/features/go:1": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-toolsai.jupyter",
+        "github.copilot",
+        "github.copilot-chat",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "redhat.vscode-yaml",
+        "ms-azuretools.vscode-docker",
+        "eamodio.gitlens",
+        "Continue.continue"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "python.linting.enabled": true,
+        "python.linting.pylintEnabled": true,
+        "python.formatting.provider": "black",
+        "editor.formatOnSave": true,
+        "files.autoSave": "onFocusChange",
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  },
+
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  
+  "forwardPorts": [
+    8080,
+    3000,
+    5000,
+    11434,
+    8787
+  ],
+  
+  "portsAttributes": {
+    "8080": {
+      "label": "BlackRoad Operator",
+      "onAutoForward": "notify"
+    },
+    "3000": {
+      "label": "Web UI",
+      "onAutoForward": "openPreview"
+    },
+    "5000": {
+      "label": "Hailo Inference",
+      "onAutoForward": "silent"
+    },
+    "11434": {
+      "label": "Ollama API",
+      "onAutoForward": "silent"
+    },
+    "8787": {
+      "label": "Wrangler Dev",
+      "onAutoForward": "notify"
+    }
+  },
+
+  "remoteEnv": {
+    "PYTHONPATH": "${containerWorkspaceFolder}/prototypes/operator:${containerWorkspaceFolder}/prototypes/mcp-server:${containerWorkspaceFolder}/prototypes/dispatcher",
+    "BLACKROAD_ENV": "codespace",
+    "NODE_ENV": "development"
+  },
+
+  "mounts": [
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,readonly,type=bind,consistency=cached"
+  ],
+
+  "postAttachCommand": "./quickstart.sh"
+}

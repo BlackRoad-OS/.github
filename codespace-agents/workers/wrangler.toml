@@ -1,0 +1,23 @@
+name = "agent-router"
+main = "agent-router.js"
+compatibility_date = "2024-01-27"
+
+# KV namespace for agent state
+[[kv_namespaces]]
+binding = "AGENT_KV"
+id = "YOUR_KV_NAMESPACE_ID"
+
+# D1 database for collaboration tracking
+[[d1_databases]]
+binding = "AGENT_DB"
+database_name = "blackroad-agents"
+database_id = "YOUR_D1_DATABASE_ID"
+
+# Environment variables
+[vars]
+ENVIRONMENT = "production"
+
+# Secrets (set via wrangler secret put)
+# OPENAI_API_KEY
+# ANTHROPIC_API_KEY
+# OLLAMA_API_URL
