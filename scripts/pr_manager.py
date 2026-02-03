@@ -5,6 +5,10 @@ PR Management Script
 Provides command-line interface for managing pull requests in the BlackRoad ecosystem.
 Complements the automated PR handler workflow with manual management tools.
 
+NOTE: This is a demonstration/helper script that shows the structure of PR management.
+For production use with live GitHub data, integrate with the GitHub API using PyGithub or
+the gh CLI tool. The current implementation uses example PR data for demonstration purposes.
+
 Usage:
     ./pr_manager.py list                    # List all open PRs
     ./pr_manager.py show <number>           # Show PR details
@@ -12,6 +16,11 @@ Usage:
     ./pr_manager.py review <number>         # Request review
     ./pr_manager.py merge <number>          # Merge PR (if ready)
     ./pr_manager.py status                  # Show PR statistics
+
+To integrate with live GitHub data:
+    1. Install PyGithub: pip install PyGithub
+    2. Set GITHUB_TOKEN environment variable
+    3. Replace demo data with API calls
 """
 
 import argparse
@@ -61,7 +70,14 @@ def list_prs():
     print("OPEN PULL REQUESTS - BlackRoad-OS/.github")
     print("="*80 + "\n")
     
-    # This would normally call GitHub API, but for demo we'll show the structure
+    # TODO: Replace with actual GitHub API call
+    # Example using PyGithub:
+    # from github import Github
+    # g = Github(os.getenv('GITHUB_TOKEN'))
+    # repo = g.get_repo('BlackRoad-OS/.github')
+    # prs = repo.get_pulls(state='open')
+    
+    # Demo data - replace with API call for production
     prs = [
         {'number': 18, 'title': '[WIP] Handle incoming pull requests efficiently', 'draft': False, 'state': 'open'},
         {'number': 12, 'title': 'Add CLAUDE.md: AI assistant guide for BlackRoad Bridge', 'draft': True, 'state': 'open'},
@@ -87,9 +103,11 @@ def show_pr(number: int):
     print(f"PR #{number} Details")
     print("="*80 + "\n")
     
-    # Would call GitHub API here
+    # TODO: Fetch actual PR details from GitHub API
     print(f"To see full details, visit: https://github.com/BlackRoad-OS/.github/pull/{number}")
     print(f"Or use: gh pr view {number}")
+    print("\nFor API integration, use:")
+    print(f"  gh api repos/BlackRoad-OS/.github/pulls/{number}")
 
 def add_label(number: int, label: str):
     """Add label to a PR"""
@@ -112,6 +130,9 @@ def show_status():
     print("\n" + "="*80)
     print("PR STATISTICS")
     print("="*80 + "\n")
+    
+    # TODO: Calculate these from actual GitHub API data
+    # For production, fetch all PRs and calculate statistics dynamically
     
     print("Status Breakdown:")
     print("  🚧 Draft:              2 PRs")
@@ -136,6 +157,7 @@ def show_status():
     print("  🟢 Low:                2 PRs  (Draft documentation)")
     print()
     
+    # TODO: Calculate from actual PR created_at timestamps
     print("Average PR Age: 6 days")
     print("Oldest PR: #2 (7 days old)")
     print()
