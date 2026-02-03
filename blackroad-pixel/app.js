@@ -49,7 +49,12 @@ document.addEventListener('DOMContentLoaded', () => {
     summit: 'THE SUMMIT',
     campus: 'HQ CAMPUS',
     metro: 'PIXEL METRO',
-    nation: 'THE NATION'
+    nation: 'THE NATION',
+    arena: 'PIXEL ARENA',
+    shrine: 'THE SHRINE',
+    outpost: 'STAR OUTPOST',
+    harbor: 'NEON HARBOR',
+    citadel: 'THE CITADEL'
   };
 
   const sceneGradients = {
@@ -72,7 +77,12 @@ document.addEventListener('DOMContentLoaded', () => {
     summit: 'linear-gradient(180deg, #0a0f1a 0%, #1a2840 40%, #2a3d5e 100%)',
     campus: 'linear-gradient(180deg, #0a1a0a 0%, #1a4a1a 40%, #2a7a3a 100%)',
     metro: 'linear-gradient(180deg, #0a1a0d 0%, #1a3a2a 40%, #2a6a4a 100%)',
-    nation: 'linear-gradient(180deg, #051020 0%, #0a2a4a 40%, #1a4a7a 100%)'
+    nation: 'linear-gradient(180deg, #051020 0%, #0a2a4a 40%, #1a4a7a 100%)',
+    arena: 'linear-gradient(180deg, #1a0a05 0%, #4a1a0a 40%, #8a3a1a 100%)',
+    shrine: 'linear-gradient(180deg, #0d0520 0%, #2a1050 40%, #5a2a8a 100%)',
+    outpost: 'linear-gradient(180deg, #0a1510 0%, #1a3a2a 40%, #2a5a4a 100%)',
+    harbor: 'linear-gradient(180deg, #050a1a 0%, #0a2040 40%, #1a3a6a 100%)',
+    citadel: 'linear-gradient(180deg, #1a0d0a 0%, #3a2010 40%, #6a4020 100%)'
   };
 
   thumbItems.forEach(item => {
