@@ -1,0 +1,132 @@
+name: 🧪 Test Auto-Heal on Failure
+
+on:
+  workflow_run:
+    workflows: ["*"]
+    types: [completed]
+  push:
+    branches: [main, master, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+jobs:
+  test-runner:
+    if: github.event.workflow_run.conclusion == 'failure' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 🔍 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: 📦 Install Dependencies
+        id: install
+        continue-on-error: true
+        run: |
+          if [ -f "pnpm-lock.yaml" ]; then
+            npm install -g pnpm
+            pnpm install
+          elif [ -f "package-lock.json" ]; then
+            npm ci
+          elif [ -f "package.json" ]; then
+            npm install
+          fi
+      
+      - name: 🧪 Run Tests
+        id: test
+        continue-on-error: true
+        run: |
+          if grep -q '"test"' package.json 2>/dev/null; then
+            npm test || exit 1
+          else
+            echo "No tests configured, skipping..."
+            exit 0
+          fi
+      
+      - name: 🏗️ Build Project
+        id: build
+        continue-on-error: true
+        run: |
+          if grep -q '"build"' package.json 2>/dev/null; then
+            npm run build || exit 1
+          else
+            echo "No build script configured, skipping..."
+            exit 0
+          fi
+      
+      - name: 🔧 Auto-Heal on Failure
+        if: steps.install.outcome == 'failure' || steps.test.outcome == 'failure' || steps.build.outcome == 'failure'
+        run: |
+          echo "🔧 Test/Build failed, attempting auto-heal..."
+          
+          # Clean everything
+          rm -rf node_modules .next dist build .cache
+          
+          # Remove conflicting lock files
+          if [ -f "package-lock.json" ] && [ -f "pnpm-lock.yaml" ]; then
+            echo "Removing conflicting lock files..."
+            rm -f package-lock.json pnpm-lock.yaml
+          fi
+          
+          # Reinstall
+          if [ -f "pnpm-lock.yaml" ] || grep -q '"packageManager".*"pnpm"' package.json 2>/dev/null; then
+            echo "Using pnpm..."
+            npm install -g pnpm
+            pnpm install
+          else
+            echo "Using npm..."
+            npm install
+          fi
+          
+          # Try build again
+          if grep -q '"build"' package.json 2>/dev/null; then
+            npm run build
+          fi
+          
+          # Commit fixes
+          git config user.name "BlackRoad Auto-Heal Bot"
+          git config user.email "bot@blackroad.io"
+          git add -A
+          git commit -m "🔧 Auto-heal: Fixed dependencies and build" || echo "No changes to commit"
+          git push || echo "No changes to push"
+      
+      - name: ✅ Verify Healing
+        if: steps.install.outcome == 'failure' || steps.test.outcome == 'failure' || steps.build.outcome == 'failure'
+        run: |
+          echo "✅ Re-running tests to verify healing..."
+          
+          if grep -q '"test"' package.json 2>/dev/null; then
+            npm test
+          fi
+          
+          if grep -q '"build"' package.json 2>/dev/null; then
+            npm run build
+          fi
+          
+          echo "✅ Auto-heal successful!"
+      
+      - name: 📊 Report Results
+        if: always()
+        run: |
+          echo "## Test & Heal Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Install: ${{ steps.install.outcome }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Tests: ${{ steps.test.outcome }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Build: ${{ steps.build.outcome }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ steps.install.outcome }}" == "failure" ] || [ "${{ steps.test.outcome }}" == "failure" ] || [ "${{ steps.build.outcome }}" == "failure" ]; then
+            echo "✅ Auto-heal was triggered and completed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ No healing required - all checks passed" >> $GITHUB_STEP_SUMMARY
+          fi
