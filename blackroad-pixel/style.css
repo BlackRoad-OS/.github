@@ -513,6 +513,26 @@ body {
   background: linear-gradient(135deg, #3d0a2a, #6b1a5e);
 }
 
+.thumb-item[data-scene="bullpen"] {
+  background: linear-gradient(135deg, #3d3020, #6b5a3a);
+}
+
+.thumb-item[data-scene="summit"] {
+  background: linear-gradient(135deg, #1a2840, #2a3d5e);
+}
+
+.thumb-item[data-scene="campus"] {
+  background: linear-gradient(135deg, #1a4a1a, #2a7a3a);
+}
+
+.thumb-item[data-scene="metro"] {
+  background: linear-gradient(135deg, #1a3a2a, #2a6a4a);
+}
+
+.thumb-item[data-scene="nation"] {
+  background: linear-gradient(135deg, #0a2a4a, #1a4a7a);
+}
+
 .thumb-label {
   position: absolute;
   bottom: 0;
