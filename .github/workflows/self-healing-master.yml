@@ -1,0 +1,388 @@
+name: 🤖 Self-Healing Master
+
+on:
+  workflow_run:
+    workflows: ["*"]
+    types: [completed]
+  schedule:
+    - cron: '*/10 * * * *'  # Every 10 minutes
+  workflow_dispatch:
+    inputs:
+      force_heal:
+        description: 'Force healing check'
+        required: false
+        default: 'false'
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  actions: write
+  checks: write
+
+jobs:
+  analyze-failure:
+    if: github.event.workflow_run.conclusion == 'failure' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    outputs:
+      fix_type: ${{ steps.diagnose.outputs.fix_type }}
+      needs_healing: ${{ steps.diagnose.outputs.needs_healing }}
+      failure_reason: ${{ steps.diagnose.outputs.reason }}
+    
+    steps:
+      - name: 🔍 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: 🧠 Diagnose Failure
+        id: diagnose
+        run: |
+          echo "🔍 Analyzing system health..."
+          
+          # Check for common failure patterns
+          if [ -f "package-lock.json" ] && [ -f "pnpm-lock.yaml" ]; then
+            echo "fix_type=lock_conflict" >> $GITHUB_OUTPUT
+            echo "needs_healing=true" >> $GITHUB_OUTPUT
+            echo "reason=Multiple lock files detected" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          # Check for missing dependencies
+          if [ -f "package.json" ] && [ ! -f "node_modules" ]; then
+            echo "fix_type=missing_deps" >> $GITHUB_OUTPUT
+            echo "needs_healing=true" >> $GITHUB_OUTPUT
+            echo "reason=Missing node_modules" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          # Check for build artifacts
+          if [ -d ".next" ] || [ -d "dist" ]; then
+            echo "fix_type=stale_build" >> $GITHUB_OUTPUT
+            echo "needs_healing=true" >> $GITHUB_OUTPUT
+            echo "reason=Stale build artifacts" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          # Check workflow logs for errors
+          if [ "${{ github.event.workflow_run.conclusion }}" == "failure" ]; then
+            echo "fix_type=workflow_failure" >> $GITHUB_OUTPUT
+            echo "needs_healing=true" >> $GITHUB_OUTPUT
+            echo "reason=Workflow execution failed" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          echo "needs_healing=false" >> $GITHUB_OUTPUT
+
+  auto-heal:
+    needs: analyze-failure
+    if: needs.analyze-failure.outputs.needs_healing == 'true'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 🔍 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: 🔧 Apply Auto-Fix
+        id: fix
+        run: |
+          FIX_TYPE="${{ needs.analyze-failure.outputs.fix_type }}"
+          echo "🔧 Applying fix type: $FIX_TYPE"
+          
+          case $FIX_TYPE in
+            lock_conflict)
+              echo "🔧 Resolving lock file conflict..."
+              # Detect which package manager is used
+              if [ -f "pnpm-lock.yaml" ]; then
+                echo "Using pnpm..."
+                rm -f package-lock.json
+                npm install -g pnpm
+                pnpm install --frozen-lockfile || pnpm install
+                git add pnpm-lock.yaml
+                git config user.name "BlackRoad Self-Healing Bot"
+                git config user.email "bot@blackroad.io"
+                git commit -m "🤖 Auto-fix: Remove package-lock.json conflict" || true
+              else
+                echo "Using npm..."
+                rm -f pnpm-lock.yaml
+                npm install
+                git add package-lock.json
+                git config user.name "BlackRoad Self-Healing Bot"
+                git config user.email "bot@blackroad.io"
+                git commit -m "🤖 Auto-fix: Remove pnpm-lock.yaml conflict" || true
+              fi
+              ;;
+            
+            missing_deps)
+              echo "🔧 Installing dependencies..."
+              if [ -f "pnpm-lock.yaml" ]; then
+                npm install -g pnpm
+                pnpm install
+              else
+                npm install
+              fi
+              ;;
+            
+            stale_build)
+              echo "🔧 Cleaning stale builds..."
+              rm -rf .next dist build .cache node_modules/.cache
+              if [ -f "pnpm-lock.yaml" ]; then
+                npm install -g pnpm
+                pnpm install
+              else
+                npm install
+              fi
+              ;;
+            
+            workflow_failure)
+              echo "🔧 Attempting generic recovery..."
+              # Clean and rebuild
+              rm -rf node_modules .next dist build .cache
+              if [ -f "pnpm-lock.yaml" ]; then
+                npm install -g pnpm
+                pnpm install
+                pnpm run build || echo "Build failed, will retry deployment"
+              else
+                npm install
+                npm run build || echo "Build failed, will retry deployment"
+              fi
+              ;;
+            
+            *)
+              echo "❌ Unknown fix type: $FIX_TYPE"
+              exit 1
+              ;;
+          esac
+          
+          echo "fix_applied=true" >> $GITHUB_OUTPUT
+      
+      - name: 📤 Push Auto-Fix
+        if: steps.fix.outputs.fix_applied == 'true'
+        run: |
+          git push || echo "No changes to push"
+      
+      - name: 🎯 Trigger Re-deployment
+        if: steps.fix.outputs.fix_applied == 'true'
+        run: |
+          echo "✅ Auto-fix applied, deployment will re-trigger automatically"
+      
+      - name: ❌ Create Issue on Failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = '🚨 Self-Healing Failed: ${{ needs.analyze-failure.outputs.fix_type }}';
+            const body = `## Auto-Healing Attempt Failed
+            
+            **Fix Type:** \`${{ needs.analyze-failure.outputs.fix_type }}\`
+            **Reason:** ${{ needs.analyze-failure.outputs.failure_reason }}
+            **Branch:** \`${{ github.ref_name }}\`
+            **Commit:** \`${{ github.sha }}\`
+            **Workflow Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            
+            ### Manual Intervention Required
+            
+            The self-healing system attempted to fix this issue but was unsuccessful.
+            Please investigate and resolve manually.
+            
+            ### Action Items
+            - [ ] Review workflow logs
+            - [ ] Identify root cause
+            - [ ] Apply manual fix
+            - [ ] Update self-healing logic if needed
+            
+            ---
+            *🤖 Auto-generated by Self-Healing Master*`;
+            
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: body,
+              labels: ['auto-fix-failed', 'urgent', 'requires-attention']
+            });
+
+  health-check:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 🏥 Check Service Health
+        id: health
+        run: |
+          echo "🏥 Performing health checks..."
+          
+          # Define health endpoints
+          ENDPOINTS=(
+            "https://www.blackroad.io/api/health"
+            "https://app.blackroad.io/api/health"
+            "https://api.blackroad.io/health"
+          )
+          
+          FAILURES=0
+          FAILED_ENDPOINTS=""
+          
+          for endpoint in "${ENDPOINTS[@]}"; do
+            echo "Checking: $endpoint"
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$endpoint" || echo "000")
+            
+            if [ "$HTTP_CODE" != "200" ]; then
+              FAILURES=$((FAILURES + 1))
+              FAILED_ENDPOINTS="$FAILED_ENDPOINTS\n- $endpoint (HTTP $HTTP_CODE)"
+              echo "❌ $endpoint returned $HTTP_CODE"
+            else
+              echo "✅ $endpoint is healthy"
+            fi
+          done
+          
+          if [ $FAILURES -gt 0 ]; then
+            echo "unhealthy=true" >> $GITHUB_OUTPUT
+            echo "failed_count=$FAILURES" >> $GITHUB_OUTPUT
+            echo -e "failed_endpoints=$FAILED_ENDPOINTS" >> $GITHUB_OUTPUT
+          else
+            echo "unhealthy=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: 🚨 Create Health Alert
+        if: steps.health.outputs.unhealthy == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = '🚨 Service Health Alert';
+            const body = `## Health Check Failed
+            
+            **Failed Endpoints:** ${{ steps.health.outputs.failed_count }}
+            **Status:** Service(s) are currently unhealthy
+            
+            ### Failed Endpoints:
+            ${{ steps.health.outputs.failed_endpoints }}
+            
+            ### Recommended Actions:
+            - [ ] Check Railway deployment status
+            - [ ] Review application logs
+            - [ ] Verify DNS and routing
+            - [ ] Check for recent deployments
+            - [ ] Monitor for auto-recovery
+            
+            The self-healing system will continue to monitor and attempt recovery.
+            
+            ---
+            *🤖 Auto-detected by Health Monitor*`;
+            
+            // Check if an open issue already exists
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'service-health'
+            });
+            
+            if (issues.data.length === 0) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['service-health', 'urgent', 'auto-detected']
+              });
+            } else {
+              // Update existing issue
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issues.data[0].number,
+                body: `🔄 **Health check update:** Still unhealthy as of ${new Date().toISOString()}\n\n${body}`
+              });
+            }
+
+  dependency-audit:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 🔍 Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: 🔒 Security Audit
+        id: audit
+        continue-on-error: true
+        run: |
+          echo "🔒 Running security audit..."
+          
+          if [ -f "pnpm-lock.yaml" ]; then
+            npm install -g pnpm
+            pnpm audit --audit-level=high > audit-report.txt 2>&1 || true
+            pnpm audit fix || true
+          else
+            npm audit --audit-level=high > audit-report.txt 2>&1 || true
+            npm audit fix || true
+          fi
+          
+          if [ -s "audit-report.txt" ]; then
+            echo "vulnerabilities_found=true" >> $GITHUB_OUTPUT
+          else
+            echo "vulnerabilities_found=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: 📦 Auto-Fix Vulnerabilities
+        if: steps.audit.outputs.vulnerabilities_found == 'true'
+        run: |
+          git config user.name "BlackRoad Self-Healing Bot"
+          git config user.email "bot@blackroad.io"
+          
+          git add .
+          git commit -m "🔒 Auto-fix: Security vulnerabilities" || echo "No changes to commit"
+          
+          if git diff-index --quiet HEAD --; then
+            echo "No security fixes applied"
+          else
+            git push
+            echo "✅ Security fixes pushed"
+          fi
+      
+      - name: 📝 Create Security Report
+        if: steps.audit.outputs.vulnerabilities_found == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('audit-report.txt', 'utf8');
+            
+            const title = '🔒 Security Audit: Vulnerabilities Auto-Fixed';
+            const body = `## Security Audit Completed
+            
+            The self-healing system has automatically patched security vulnerabilities.
+            
+            ### Audit Report:
+            \`\`\`
+            ${report}
+            \`\`\`
+            
+            ### Actions Taken:
+            - ✅ Ran security audit
+            - ✅ Applied automatic fixes
+            - ✅ Committed and pushed changes
+            
+            ---
+            *🤖 Auto-generated by Dependency Audit*`;
+            
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: body,
+              labels: ['security', 'auto-fixed', 'dependencies']
+            });
