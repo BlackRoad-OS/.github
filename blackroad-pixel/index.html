@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BlackRoad OS</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-window">
+    <!-- Title Bar -->
+    <div class="title-bar">
+      <div class="title-bar-left">
+        <div class="app-logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <rect width="24" height="24" rx="4" fill="url(#logoGrad)"/>
+            <path d="M6 7h5v4H6zm7 0h5v4h-5zM6 13h5v4H6zm7 0h5v4h-5z" fill="white" opacity="0.9"/>
+            <defs><linearGradient id="logoGrad" x1="0" y1="0" x2="24" y2="24"><stop stop-color="#ff6b9d"/><stop offset="1" stop-color="#c44dff"/></linearGradient></defs>
+          </svg>
+        </div>
+        <nav class="top-nav">
+          <a href="#" class="nav-item active">Dashboard</a>
+          <a href="#" class="nav-item">Repositories</a>
+          <a href="#" class="nav-item">Files</a>
+          <a href="#" class="nav-item">Terminal</a>
+          <a href="#" class="nav-item">Tools</a>
+          <a href="#" class="nav-item">Agents</a>
+        </nav>
+      </div>
+      <div class="window-controls">
+        <button class="win-btn minimize">&mdash;</button>
+        <button class="win-btn maximize">&#9634;</button>
+        <button class="win-btn close">&times;</button>
+      </div>
+    </div>
+
+    <!-- Gradient Bars -->
+    <div class="gradient-bars">
+      <div class="gradient-bar bar-warm"></div>
+      <div class="gradient-bar bar-cool"></div>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="main-layout">
+      <!-- Left Sidebar -->
+      <div class="sidebar-left">
+        <button class="sidebar-icon" title="Search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        </button>
+        <button class="sidebar-icon" title="Run">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 19,12 5,21"/></svg>
+        </button>
+        <button class="sidebar-icon" title="Grid">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        </button>
+        <div class="sidebar-spacer"></div>
+        <button class="sidebar-icon" title="Profile">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>
+        </button>
+        <button class="sidebar-icon" title="Settings">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+      </div>
+
+      <!-- Content Area -->
+      <div class="content-area">
+        <!-- Chat Panel -->
+        <div class="chat-panel">
+          <div class="chat-header">Chat / Coding / Planning Interface</div>
+          <div class="chat-messages">
+            <div class="chat-msg"><span class="agent-name cecilia">Cecilia:</span> Initializing workspace modules...</div>
+            <div class="chat-msg"><span class="agent-name cadence">Cadence:</span> Build pipeline ready. All checks passing.</div>
+            <div class="chat-msg"><span class="agent-name lucidia">Lucidia:</span> Documentation updated for v2.4 release.</div>
+            <div class="chat-msg"><span class="agent-name octavia">Octavia:</span> Security scan complete. No vulnerabilities found.</div>
+            <div class="chat-msg"><span class="agent-name aria">Aria:</span> Deployed staging environment successfully.</div>
+            <div class="chat-msg"><span class="agent-name anastasia">Anastasia:</span> Database migrations applied cleanly.</div>
+            <div class="chat-msg"><span class="agent-name alice">Alice:</span> Unit test coverage at 94.2%.</div>
+            <div class="chat-msg"><span class="agent-name gematria">Gematria:</span> Analytics dashboard metrics updated.</div>
+            <div class="chat-msg"><span class="agent-name codex">Codex:</span> API endpoints documented and validated.</div>
+            <div class="chat-msg"><span class="agent-name silas">Silas:</span> Infrastructure monitoring active.</div>
+            <div class="chat-msg"><span class="agent-name alexandria">Alexandria:</span> Knowledge base indexed. 12,847 entries.</div>
+            <div class="chat-msg"><span class="agent-name alexa-louise">Alexa Louise:</span> All agents synchronized and operational.</div>
+          </div>
+          <div class="chat-divider"></div>
+          <div class="chat-input-area">
+            <span class="prompt-symbol">&gt;&gt;&gt;:</span>
+            <input type="text" class="chat-input" placeholder="Type a command or message..." />
+          </div>
+        </div>
+
+        <!-- Center Viewport -->
+        <div class="center-viewport">
+          <div class="viewport-main">
+            <div class="pixel-scene command-center">
+              <div class="scene-overlay">COMMAND CENTER</div>
+              <div class="holo-table"></div>
+              <div class="console-row">
+                <div class="console-screen s1"></div>
+                <div class="console-screen s2"></div>
+                <div class="console-screen s3"></div>
+              </div>
+              <div class="console-row bottom">
+                <div class="console-screen s4"></div>
+                <div class="console-screen s5"></div>
+                <div class="console-screen s6"></div>
+              </div>
+              <div class="stars"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Thumbnail Grid -->
+        <div class="thumb-grid">
+          <div class="thumb-item" data-scene="office">
+            <div class="thumb-label">HQ Office</div>
+          </div>
+          <div class="thumb-item" data-scene="campus">
+            <div class="thumb-label">Campus</div>
+          </div>
+          <div class="thumb-item" data-scene="museum">
+            <div class="thumb-label">Museum</div>
+          </div>
+          <div class="thumb-item" data-scene="store">
+            <div class="thumb-label">Store</div>
+          </div>
+          <div class="thumb-item" data-scene="lounge">
+            <div class="thumb-label">Lounge</div>
+          </div>
+          <div class="thumb-item" data-scene="workshop">
+            <div class="thumb-label">Workshop</div>
+          </div>
+          <div class="thumb-item" data-scene="map">
+            <div class="thumb-label">World Map</div>
+          </div>
+          <div class="thumb-item" data-scene="cottage">
+            <div class="thumb-label">Cottage</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="bottom-bar">
+      <div class="color-palette">
+        <button class="color-dot" style="background: #f5a623;" data-color="#f5a623"></button>
+        <button class="color-dot" style="background: #7ed321;" data-color="#7ed321"></button>
+        <button class="color-dot" style="background: #d0021b;" data-color="#d0021b"></button>
+        <button class="color-dot" style="background: #ff6b9d;" data-color="#ff6b9d"></button>
+        <button class="color-dot" style="background: #9013fe;" data-color="#9013fe"></button>
+        <button class="color-dot" style="background: #4a90d9;" data-color="#4a90d9"></button>
+        <button class="color-dot active" style="background: linear-gradient(135deg, #fff 50%, #1a1a2e 50%);" data-color="#ffffff"></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
