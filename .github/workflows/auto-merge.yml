@@ -1,258 +1,129 @@
-# Auto-merge pull requests when all checks pass
-# Automatically merges PRs from copilot branches or with auto-merge label
-name: Auto-Merge
+# Auto-merge PRs after CI passes
+# Automatically merges approved PRs to main once all checks pass
+
+name: Auto Merge
 
 on:
-  # Trigger when other workflows complete
+  pull_request_review:
+    types: [submitted]
   workflow_run:
-    workflows:
-      - "Tests"
-      - "PR Review"
-    types:
-      - completed
-  
-  # Also trigger on PR events
-  pull_request:
-    types: [labeled, synchronize]
-  
-  # Manual trigger for testing
-  workflow_dispatch:
-    inputs:
-      pr_number:
-        description: 'PR number to auto-merge (optional)'
-        required: false
-
-permissions:
-  pull-requests: write
-  contents: write
-  checks: read
+    workflows: ["CI"]
+    types: [completed]
 
 jobs:
   auto-merge:
-    name: Auto-Merge PR
+    name: Auto Merge PR
     runs-on: ubuntu-latest
-    # Only run on successful workflow completions or labeled events
+    
+    # Only run on approved PRs targeting main
     if: |
-      github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'pull_request' ||
+      github.event_name == 'pull_request_review' ||
       (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: read
+    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Get PR number
+      - uses: actions/checkout@v4
+
+      - name: Get PR info
         id: pr
-        uses: actions/github-script@v7
-        with:
-          script: |
-            let prNumber;
-            
-            // Manual trigger
-            if (context.eventName === 'workflow_dispatch') {
-              prNumber = context.payload.inputs.pr_number;
-              if (!prNumber) {
-                console.log('No PR number provided for manual trigger');
-                return;
-              }
-            }
-            // Pull request event
-            else if (context.eventName === 'pull_request') {
-              prNumber = context.payload.pull_request.number;
-            }
-            // Workflow run event
-            else if (context.eventName === 'workflow_run') {
-              const prs = context.payload.workflow_run.pull_requests;
-              if (prs && prs.length > 0) {
-                prNumber = prs[0].number;
-              } else {
-                console.log('No PR associated with workflow run');
-                return;
-              }
-            }
-            
-            if (prNumber) {
-              console.log(`PR number: ${prNumber}`);
-              core.setOutput('number', prNumber);
-              core.setOutput('found', 'true');
-            } else {
-              core.setOutput('found', 'false');
-            }
-      
-      - name: Check auto-merge eligibility
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Get PR number from the event
+          if [ "${{ github.event_name }}" == "pull_request_review" ]; then
+            PR_NUMBER="${{ github.event.pull_request.number }}"
+          elif [ "${{ github.event_name }}" == "workflow_run" ]; then
+            # Extract PR number from workflow run
+            PR_NUMBER=$(gh pr list --json number,headRefName --jq '.[] | select(.headRefName=="${{ github.event.workflow_run.head_branch }}") | .number' | head -1)
+          else
+            echo "No PR found for event type: ${{ github.event_name }}"
+            exit 1
+          fi
+          
+          if [ -z "$PR_NUMBER" ]; then
+            echo "No PR number found for branch ${{ github.event.workflow_run.head_branch }}"
+            exit 1
+          fi
+          
+          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+          
+          # Get PR details
+          PR_DATA=$(gh pr view $PR_NUMBER --json number,title,state,mergeable,reviewDecision,statusCheckRollup)
+          
+          echo "$PR_DATA" | jq .
+          
+          STATE=$(echo "$PR_DATA" | jq -r .state)
+          MERGEABLE=$(echo "$PR_DATA" | jq -r .mergeable)
+          REVIEW_DECISION=$(echo "$PR_DATA" | jq -r .reviewDecision)
+          
+          echo "state=$STATE" >> $GITHUB_OUTPUT
+          echo "mergeable=$MERGEABLE" >> $GITHUB_OUTPUT
+          echo "review_decision=$REVIEW_DECISION" >> $GITHUB_OUTPUT
+
+      - name: Check merge conditions
         id: check
-        if: steps.pr.outputs.found == 'true'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const prNumber = ${{ steps.pr.outputs.number }};
-            
-            // Get PR details
-            const { data: pr } = await github.rest.pulls.get({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: prNumber
-            });
-            
-            console.log(`PR #${prNumber}: ${pr.title}`);
-            console.log(`Branch: ${pr.head.ref}`);
-            console.log(`State: ${pr.state}`);
-            console.log(`Mergeable: ${pr.mergeable}`);
-            console.log(`Draft: ${pr.draft}`);
-            
-            // Check if PR is eligible for auto-merge
-            let eligible = true;
-            let reasons = [];
-            
-            // Must be open
-            if (pr.state !== 'open') {
-              eligible = false;
-              reasons.push('PR is not open');
-            }
-            
-            // Must not be draft
-            if (pr.draft) {
-              eligible = false;
-              reasons.push('PR is a draft');
-            }
-            
-            // Check branch name or labels
-            const isCopilotBranch = pr.head.ref.startsWith('copilot/');
-            const hasAutoMergeLabel = pr.labels.some(label => 
-              label.name === 'auto-merge' || label.name === 'automerge'
-            );
-            
-            if (!isCopilotBranch && !hasAutoMergeLabel) {
-              eligible = false;
-              reasons.push('Not a copilot branch and no auto-merge label');
-            }
-            
-            // Check if mergeable
-            if (pr.mergeable === false) {
-              eligible = false;
-              reasons.push('PR has merge conflicts');
-            }
-            
-            // Check if all checks passed
-            const { data: checkRuns } = await github.rest.checks.listForRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: pr.head.sha
-            });
-            
-            const failedChecks = checkRuns.check_runs.filter(check => 
-              check.conclusion === 'failure' || check.conclusion === 'cancelled'
-            );
-            
-            if (failedChecks.length > 0) {
-              eligible = false;
-              reasons.push(`${failedChecks.length} check(s) failed`);
-              failedChecks.forEach(check => {
-                console.log(`Failed check: ${check.name} - ${check.conclusion}`);
-              });
-            }
-            
-            // Check for pending checks
-            const pendingChecks = checkRuns.check_runs.filter(check => 
-              check.status !== 'completed'
-            );
-            
-            if (pendingChecks.length > 0) {
-              eligible = false;
-              reasons.push(`${pendingChecks.length} check(s) still pending`);
-            }
-            
-            console.log(`Eligible for auto-merge: ${eligible}`);
-            if (!eligible) {
-              console.log('Reasons:', reasons.join(', '));
-            }
-            
-            core.setOutput('eligible', eligible.toString());
-            core.setOutput('pr_number', prNumber);
-            core.setOutput('branch', pr.head.ref);
-            
-            return eligible;
-      
-      - name: Enable auto-merge
-        if: steps.check.outputs.eligible == 'true'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const prNumber = ${{ steps.check.outputs.pr_number }};
-            
-            try {
-              // Get PR to get the node ID
-              const { data: pr } = await github.rest.pulls.get({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: prNumber
-              });
-              
-              // Enable auto-merge using GraphQL
-              const mutation = `
-                mutation EnableAutoMerge($pullRequestId: ID!) {
-                  enablePullRequestAutoMerge(input: {
-                    pullRequestId: $pullRequestId,
-                    mergeMethod: SQUASH
-                  }) {
-                    pullRequest {
-                      autoMergeRequest {
-                        enabledAt
-                        enabledBy {
-                          login
-                        }
-                      }
-                    }
-                  }
-                }
-              `;
-              
-              const result = await github.graphql(mutation, {
-                pullRequestId: pr.node_id
-              });
-              
-              console.log('✅ Auto-merge enabled for PR #' + prNumber);
-              console.log('Merge method: SQUASH');
-              
-              // Add comment to PR
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: prNumber,
-                body: `🤖 **Auto-merge enabled**
-                
-All checks have passed! This PR will be automatically merged when ready.
+        run: |
+          STATE="${{ steps.pr.outputs.state }}"
+          MERGEABLE="${{ steps.pr.outputs.mergeable }}"
+          REVIEW_DECISION="${{ steps.pr.outputs.review_decision }}"
+          
+          echo "PR State: $STATE"
+          echo "Mergeable: $MERGEABLE"
+          echo "Review Decision: $REVIEW_DECISION"
+          
+          # Check conditions
+          CAN_MERGE=false
+          
+          if [ "$STATE" == "OPEN" ] && \
+             [ "$MERGEABLE" == "MERGEABLE" ] && \
+             [ "$REVIEW_DECISION" == "APPROVED" ]; then
+            CAN_MERGE=true
+          fi
+          
+          echo "can_merge=$CAN_MERGE" >> $GITHUB_OUTPUT
+          
+          if [ "$CAN_MERGE" == "true" ]; then
+            echo "✓ All conditions met for auto-merge"
+          else
+            echo "⚠️  Conditions not met:"
+            [ "$STATE" != "OPEN" ] && echo "  - PR is not open"
+            [ "$MERGEABLE" != "MERGEABLE" ] && echo "  - PR has conflicts or is not mergeable"
+            [ "$REVIEW_DECISION" != "APPROVED" ] && echo "  - PR is not approved"
+          fi
 
-- Branch: \`${context.payload.pull_request?.head?.ref || 'unknown'}\`
-- Merge method: Squash and merge
-- Triggered by: ${context.eventName}
+      - name: Auto-merge PR
+        if: steps.check.outputs.can_merge == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUMBER="${{ steps.pr.outputs.pr_number }}"
+          
+          echo "🚀 Auto-merging PR #$PR_NUMBER to main..."
+          
+          # Enable auto-merge with squash
+          gh pr merge $PR_NUMBER --auto --squash --delete-branch
+          
+          echo "✓ Auto-merge enabled"
 
-_This is an automated action by the BlackRoad auto-merge system._
+      - name: Comment on PR
+        if: steps.check.outputs.can_merge == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUMBER="${{ steps.pr.outputs.pr_number }}"
+          
+          gh pr comment $PR_NUMBER --body "🤖 Auto-merge enabled. This PR will be merged automatically once all status checks pass."
 
-📡 \`auto-merge → ${context.payload.pull_request?.head?.ref || 'branch'} : enabled\``
-              });
-              
-            } catch (error) {
-              console.error('Failed to enable auto-merge:', error.message);
-              core.setFailed(error.message);
-            }
-      
       - name: Summary
         if: always()
         run: |
-          echo "## Auto-Merge Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          
-          if [ "${{ steps.pr.outputs.found }}" = "true" ]; then
-            echo "**PR Number:** #${{ steps.check.outputs.pr_number }}" >> $GITHUB_STEP_SUMMARY
-            echo "**Branch:** \`${{ steps.check.outputs.branch }}\`" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            
-            if [ "${{ steps.check.outputs.eligible }}" = "true" ]; then
-              echo "✅ **Status:** Auto-merge enabled" >> $GITHUB_STEP_SUMMARY
-            else
-              echo "❌ **Status:** Not eligible for auto-merge" >> $GITHUB_STEP_SUMMARY
-            fi
-          else
-            echo "ℹ️ No PR found for this event" >> $GITHUB_STEP_SUMMARY
-          fi
+          echo "🎯 Auto-merge Summary"
+          echo ""
+          echo "PR: #${{ steps.pr.outputs.pr_number }}"
+          echo "State: ${{ steps.pr.outputs.state }}"
+          echo "Can merge: ${{ steps.check.outputs.can_merge }}"
+          echo "Status: ${{ job.status }}"
