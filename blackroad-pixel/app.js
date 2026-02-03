@@ -39,7 +39,12 @@ document.addEventListener('DOMContentLoaded', () => {
     museum: 'SCIENCE MUSEUM',
     store: 'MEGA STORE',
     lounge: 'AGENT LOUNGE',
-    cottage: 'PIXEL COTTAGE'
+    cottage: 'PIXEL COTTAGE',
+    garage: 'CYBER GARAGE',
+    dock: 'STAR DOCK',
+    lab: 'NEON LAB',
+    vault: 'THE VAULT',
+    garden: 'PIXEL GARDEN'
   };
 
   const sceneGradients = {
@@ -52,7 +57,12 @@ document.addEventListener('DOMContentLoaded', () => {
     museum: 'linear-gradient(180deg, #0a0a2a 0%, #1a1a3d 40%, #2b2b5e 100%)',
     store: 'linear-gradient(180deg, #1a0d05 0%, #3d2a1a 40%, #5e3b2b 100%)',
     lounge: 'linear-gradient(180deg, #050d1a 0%, #1a2a3d 40%, #2b3b5e 100%)',
-    cottage: 'linear-gradient(180deg, #0d1a05 0%, #2a3d0a 40%, #3b5e1a 100%)'
+    cottage: 'linear-gradient(180deg, #0d1a05 0%, #2a3d0a 40%, #3b5e1a 100%)',
+    garage: 'linear-gradient(180deg, #1a0808 0%, #3d1a1a 40%, #5e2b2b 100%)',
+    dock: 'linear-gradient(180deg, #10051a 0%, #2a0a3d 40%, #5e1a6b 100%)',
+    lab: 'linear-gradient(180deg, #051a10 0%, #0a3d2a 40%, #1a5e4a 100%)',
+    vault: 'linear-gradient(180deg, #1a1905 0%, #3d3a0a 40%, #5e5510 100%)',
+    garden: 'linear-gradient(180deg, #1a050d 0%, #3d0a2a 40%, #6b1a5e 100%)'
   };
 
   thumbItems.forEach(item => {
