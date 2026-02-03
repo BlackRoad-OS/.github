@@ -54,7 +54,12 @@ document.addEventListener('DOMContentLoaded', () => {
     shrine: 'THE SHRINE',
     outpost: 'STAR OUTPOST',
     harbor: 'NEON HARBOR',
-    citadel: 'THE CITADEL'
+    citadel: 'THE CITADEL',
+    bunker: 'THE BUNKER',
+    tavern: 'PIXEL TAVERN',
+    skyport: 'SKY PORT',
+    canyon: 'CYBER CANYON',
+    fortress: 'THE FORTRESS'
   };
 
   const sceneGradients = {
@@ -82,7 +87,12 @@ document.addEventListener('DOMContentLoaded', () => {
     shrine: 'linear-gradient(180deg, #0d0520 0%, #2a1050 40%, #5a2a8a 100%)',
     outpost: 'linear-gradient(180deg, #0a1510 0%, #1a3a2a 40%, #2a5a4a 100%)',
     harbor: 'linear-gradient(180deg, #050a1a 0%, #0a2040 40%, #1a3a6a 100%)',
-    citadel: 'linear-gradient(180deg, #1a0d0a 0%, #3a2010 40%, #6a4020 100%)'
+    citadel: 'linear-gradient(180deg, #1a0d0a 0%, #3a2010 40%, #6a4020 100%)',
+    bunker: 'linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 40%, #2a2a2a 100%)',
+    tavern: 'linear-gradient(180deg, #1a0a00 0%, #3a2a10 40%, #6a4a20 100%)',
+    skyport: 'linear-gradient(180deg, #0a1020 0%, #1a3050 40%, #3a5080 100%)',
+    canyon: 'linear-gradient(180deg, #1a0800 0%, #4a2010 40%, #7a3820 100%)',
+    fortress: 'linear-gradient(180deg, #10100a 0%, #2a2a1a 40%, #4a4a2a 100%)'
   };
 
   thumbItems.forEach(item => {

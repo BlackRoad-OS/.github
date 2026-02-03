@@ -553,6 +553,26 @@ body {
   background: linear-gradient(135deg, #3a2010, #6a4020);
 }
 
+.thumb-item[data-scene="bunker"] {
+  background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+}
+
+.thumb-item[data-scene="tavern"] {
+  background: linear-gradient(135deg, #3a2a10, #6a4a20);
+}
+
+.thumb-item[data-scene="skyport"] {
+  background: linear-gradient(135deg, #1a3050, #3a5080);
+}
+
+.thumb-item[data-scene="canyon"] {
+  background: linear-gradient(135deg, #4a2010, #7a3820);
+}
+
+.thumb-item[data-scene="fortress"] {
+  background: linear-gradient(135deg, #2a2a1a, #4a4a2a);
+}
+
 .thumb-label {
   position: absolute;
   bottom: 0;
