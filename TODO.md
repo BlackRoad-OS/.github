@@ -24,16 +24,16 @@
 
 ## Intelligence Layer (AI)
 
-- [ ] Build AI provider failover chain (Claude -> GPT -> Llama)
-- [ ] Implement prompt template registry
-- [ ] Add token usage tracking per-route
+- [x] Build AI provider failover chain (Claude -> GPT -> Llama)
+- [x] Implement prompt template registry
+- [x] Add token usage tracking per-route
 - [ ] Set up Hailo-8 inference pipeline on lucidia
 - [ ] Create model evaluation benchmarks
 
 ## Cloud & Edge (CLD)
 
-- [ ] Deploy API gateway worker to Cloudflare
-- [ ] Set up webhook receiver worker
+- [x] Deploy API gateway worker to Cloudflare
+- [x] Set up webhook receiver worker
 - [ ] Configure Cloudflare Tunnel to Pi cluster
 - [ ] Implement edge caching for common routes
 - [ ] Add geo-routing rules
@@ -50,8 +50,8 @@
 
 - [ ] Implement API key rotation system
 - [ ] Set up secrets vault (HashiCorp or SOPS)
-- [ ] Add webhook signature verification
-- [ ] Create audit log pipeline
+- [x] Add webhook signature verification
+- [x] Create audit log pipeline
 - [ ] Define RBAC roles for org access
 
 ## Business Layer (FND)
@@ -94,6 +94,12 @@ _Move items here when done._
 - [x] Configure GitHub Actions workflows (8)
 - [x] Build MCP server for AI assistants
 - [x] Define node configurations (7 nodes)
+- [x] Build AI provider failover chain (Session 4)
+- [x] Build prompt template registry (Session 4)
+- [x] Build token usage tracker (Session 4)
+- [x] Build webhook signature verification (Session 4)
+- [x] Build audit log pipeline (Session 4)
+- [x] Build API gateway worker for Cloudflare (Session 4)
 
 ---
 
