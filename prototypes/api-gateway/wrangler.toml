@@ -1,0 +1,39 @@
+# BlackRoad API Gateway - Cloudflare Worker Configuration
+# Deploy: wrangler deploy
+
+name = "blackroad-gateway"
+main = "worker.js"
+compatibility_date = "2026-01-01"
+
+# Environment variables (set via wrangler secret)
+# BLACKROAD_API_KEY - master API key
+# UPSTREAM_URL - backend URL (Pi cluster or cloud)
+
+[vars]
+ENVIRONMENT = "production"
+RATE_LIMIT_REQUESTS = "60"
+RATE_LIMIT_WINDOW = "60"
+CORS_ORIGIN = "*"
+
+# KV namespace for rate limiting and caching
+[[kv_namespaces]]
+binding = "RATE_LIMIT"
+id = "PLACEHOLDER_KV_ID"
+
+[[kv_namespaces]]
+binding = "CACHE"
+id = "PLACEHOLDER_CACHE_KV_ID"
+
+# Staging environment
+[env.staging]
+name = "blackroad-gateway-staging"
+[env.staging.vars]
+ENVIRONMENT = "staging"
+RATE_LIMIT_REQUESTS = "120"
+
+# Development
+[env.dev]
+name = "blackroad-gateway-dev"
+[env.dev.vars]
+ENVIRONMENT = "development"
+RATE_LIMIT_REQUESTS = "1000"
