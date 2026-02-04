@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlackRoad Harvest - Pixel Farm</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#1a1a2e;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:'Press Start 2P',monospace;overflow:hidden}
+#game-wrapper{position:relative;width:960px;height:704px;border:3px solid #2a2a4a;border-radius:8px;overflow:hidden;box-shadow:0 0 40px rgba(74,144,217,0.2)}
+canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges;cursor:crosshair}
+#ui-overlay{position:absolute;top:0;left:0;width:100%;pointer-events:none;z-index:10}
+#top-bar{display:flex;justify-content:space-between;padding:8px 12px;background:rgba(0,0,0,0.7);pointer-events:auto;flex-wrap:wrap;gap:4px}
+#top-bar span{font-size:8px;color:#e0e0e0}
+.bar-label{color:#8888aa!important;font-size:7px!important}
+#energy-bar,#money-display,#day-display,#time-display,#season-display,#weather-display{display:flex;align-items:center;gap:4px}
+#energy-fill{width:80px;height:8px;background:#333;border-radius:4px;overflow:hidden;border:1px solid #555}
+#energy-fill-inner{height:100%;background:linear-gradient(90deg,#7ed321,#4caf50);transition:width 0.3s}
+#inventory-bar{position:absolute;bottom:0;left:0;width:100%;background:rgba(0,0,0,0.8);display:flex;justify-content:center;gap:4px;padding:8px;pointer-events:auto}
+.inv-slot{width:48px;height:48px;background:rgba(255,255,255,0.08);border:2px solid #2a2a4a;border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;transition:all 0.15s}
+.inv-slot:hover{border-color:#00d4ff;background:rgba(0,212,255,0.1)}
+.inv-slot.selected{border-color:#ff6b9d;box-shadow:0 0 8px rgba(255,107,157,0.4)}
+.inv-slot .item-icon{font-size:18px;line-height:1}
+.inv-slot .item-count{font-size:6px;color:#ccc;position:absolute;bottom:2px;right:4px}
+.inv-slot .item-quality{font-size:8px;position:absolute;top:1px;left:2px}
+#tooltip{position:absolute;background:rgba(0,0,0,0.9);border:1px solid #ff6b9d;border-radius:4px;padding:6px 10px;font-size:7px;color:#e0e0e0;pointer-events:none;display:none;z-index:20;white-space:nowrap}
+#shop-modal{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a1a2e;border:3px solid #ff6b9d;border-radius:8px;padding:16px;display:none;z-index:30;pointer-events:auto;min-width:340px;max-height:500px;overflow-y:auto}
+#shop-modal h3{font-size:10px;color:#ff6b9d;margin-bottom:12px;text-align:center}
+.shop-item{display:flex;align-items:center;justify-content:space-between;padding:6px 8px;background:rgba(255,255,255,0.05);border-radius:4px;margin-bottom:4px;cursor:pointer;transition:background 0.15s}
+.shop-item:hover{background:rgba(255,107,157,0.15)}
+.shop-item span{font-size:8px;color:#e0e0e0}
+.shop-item .price{color:#f5a623}
+#shop-close{font-size:8px;color:#ff6b9d;background:none;border:1px solid #ff6b9d;padding:4px 12px;border-radius:4px;cursor:pointer;margin-top:8px;display:block;margin-left:auto;margin-right:auto}
+#shop-close:hover{background:rgba(255,107,157,0.2)}
+#msg-box{position:absolute;bottom:76px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.85);border:2px solid #4a90d9;border-radius:6px;padding:8px 16px;font-size:8px;color:#e0e0e0;display:none;z-index:15;pointer-events:none;text-align:center;max-width:500px}
+#dialogue-box{position:absolute;bottom:76px;left:50%;transform:translateX(-50%);background:rgba(13,13,26,0.95);border:3px solid #c44dff;border-radius:8px;padding:12px 18px;display:none;z-index:25;pointer-events:none;text-align:left;width:480px}
+#dialogue-name{font-size:9px;color:#ff6b9d;margin-bottom:6px}
+#dialogue-text{font-size:7px;color:#e0e0e0;line-height:1.6}
+#dialogue-hearts{font-size:7px;color:#888;margin-top:6px}
+#dialogue-hint{font-size:6px;color:#555;margin-top:4px;text-align:right}
+#fishing-overlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(13,13,26,0.95);border:3px solid #00d4ff;border-radius:8px;padding:20px;display:none;z-index:35;pointer-events:auto;text-align:center;width:240px}
+#fishing-overlay h3{font-size:9px;color:#00d4ff;margin-bottom:10px}
+#fishing-bar-container{width:30px;height:200px;background:#1a1a2e;border:2px solid #2a2a4a;border-radius:4px;margin:0 auto;position:relative;overflow:hidden}
+#fishing-target{position:absolute;width:100%;height:40px;background:rgba(0,212,255,0.3);border:1px solid #00d4ff;border-radius:2px;transition:top 0.1s}
+#fishing-cursor{position:absolute;width:100%;height:6px;background:#ff6b9d;border-radius:2px;left:0}
+#fishing-fish-icon{font-size:16px;position:absolute;right:-30px;top:50%;transform:translateY(-50%)}
+#fishing-hint{font-size:7px;color:#888;margin-top:10px}
+#fishing-result{font-size:8px;color:#7ed321;margin-top:8px;display:none}
+#npc-shop-modal{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a1a2e;border:3px solid #c44dff;border-radius:8px;padding:16px;display:none;z-index:30;pointer-events:auto;min-width:340px}
+#npc-shop-modal h3{font-size:10px;color:#c44dff;margin-bottom:12px;text-align:center}
+#npc-shop-items{}
+#npc-shop-close{font-size:8px;color:#c44dff;background:none;border:1px solid #c44dff;padding:4px 12px;border-radius:4px;cursor:pointer;margin-top:8px;display:block;margin-left:auto;margin-right:auto}
+#title-screen{position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(180deg,#0d1b2a 0%,#1b4332 40%,#2d6a4f 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:50}
+#title-screen h1{font-size:16px;color:#7ed321;text-shadow:0 0 20px rgba(126,211,33,0.5);margin-bottom:8px}
+#title-screen h2{font-size:8px;color:#f5a623;margin-bottom:30px}
+#title-screen p{font-size:7px;color:#8888aa;margin-bottom:4px}
+#start-btn{font-family:'Press Start 2P',monospace;font-size:10px;color:#fff;background:linear-gradient(135deg,#ff6b9d,#c44dff);border:none;padding:12px 32px;border-radius:6px;cursor:pointer;margin-top:20px;transition:transform 0.15s}
+#start-btn:hover{transform:scale(1.05)}
+</style>
+</head>
+<body>
+<div id="game-wrapper">
+  <canvas id="game" width="960" height="704"></canvas>
+  <div id="ui-overlay">
+    <div id="top-bar">
+      <div id="season-display"><span class="bar-label">SEASON:</span><span id="season-text">SPRING</span></div>
+      <div id="day-display"><span class="bar-label">DAY:</span><span id="day-text">1</span></div>
+      <div id="weather-display"><span class="bar-label">WEATHER:</span><span id="weather-icon"></span><span id="weather-text">SUNNY</span></div>
+      <div id="time-display"><span class="bar-label">TIME:</span><span id="time-text">6:00 AM</span></div>
+      <div id="energy-bar"><span class="bar-label">ENERGY:</span><div id="energy-fill"><div id="energy-fill-inner" style="width:100%"></div></div></div>
+      <div id="money-display"><span style="color:#f5a623">$</span><span id="money-text">500</span></div>
+    </div>
+    <div id="inventory-bar"></div>
+  </div>
+  <div id="tooltip"></div>
+  <div id="msg-box"></div>
+  <div id="dialogue-box">
+    <div id="dialogue-name"></div>
+    <div id="dialogue-text"></div>
+    <div id="dialogue-hearts"></div>
+    <div id="dialogue-hint">SPACE to close / Gift selected crop</div>
+  </div>
+  <div id="shop-modal">
+    <h3>BLACKROAD SEED SHOP</h3>
+    <div id="shop-items"></div>
+    <button id="shop-close">CLOSE [ESC]</button>
+  </div>
+  <div id="npc-shop-modal">
+    <h3 id="npc-shop-title">FARMER SAGE'S ANIMALS</h3>
+    <div id="npc-shop-items"></div>
+    <button id="npc-shop-close">CLOSE [ESC]</button>
+  </div>
+  <div id="fishing-overlay">
+    <h3>FISHING!</h3>
+    <div id="fishing-bar-container">
+      <div id="fishing-target"></div>
+      <div id="fishing-cursor"></div>
+    </div>
+    <span id="fishing-fish-icon"></span>
+    <div id="fishing-hint">Press SPACE to catch!</div>
+    <div id="fishing-result"></div>
+  </div>
+  <div id="title-screen">
+    <h1>BLACKROAD HARVEST</h1>
+    <h2>A Pixel Farming World</h2>
+    <p>WASD / Arrows - Move</p>
+    <p>SPACE - Use Tool / Interact / Talk to NPCs</p>
+    <p>1-0 - Select Item (10 slots)</p>
+    <p>E - Open Shop (near store) / NPC shops</p>
+    <p>F - Fish (equip rod near water)</p>
+    <button id="start-btn">START FARMING</button>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const W = 960, H = 704;
+const TILE = 32;
+const COLS = 30, ROWS = 22;
+
+// ===================== GAME STATE =====================
+let gameStarted = false;
+let gameTime = 360;
+let day = 1;
+let season = 0;
+const seasonNames = ['SPRING','SUMMER','FALL','WINTER'];
+const seasonColors = [
+  {sky:['#87CEEB','#4a90d9'],grass:'#4caf50',dirt:'#8B6914'},
+  {sky:['#FFD700','#ff8a65'],grass:'#2e7d32',dirt:'#a0855a'},
+  {sky:['#ff8a65','#d4553a'],grass:'#c49e3b',dirt:'#8B6914'},
+  {sky:['#b0c4de','#6a7b8b'],grass:'#e8e8e8',dirt:'#9e9e9e'}
+];
+let money = 500;
+let energy = 100;
+let maxEnergy = 100;
+
+// ===================== WEATHER SYSTEM =====================
+const WEATHER_SUNNY = 0, WEATHER_RAINY = 1, WEATHER_STORMY = 2, WEATHER_SNOWY = 3;
+let weather = WEATHER_SUNNY;
+const weatherNames = ['SUNNY','RAINY','STORMY','SNOWY'];
+const weatherIcons = ['\u2600\uFE0F','\uD83C\uDF27\uFE0F','\u26C8\uFE0F','\u2744\uFE0F'];
+let raindrops = [];
+let snowflakes = [];
+
+function rollWeather() {
+  if (season === 3) {
+    // Winter: mostly snowy
+    const r = Math.random();
+    if (r < 0.4) weather = WEATHER_SNOWY;
+    else if (r < 0.6) weather = WEATHER_SUNNY;
+    else if (r < 0.85) weather = WEATHER_RAINY;
+    else weather = WEATHER_STORMY;
+  } else {
+    const r = Math.random();
+    if (r < 0.45) weather = WEATHER_SUNNY;
+    else if (r < 0.75) weather = WEATHER_RAINY;
+    else if (r < 0.9) weather = WEATHER_STORMY;
+    else weather = season === 3 ? WEATHER_SNOWY : WEATHER_SUNNY;
+  }
+  raindrops = [];
+  snowflakes = [];
+  if (weather === WEATHER_RAINY || weather === WEATHER_STORMY) {
+    for (let i = 0; i < (weather === WEATHER_STORMY ? 200 : 120); i++) {
+      raindrops.push({x: Math.random()*W, y: Math.random()*H, speed: 8+Math.random()*6, len: 8+Math.random()*8});
+    }
+  }
+  if (weather === WEATHER_SNOWY) {
+    for (let i = 0; i < 100; i++) {
+      snowflakes.push({x: Math.random()*W, y: Math.random()*H, speed: 0.5+Math.random()*1.5, drift: Math.random()*2-1, size: 2+Math.random()*3});
+    }
+  }
+  // Stormy = energy penalty
+  if (weather === WEATHER_STORMY) {
+    maxEnergy = 80;
+    energy = Math.min(energy, maxEnergy);
+  } else {
+    maxEnergy = 100;
+  }
+}
+
+function drawWeatherEffects() {
+  if (weather === WEATHER_RAINY || weather === WEATHER_STORMY) {
+    ctx.strokeStyle = weather === WEATHER_STORMY ? 'rgba(180,200,255,0.5)' : 'rgba(150,200,255,0.35)';
+    ctx.lineWidth = 1;
+    for (const d of raindrops) {
+      ctx.beginPath();
+      ctx.moveTo(d.x, d.y);
+      ctx.lineTo(d.x - 2, d.y + d.len);
+      ctx.stroke();
+      d.y += d.speed;
+      d.x -= 1;
+      if (d.y > H) { d.y = -d.len; d.x = Math.random()*W; }
+    }
+    // Slight blue overlay
+    ctx.fillStyle = weather === WEATHER_STORMY ? 'rgba(20,20,60,0.15)' : 'rgba(30,50,80,0.08)';
+    ctx.fillRect(0,0,W,H);
+  }
+  if (weather === WEATHER_SNOWY) {
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    for (const s of snowflakes) {
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.size, 0, Math.PI*2);
+      ctx.fill();
+      s.y += s.speed;
+      s.x += Math.sin(Date.now()/1000 + s.drift*10) * 0.5 + s.drift * 0.3;
+      if (s.y > H) { s.y = -4; s.x = Math.random()*W; }
+      if (s.x < 0) s.x = W;
+      if (s.x > W) s.x = 0;
+    }
+  }
+}
+
+// ===================== PLAYER =====================
+let player = {x: 14*TILE, y: 12*TILE, dir: 0, frame: 0, speed: 3};
+let keys = {};
+let selectedSlot = 0;
+
+// ===================== INVENTORY (10 slots) =====================
+let inventory = [
+  {id:'hoe',name:'Hoe',icon:'\u26CF',count:1,type:'tool'},
+  {id:'water',name:'Watering Can',icon:'\uD83D\uDCA7',count:1,type:'tool'},
+  {id:'scythe',name:'Scythe',icon:'\u2694',count:1,type:'tool'},
+  {id:'fishing_rod',name:'Fishing Rod',icon:'\uD83C\uDFA3',count:1,type:'tool'},
+  {id:'turnip_seed',name:'Turnip Seeds',icon:'\uD83C\uDF31',count:8,type:'seed',crop:'turnip',growTime:4},
+  {id:'corn_seed',name:'Corn Seeds',icon:'\uD83C\uDF3D',count:4,type:'seed',crop:'corn',growTime:8},
+  null,null,null,null
+];
+const INV_SIZE = 10;
+
+// ===================== QUALITY SYSTEM =====================
+// 0=normal, 1=silver, 2=gold
+const qualityNames = ['','Silver ','Gold '];
+const qualityIcons = ['','\u2B50','\uD83C\uDF1F'];
+const qualityMultipliers = [1, 1.5, 2];
+
+// ===================== SHOP =====================
+const shopItems = [
+  {id:'turnip_seed',name:'Turnip Seeds',icon:'\uD83C\uDF31',price:20,type:'seed',crop:'turnip',growTime:4},
+  {id:'corn_seed',name:'Corn Seeds',icon:'\uD83C\uDF3D',price:40,type:'seed',crop:'corn',growTime:8},
+  {id:'berry_seed',name:'Berry Seeds',icon:'\uD83C\uDF53',price:30,type:'seed',crop:'berry',growTime:6},
+  {id:'flower_seed',name:'Flower Seeds',icon:'\uD83C\uDF3B',price:50,type:'seed',crop:'flower',growTime:5},
+  {id:'melon_seed',name:'Melon Seeds',icon:'\uD83C\uDF48',price:60,type:'seed',crop:'melon',growTime:10},
+  {id:'pumpkin_seed',name:'Pumpkin Seeds',icon:'\uD83C\uDF83',price:70,type:'seed',crop:'pumpkin',growTime:12},
+  {id:'hay',name:'Hay (Animal Feed)',icon:'\uD83C\uDF3E',price:15,type:'feed'},
+  {id:'energy_drink',name:'Energy Drink',icon:'\u26A1',price:100,type:'consumable',energy:40},
+];
+
+const cropData = {
+  turnip:{icon:'\uD83E\uDD55',sellPrice:60,stages:['\uD83C\uDF31','\uD83C\uDF3F','\uD83C\uDF3E','\uD83E\uDD55']},
+  corn:{icon:'\uD83C\uDF3D',sellPrice:100,stages:['\uD83C\uDF31','\uD83C\uDF3F','\uD83C\uDF3E','\uD83C\uDF3D']},
+  berry:{icon:'\uD83C\uDF53',sellPrice:80,stages:['\uD83C\uDF31','\uD83C\uDF3F','\uD83C\uDF38','\uD83C\uDF53']},
+  flower:{icon:'\uD83C\uDF3B',sellPrice:120,stages:['\uD83C\uDF31','\uD83C\uDF3F','\uD83C\uDF38','\uD83C\uDF3B']},
+  melon:{icon:'\uD83C\uDF48',sellPrice:150,stages:['\uD83C\uDF31','\uD83C\uDF3F','\uD83C\uDF3E','\uD83C\uDF48']},
+  pumpkin:{icon:'\uD83C\uDF83',sellPrice:200,stages:['\uD83C\uDF31','\uD83C\uDF3F','\uD83C\uDF3E','\uD83C\uDF83']}
+};
+
+// ===================== FISH DATA =====================
+const fishTypes = [
+  {id:'pixelfish',name:'Pixelfish',icon:'\uD83D\uDC1F',value:40,difficulty:0.4,color:'#00d4ff'},
+  {id:'neon_bass',name:'Neon Bass',icon:'\uD83D\uDC20',value:80,difficulty:0.3,color:'#c44dff'},
+  {id:'cyber_trout',name:'Cyber Trout',icon:'\uD83D\uDC1F',value:120,difficulty:0.22,color:'#ff6b9d'},
+  {id:'golden_byte',name:'Golden Byte',icon:'\uD83D\uDC1F',value:200,difficulty:0.12,color:'#f5a623'}
+];
+
+let fishingActive = false;
+let fishingState = null; // {fish, cursorY, targetY, targetDir, timer, catching, result}
+
+// ===================== ANIMALS =====================
+let animals = []; // {type, x, y, fed, produces, produceValue, icon, dir, moveTimer}
+let animalProducts = []; // collected at start of day
+
+const animalShopItems = [
+  {type:'chicken',name:'Chicken',icon:'\uD83D\uDC14',price:200,product:'Egg',productIcon:'\uD83E\uDD5A',productValue:30},
+  {type:'cow',name:'Cow',icon:'\uD83D\uDC04',price:500,product:'Milk',productIcon:'\uD83E\uDD5B',productValue:60},
+];
+
+// ===================== NPCs =====================
+const npcs = [
+  {
+    id:'mayor', name:'Mayor Pixel', color:'#4a90d9', accentColor:'#2c5282',
+    homeX: 17, homeY: 16, x: 17, y: 16, dir: 0, moveTimer: 0, wanderRange: 3,
+    hearts: 0, maxHearts: 5,
+    dialogues: [
+      "Welcome to BlackRoad Farm! Work hard and prosper!",
+      "The town needs a strong farmer. That's you!",
+      "Check the shipping bin to sell your crops.",
+      "Different seasons grow different things.",
+      "Rainy days are free watering days!",
+      "Visit the other townsfolk. They have useful things!"
+    ],
+    tips: [
+      "TIP: Water your crops daily for better quality!",
+      "TIP: Storms drain more energy. Take it easy!",
+      "TIP: Gift crops to NPCs to build friendships!",
+      "TIP: Fish near the dock for valuable catches!"
+    ],
+    giftResponse: "For me? How generous! Thank you!"
+  },
+  {
+    id:'sage', name:'Farmer Sage', color:'#8B4513', accentColor:'#654321',
+    homeX: 3, homeY: 15, x: 3, y: 15, dir: 0, moveTimer: 0, wanderRange: 3,
+    hearts: 0, maxHearts: 5, hasShop: true,
+    dialogues: [
+      "Moo! Err, I mean, howdy partner!",
+      "Animals need hay every day or they won't produce.",
+      "Chickens give eggs, cows give milk. Simple as that!",
+      "Buy hay from the seed shop to feed your animals.",
+      "A well-fed animal is a productive animal!",
+      "I've got the finest animals in BlackRoad county!"
+    ],
+    giftResponse: "Well shucks, you're too kind! Have a great day!"
+  },
+  {
+    id:'luna', name:'Fisher Luna', color:'#00d4ff', accentColor:'#0099aa',
+    homeX: 24, homeY: 4, x: 24, y: 4, dir: 0, moveTimer: 0, wanderRange: 2,
+    hearts: 0, maxHearts: 5,
+    dialogues: [
+      "The waters are full of fish today!",
+      "Equip your fishing rod and press F near water.",
+      "Time your catch carefully for rare fish!",
+      "The Golden Byte is worth 200 coins! So rare...",
+      "Rainy days are the best for fishing!",
+      "Fish make great gifts for the townsfolk too."
+    ],
+    giftResponse: "Ooh, a gift from the sea... er, the farm! Thanks!"
+  },
+  {
+    id:'nova', name:'Merchant Nova', color:'#f5a623', accentColor:'#c47d10',
+    homeX: 22, homeY: 10, x: 22, y: 10, dir: 0, moveTimer: 0, wanderRange: 3,
+    hearts: 0, maxHearts: 5,
+    dialogues: [
+      "Looking for a deal? You've come to the right place!",
+      "I travel far and wide for the best goods.",
+      "Higher quality crops fetch premium prices!",
+      "Gold star crops are worth double! Aim for those.",
+      "Silver star crops sell for 1.5x. Not bad!",
+      "The more hearts we share, the better my deals get!"
+    ],
+    giftResponse: "A shrewd investment in our friendship! Love it!"
+  }
+];
+
+let activeDialogue = null; // {npcId, lineIndex}
+let dialogueTimer = 0;
+
+// ===================== PARTICLES =====================
+let particles = []; // {x, y, text, life, maxLife, vy, vx, alpha, size}
+let fireflies = []; // {x, y, phase, speed}
+
+function spawnParticles(x, y, icons, count) {
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: x + Math.random()*24 - 12,
+      y: y,
+      text: icons[Math.floor(Math.random()*icons.length)],
+      life: 60 + Math.random()*30,
+      maxLife: 90,
+      vy: -1 - Math.random()*1.5,
+      vx: Math.random()*2 - 1,
+      size: 10 + Math.random()*6
+    });
+  }
+}
+
+function initFireflies() {
+  fireflies = [];
+  for (let i = 0; i < 25; i++) {
+    fireflies.push({
+      x: Math.random()*W,
+      y: 100 + Math.random()*(H-200),
+      phase: Math.random()*Math.PI*2,
+      speed: 0.3 + Math.random()*0.5,
+      dx: Math.random()*0.6-0.3,
+      dy: Math.random()*0.6-0.3
+    });
+  }
+}
+
+function drawParticles() {
+  for (let i = particles.length-1; i >= 0; i--) {
+    const p = particles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.life--;
+    const alpha = Math.max(0, p.life / p.maxLife);
+    ctx.globalAlpha = alpha;
+    ctx.font = `${p.size}px serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText(p.text, p.x, p.y);
+    ctx.textAlign = 'left';
+    ctx.globalAlpha = 1;
+    if (p.life <= 0) particles.splice(i, 1);
+  }
+}
+
+function drawFireflies() {
+  // Only at dusk/night
+  if (gameTime < 1100 && gameTime > 400) return;
+  const brightness = gameTime > 1100 ? Math.min(1, (gameTime-1100)/200) : (gameTime < 400 ? 1 : 0);
+  if (brightness <= 0) return;
+  for (const f of fireflies) {
+    f.x += f.dx + Math.sin(Date.now()/2000 + f.phase)*0.3;
+    f.y += f.dy + Math.cos(Date.now()/2500 + f.phase)*0.2;
+    if (f.x < 0) f.x = W;
+    if (f.x > W) f.x = 0;
+    if (f.y < 50) f.y = H-100;
+    if (f.y > H-50) f.y = 100;
+    const glow = (Math.sin(Date.now()/500 + f.phase) + 1) / 2;
+    ctx.fillStyle = `rgba(200,255,100,${glow * 0.8 * brightness})`;
+    ctx.beginPath();
+    ctx.arc(f.x, f.y, 2, 0, Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle = `rgba(200,255,100,${glow * 0.2 * brightness})`;
+    ctx.beginPath();
+    ctx.arc(f.x, f.y, 6, 0, Math.PI*2);
+    ctx.fill();
+  }
+}
+
+// ===================== WORLD MAP =====================
+// 0=grass, 1=dirt, 2=water, 3=path, 4=building, 5=fence, 6=dock
+const map = [];
+const farmPlots = [];
+const buildings = [];
+const trees = [];
+const decorations = []; // {x, y, icon, season}
+
+function initWorld() {
+  for (let r = 0; r < ROWS; r++) {
+    map[r] = [];
+    for (let c = 0; c < COLS; c++) map[r][c] = 0;
+  }
+
+  // Main horizontal path
+  for (let c = 0; c < COLS; c++) { map[11][c] = 3; map[12][c] = 3; }
+  // Main vertical path
+  for (let r = 0; r < ROWS; r++) { map[r][14] = 3; map[r][15] = 3; }
+  // Town square paths
+  for (let c = 16; c < 20; c++) { map[15][c] = 3; map[16][c] = 3; }
+  for (let r = 13; r < 18; r++) { map[r][18] = 3; map[r][19] = 3; }
+  // Path to dock
+  for (let c = 20; c < 26; c++) { map[4][c] = 3; }
+
+  // Water pond (larger)
+  for (let r = 1; r < 6; r++) for (let c = 25; c < COLS; c++) map[r][c] = 2;
+  for (let r = 2; r < 5; r++) for (let c = 23; c < 25; c++) map[r][c] = 2;
+  // Dock tiles extending into water
+  map[3][24] = 6; map[3][25] = 6; map[3][26] = 6;
+
+  // Farm area 1 (large field)
+  for (let r = 3; r < 9; r++) for (let c = 2; c < 8; c++) {
+    farmPlots.push({x:c, y:r, tilled:false, watered:false, wateredStreak:0, crop:null, cropType:null, growDay:0, stage:0, quality:0, rainBonus:false});
+  }
+  // Farm area 2
+  for (let r = 3; r < 9; r++) for (let c = 9; c < 13; c++) {
+    farmPlots.push({x:c, y:r, tilled:false, watered:false, wateredStreak:0, crop:null, cropType:null, growDay:0, stage:0, quality:0, rainBonus:false});
+  }
+
+  // Fences around farm
+  for (let c = 1; c < 14; c++) { map[2][c] = 5; map[9][c] = 5; }
+  for (let r = 2; r < 10; r++) { map[r][1] = 5; map[r][13] = 5; }
+
+  // Buildings
+  buildings.push({x:16, y:1, w:4, h:3, type:'house', name:'YOUR HOUSE'});
+  buildings.push({x:21, y:8, w:3, h:3, type:'shop', name:'SEED SHOP'});
+  buildings.push({x:1, y:14, w:3, h:3, type:'barn', name:'BARN'});
+  buildings.push({x:25, y:13, w:4, h:3, type:'shipping', name:'SHIPPING BIN'});
+  buildings.push({x:16, y:14, w:3, h:3, type:'townhall', name:'TOWN HALL'});
+  buildings.push({x:8, y:17, w:2, h:2, type:'well', name:'WELL'});
+
+  // Trees (scattered, avoiding key areas)
+  const treePositions = [
+    {x:0,y:0},{x:1,y:1},{x:28,y:0},{x:29,y:8},{x:0,y:10},
+    {x:27,y:18},{x:28,y:19},{x:0,y:19},{x:0,y:20},{x:29,y:20},
+    {x:10,y:13},{x:12,y:19},{x:6,y:20},{x:24,y:19},{x:13,y:20}
+  ];
+  treePositions.forEach(t => trees.push({x:t.x, y:t.y}));
+
+  // Decorations (seasonal elements)
+  const decoSpots = [
+    {x:5,y:10},{x:7,y:11},{x:20,y:17},{x:22,y:18},{x:11,y:15},
+    {x:3,y:20},{x:15,y:20},{x:26,y:17},{x:9,y:0},{x:13,y:0},
+    {x:24,y:10},{x:1,y:11},{x:28,y:12},{x:7,y:15},{x:20,y:0}
+  ];
+  decoSpots.forEach(d => decorations.push({x:d.x, y:d.y}));
+
+  initFireflies();
+  rollWeather();
+}
+
+// ===================== RENDERING =====================
+function drawTile(c, r) {
+  const x = c*TILE, y = r*TILE;
+  const sc = seasonColors[season];
+  switch(map[r][c]) {
+    case 0:
+      ctx.fillStyle = sc.grass;
+      ctx.fillRect(x, y, TILE, TILE);
+      if ((c+r)%3 === 0) {
+        ctx.fillStyle = 'rgba(0,0,0,0.1)';
+        ctx.fillRect(x+4,y+20,2,8); ctx.fillRect(x+14,y+16,2,10); ctx.fillRect(x+24,y+22,2,6);
+      }
+      break;
+    case 1:
+      ctx.fillStyle = sc.dirt;
+      ctx.fillRect(x, y, TILE, TILE);
+      break;
+    case 2:
+      ctx.fillStyle = '#2196f3';
+      ctx.fillRect(x, y, TILE, TILE);
+      ctx.fillStyle = 'rgba(255,255,255,0.15)';
+      ctx.fillRect(x+Math.sin(Date.now()/800+c)*6+10, y+8, 8, 2);
+      ctx.fillRect(x+Math.cos(Date.now()/600+r)*5+6, y+20, 6, 2);
+      break;
+    case 3:
+      ctx.fillStyle = '#d4a574';
+      ctx.fillRect(x, y, TILE, TILE);
+      ctx.fillStyle = 'rgba(0,0,0,0.06)';
+      if ((c*7+r*13)%5===0) ctx.fillRect(x+8,y+8,4,4);
+      if ((c*11+r*3)%7===0) ctx.fillRect(x+20,y+18,3,3);
+      break;
+    case 5:
+      ctx.fillStyle = sc.grass;
+      ctx.fillRect(x, y, TILE, TILE);
+      ctx.fillStyle = '#8B4513';
+      ctx.fillRect(x+12, y, 8, TILE);
+      ctx.fillStyle = '#A0522D';
+      ctx.fillRect(x+4,y+8,24,4); ctx.fillRect(x+4,y+22,24,4);
+      break;
+    case 6: // dock
+      ctx.fillStyle = '#2196f3';
+      ctx.fillRect(x, y, TILE, TILE);
+      ctx.fillStyle = '#8B6914';
+      ctx.fillRect(x, y+4, TILE, TILE-8);
+      ctx.fillStyle = '#A0855A';
+      for (let i = 0; i < 4; i++) ctx.fillRect(x, y+4+i*7, TILE, 2);
+      break;
+  }
+}
+
+function drawBuilding(b) {
+  const x = b.x*TILE, y = b.y*TILE, w = b.w*TILE, h = b.h*TILE;
+  ctx.fillStyle = 'rgba(0,0,0,0.2)';
+  ctx.fillRect(x+4, y+4, w, h);
+
+  if (b.type === 'house') {
+    ctx.fillStyle = '#6d4c41'; ctx.fillRect(x, y+h*0.3, w, h*0.7);
+    ctx.fillStyle = '#8d6e63'; ctx.fillRect(x+4, y+h*0.34, w-8, h*0.62);
+    ctx.fillStyle = '#d32f2f';
+    ctx.beginPath(); ctx.moveTo(x-8,y+h*0.3); ctx.lineTo(x+w/2,y); ctx.lineTo(x+w+8,y+h*0.3); ctx.fill();
+    ctx.fillStyle = '#e53935';
+    ctx.beginPath(); ctx.moveTo(x-4,y+h*0.3); ctx.lineTo(x+w/2,y+4); ctx.lineTo(x+w+4,y+h*0.3); ctx.fill();
+    ctx.fillStyle = '#4e342e'; ctx.fillRect(x+w/2-8,y+h-24,16,24);
+    ctx.fillStyle = '#f5a623'; ctx.fillRect(x+w/2+4,y+h-14,3,3);
+    ctx.fillStyle = '#fff9c4'; ctx.fillRect(x+12,y+h*0.4,16,14); ctx.fillRect(x+w-28,y+h*0.4,16,14);
+    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(x+19,y+h*0.4,2,14); ctx.fillRect(x+w-21,y+h*0.4,2,14);
+  } else if (b.type === 'shop') {
+    ctx.fillStyle = '#5d4037'; ctx.fillRect(x, y+h*0.2, w, h*0.8);
+    ctx.fillStyle = '#795548'; ctx.fillRect(x+4, y+h*0.24, w-8, h*0.72);
+    ctx.fillStyle = '#ff6b9d'; ctx.fillRect(x-4, y+h*0.18, w+8, 12);
+    ctx.fillStyle = '#c44dff';
+    for (let i = 0; i < w/8; i++) ctx.fillRect(x-4+i*16, y+h*0.18+8, 8, 4);
+    ctx.fillStyle = '#f5a623'; ctx.font = '7px "Press Start 2P"'; ctx.fillText('SEEDS', x+w/2-20, y+h*0.16);
+    ctx.fillStyle = '#3e2723'; ctx.fillRect(x+w/2-10, y+h-24, 20, 24);
+  } else if (b.type === 'barn') {
+    const animalCount = animals.length;
+    ctx.fillStyle = '#c62828'; ctx.fillRect(x, y+h*0.25, w, h*0.75);
+    ctx.fillStyle = '#d32f2f'; ctx.fillRect(x+4, y+h*0.29, w-8, h*0.67);
+    ctx.fillStyle = '#4e342e'; ctx.fillRect(x-4, y+h*0.2, w+8, 8);
+    ctx.fillStyle = '#3e2723'; ctx.fillRect(x+w/2-12, y+h-28, 24, 28);
+    ctx.fillStyle = '#5d4037'; ctx.fillRect(x+w/2-1, y+h-28, 2, 28);
+    ctx.strokeStyle = '#8d6e63'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(x+w/2-10,y+h-26); ctx.lineTo(x+w/2+10,y+h-4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x+w/2+10,y+h-26); ctx.lineTo(x+w/2-10,y+h-4); ctx.stroke();
+  } else if (b.type === 'shipping') {
+    ctx.fillStyle = '#5d4037'; ctx.fillRect(x, y+h*0.4, w, h*0.6);
+    ctx.fillStyle = '#795548'; ctx.fillRect(x+4, y+h*0.44, w-8, h*0.52);
+    ctx.fillStyle = '#4e342e'; ctx.fillRect(x, y+h*0.35, w, 8);
+    ctx.fillStyle = '#f5a623'; ctx.font = '6px "Press Start 2P"'; ctx.fillText('SHIP', x+w/2-12, y+h*0.34);
+    ctx.fillStyle = '#3e2723'; ctx.fillRect(x+8, y+h*0.48, w-16, h*0.2);
+  } else if (b.type === 'townhall') {
+    ctx.fillStyle = '#37474f'; ctx.fillRect(x, y+h*0.2, w, h*0.8);
+    ctx.fillStyle = '#455a64'; ctx.fillRect(x+4, y+h*0.24, w-8, h*0.72);
+    // Columns
+    ctx.fillStyle = '#cfd8dc';
+    ctx.fillRect(x+6, y+h*0.3, 6, h*0.65);
+    ctx.fillRect(x+w-12, y+h*0.3, 6, h*0.65);
+    // Roof triangle
+    ctx.fillStyle = '#263238';
+    ctx.beginPath(); ctx.moveTo(x-4,y+h*0.2); ctx.lineTo(x+w/2,y); ctx.lineTo(x+w+4,y+h*0.2); ctx.fill();
+    // Door
+    ctx.fillStyle = '#1a237e'; ctx.fillRect(x+w/2-8, y+h-20, 16, 20);
+    ctx.fillStyle = '#ffd54f'; ctx.fillRect(x+w/2+3, y+h-12, 3, 3);
+    // Flag
+    ctx.fillStyle = '#ff6b9d'; ctx.fillRect(x+w/2-1, y-8, 2, 12);
+    ctx.fillRect(x+w/2+1, y-8, 10, 6);
+  } else if (b.type === 'well') {
+    ctx.fillStyle = '#757575'; ctx.fillRect(x+4, y+8, w-8, h-8);
+    ctx.fillStyle = '#9e9e9e'; ctx.fillRect(x+8, y+12, w-16, h-16);
+    ctx.fillStyle = '#2196f3'; ctx.fillRect(x+12, y+16, w-24, h-24);
+    // Roof
+    ctx.fillStyle = '#5d4037';
+    ctx.fillRect(x+w/2-2, y-4, 4, 16);
+    ctx.fillRect(x-2, y-4, w+4, 4);
+    // Rope
+    ctx.strokeStyle = '#8d6e63'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x+w/2, y+2); ctx.lineTo(x+w/2, y+20); ctx.stroke();
+  }
+}
+
+function drawTree(t) {
+  const x = t.x*TILE+TILE/2, y = t.y*TILE;
+  ctx.fillStyle = '#5d4037'; ctx.fillRect(x-4, y+12, 8, 20);
+  ctx.fillStyle = '#4e342e'; ctx.fillRect(x-3, y+14, 6, 16);
+  const lc = season===2?'#c49e3b':season===3?'#90a4ae':'#2e7d32';
+  ctx.fillStyle = lc;
+  ctx.beginPath(); ctx.arc(x, y+6, 14, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = season===2?'#a08030':season===3?'#78909c':'#388e3c';
+  ctx.beginPath(); ctx.arc(x-4, y+8, 10, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x+5, y+4, 11, 0, Math.PI*2); ctx.fill();
+  // Seasonal fruits
+  if (season === 2) {
+    ctx.fillStyle = '#e53935';
+    ctx.beginPath(); ctx.arc(x-6,y+2,2,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x+8,y+6,2,0,Math.PI*2); ctx.fill();
+  } else if (season === 0) {
+    ctx.fillStyle = '#f8bbd0';
+    ctx.beginPath(); ctx.arc(x-8,y+1,3,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x+7,y-2,3,0,Math.PI*2); ctx.fill();
+  }
+}
+
+function drawDecorations() {
+  decorations.forEach(d => {
+    const x = d.x*TILE, y = d.y*TILE;
+    if (map[d.y] && (map[d.y][d.x] === 0 || map[d.y][d.x] === 3)) {
+      ctx.font = '14px serif';
+      if (season === 0) ctx.fillText('\uD83C\uDF38', x+8, y+20); // flower
+      else if (season === 1) ctx.fillText('\uD83C\uDF3B', x+8, y+20);
+      else if (season === 2) ctx.fillText('\uD83C\uDF44', x+8, y+20); // mushroom
+      else ctx.fillText('\u2744\uFE0F', x+8, y+20); // snowflake on ground
+    }
+  });
+}
+
+function drawFarmPlot(p) {
+  const x = p.x*TILE, y = p.y*TILE;
+  if (p.tilled) {
+    ctx.fillStyle = p.watered ? '#5d4037' : '#8B6914';
+    ctx.fillRect(x, y, TILE, TILE);
+    ctx.fillStyle = 'rgba(0,0,0,0.15)';
+    for (let i = 0; i < 4; i++) ctx.fillRect(x+2, y+4+i*7, TILE-4, 2);
+
+    if (p.crop) {
+      const cd = cropData[p.cropType];
+      const stageIdx = Math.min(p.stage, cd.stages.length-1);
+      ctx.font = '20px serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(cd.stages[stageIdx], x+TILE/2, y+TILE/2+6);
+      // Show quality star if fully grown
+      if (p.stage >= cd.stages.length-1 && p.quality > 0) {
+        ctx.font = '8px serif';
+        ctx.fillText(p.quality === 2 ? '\uD83C\uDF1F' : '\u2B50', x+TILE-6, y+10);
+      }
+      ctx.textAlign = 'left';
+    }
+  }
+  if (p.watered && !p.crop) {
+    ctx.fillStyle = 'rgba(33,150,243,0.15)';
+    ctx.fillRect(x, y, TILE, TILE);
+  }
+}
+
+function drawPlayer() {
+  const x = player.x, y = player.y;
+  ctx.fillStyle = 'rgba(0,0,0,0.2)';
+  ctx.beginPath(); ctx.ellipse(x+TILE/2,y+TILE-2,10,4,0,0,Math.PI*2); ctx.fill();
+
+  // Body
+  ctx.fillStyle = '#ff6b9d'; ctx.fillRect(x+8,y+10,16,14);
+  // Head
+  ctx.fillStyle = '#ffcc80'; ctx.fillRect(x+10,y+2,12,10);
+  // Hair
+  ctx.fillStyle = '#5d4037'; ctx.fillRect(x+9,y,14,5); ctx.fillRect(x+8,y+2,3,4); ctx.fillRect(x+21,y+2,3,4);
+  // Eyes
+  ctx.fillStyle = '#1a1a2e';
+  if (player.dir===0){ctx.fillRect(x+13,y+5,2,2);ctx.fillRect(x+18,y+5,2,2);}
+  else if (player.dir===1){ctx.fillRect(x+17,y+5,3,2);}
+  else if (player.dir===3){ctx.fillRect(x+12,y+5,3,2);}
+  else {ctx.fillRect(x+13,y+5,2,2);ctx.fillRect(x+18,y+5,2,2);}
+  // Legs
+  const moving = keys.w||keys.a||keys.s||keys.d||keys.ArrowUp||keys.ArrowDown||keys.ArrowLeft||keys.ArrowRight;
+  const legOff = Math.sin(Date.now()/150)*2*(moving?1:0);
+  ctx.fillStyle = '#1565c0'; ctx.fillRect(x+10,y+24,5,8+legOff); ctx.fillRect(x+17,y+24,5,8-legOff);
+  ctx.fillStyle = '#4e342e'; ctx.fillRect(x+9,y+30+legOff,7,3); ctx.fillRect(x+16,y+30-legOff,7,3);
+
+  // Tool display
+  const item = inventory[selectedSlot];
+  if (item) {
+    ctx.font = '12px serif';
+    ctx.fillText(item.icon, x+24, y+18);
+  }
+}
+
+// ===================== NPC RENDERING =====================
+function drawNPC(npc) {
+  const x = npc.x * TILE, y = npc.y * TILE;
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.2)';
+  ctx.beginPath(); ctx.ellipse(x+TILE/2, y+TILE-2, 9, 3, 0, 0, Math.PI*2); ctx.fill();
+  // Body (colored shirt)
+  ctx.fillStyle = npc.color; ctx.fillRect(x+9, y+10, 14, 13);
+  // Accent trim
+  ctx.fillStyle = npc.accentColor; ctx.fillRect(x+9, y+10, 14, 3);
+  // Head
+  ctx.fillStyle = '#ffcc80'; ctx.fillRect(x+10, y+2, 12, 10);
+  // Hair varies by NPC
+  if (npc.id === 'mayor') {
+    ctx.fillStyle = '#9e9e9e'; ctx.fillRect(x+9,y,14,4); ctx.fillRect(x+8,y+2,3,3); ctx.fillRect(x+21,y+2,3,3);
+    // Hat
+    ctx.fillStyle = '#1a237e'; ctx.fillRect(x+7,y-3,18,5); ctx.fillRect(x+10,y-6,12,4);
+  } else if (npc.id === 'sage') {
+    ctx.fillStyle = '#f5a623'; ctx.fillRect(x+9,y,14,4);
+    // Straw hat
+    ctx.fillStyle = '#daa520'; ctx.fillRect(x+6,y-2,20,4); ctx.fillRect(x+9,y-5,14,4);
+  } else if (npc.id === 'luna') {
+    ctx.fillStyle = '#4fc3f7'; ctx.fillRect(x+9,y-1,14,6); ctx.fillRect(x+8,y+2,4,6); ctx.fillRect(x+20,y+2,4,6);
+  } else if (npc.id === 'nova') {
+    ctx.fillStyle = '#e91e63'; ctx.fillRect(x+9,y,14,4);
+    // Bandana
+    ctx.fillStyle = '#f5a623'; ctx.fillRect(x+8,y,16,3);
+  }
+  // Eyes
+  ctx.fillStyle = '#1a1a2e';
+  ctx.fillRect(x+13, y+5, 2, 2); ctx.fillRect(x+18, y+5, 2, 2);
+  // Legs
+  ctx.fillStyle = '#5d4037'; ctx.fillRect(x+11, y+23, 4, 8); ctx.fillRect(x+17, y+23, 4, 8);
+  ctx.fillStyle = '#3e2723'; ctx.fillRect(x+10, y+29, 6, 3); ctx.fillRect(x+16, y+29, 6, 3);
+
+  // Name tag when player is near
+  const px = Math.floor((player.x+TILE/2)/TILE), py = Math.floor((player.y+TILE/2)/TILE);
+  const dist = Math.abs(px - npc.x) + Math.abs(py - npc.y);
+  if (dist <= 3) {
+    ctx.fillStyle = 'rgba(0,0,0,0.75)';
+    const nameW = npc.name.length * 6 + 12;
+    ctx.fillRect(x + TILE/2 - nameW/2, y - 14, nameW, 12);
+    ctx.fillStyle = npc.color; ctx.font = '6px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText(npc.name, x + TILE/2, y - 5);
+    // Hearts
+    let heartStr = '';
+    for (let i = 0; i < npc.maxHearts; i++) heartStr += i < npc.hearts ? '\u2764\uFE0F' : '\uD83E\uDD0D';
+    ctx.font = '6px serif';
+    ctx.fillText(heartStr, x + TILE/2, y - 18);
+    ctx.textAlign = 'left';
+  }
+}
+
+function updateNPCs() {
+  for (const npc of npcs) {
+    npc.moveTimer--;
+    if (npc.moveTimer <= 0) {
+      npc.moveTimer = 90 + Math.floor(Math.random()*120);
+      // Wander
+      const dx = Math.floor(Math.random()*3) - 1;
+      const dy = Math.floor(Math.random()*3) - 1;
+      const nx = npc.x + dx;
+      const ny = npc.y + dy;
+      // Stay within wander range of home, and not in water/buildings
+      if (Math.abs(nx - npc.homeX) <= npc.wanderRange && Math.abs(ny - npc.homeY) <= npc.wanderRange
+          && nx >= 0 && nx < COLS && ny >= 0 && ny < ROWS
+          && map[ny] && map[ny][nx] !== 2 && map[ny][nx] !== 5) {
+        let blocked = false;
+        for (const b of buildings) {
+          if (nx >= b.x && nx < b.x+b.w && ny >= b.y && ny < b.y+b.h) blocked = true;
+        }
+        if (!blocked) {
+          npc.x = nx; npc.y = ny;
+          if (dx > 0) npc.dir = 1;
+          else if (dx < 0) npc.dir = 3;
+          else if (dy > 0) npc.dir = 0;
+          else if (dy < 0) npc.dir = 2;
+        }
+      }
+    }
+  }
+}
+
+// ===================== ANIMALS =====================
+function drawAnimals() {
+  const barnB = buildings.find(b => b.type === 'barn');
+  if (!barnB) return;
+  for (const a of animals) {
+    const x = a.x * TILE, y = a.y * TILE;
+    ctx.font = '20px serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(a.icon, x + TILE/2, y + TILE/2 + 6);
+    ctx.textAlign = 'left';
+    // Fed indicator
+    if (!a.fed) {
+      ctx.fillStyle = 'rgba(255,0,0,0.7)'; ctx.font = '8px serif';
+      ctx.fillText('\u2757', x+TILE-6, y+8);
+    }
+  }
+}
+
+function updateAnimals() {
+  const barnB = buildings.find(b => b.type === 'barn');
+  if (!barnB) return;
+  for (const a of animals) {
+    a.moveTimer--;
+    if (a.moveTimer <= 0) {
+      a.moveTimer = 60 + Math.floor(Math.random()*120);
+      const dx = Math.floor(Math.random()*3) - 1;
+      const dy = Math.floor(Math.random()*3) - 1;
+      const nx = a.x + dx;
+      const ny = a.y + dy;
+      // Stay near barn area
+      if (Math.abs(nx - (barnB.x+1)) <= 4 && Math.abs(ny - (barnB.y+barnB.h+1)) <= 3
+          && nx >= 0 && nx < COLS && ny >= 0 && ny < ROWS
+          && map[ny] && map[ny][nx] !== 2 && map[ny][nx] !== 5) {
+        let blocked = false;
+        for (const b of buildings) {
+          if (nx >= b.x && nx < b.x+b.w && ny >= b.y && ny < b.y+b.h) blocked = true;
+        }
+        if (!blocked) { a.x = nx; a.y = ny; }
+      }
+    }
+  }
+}
+
+function collectAnimalProducts() {
+  let earned = 0;
+  for (const a of animals) {
+    if (a.fed) {
+      const product = {
+        id: a.type === 'chicken' ? 'egg' : 'milk',
+        name: a.type === 'chicken' ? 'Egg' : 'Milk',
+        icon: a.type === 'chicken' ? '\uD83E\uDD5A' : '\uD83E\uDD5B',
+        count: 1,
+        type: 'crop',
+        sellPrice: a.produceValue
+      };
+      addToInventory(product);
+      earned++;
+    }
+    a.fed = false;
+  }
+  return earned;
+}
+
+function feedAnimals() {
+  // Find hay in inventory
+  const hayIdx = inventory.findIndex(it => it && it.id === 'hay');
+  if (hayIdx === -1) { showMsg("You need hay to feed animals! Buy from shop."); return; }
+  let fedCount = 0;
+  for (const a of animals) {
+    if (!a.fed && inventory[hayIdx]) {
+      a.fed = true;
+      inventory[hayIdx].count--;
+      if (inventory[hayIdx].count <= 0) inventory[hayIdx] = null;
+      fedCount++;
+      if (!inventory.find(it => it && it.id === 'hay')) break;
+    }
+  }
+  if (fedCount > 0) {
+    showMsg(`Fed ${fedCount} animal${fedCount>1?'s':''}!`);
+    spawnParticles(player.x+TILE/2, player.y, ['\uD83C\uDF3E'], fedCount);
+  } else {
+    showMsg("All animals already fed today!");
+  }
+}
+
+// ===================== FISHING =====================
+function startFishing() {
+  if (energy <= 0) { showMsg("Too tired to fish!"); return; }
+  // Check if near water
+  const px = Math.floor((player.x+TILE/2)/TILE), py = Math.floor((player.y+TILE/2)/TILE);
+  let nearWater = false;
+  for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
+    const nr = py+dr, nc = px+dc;
+    if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && (map[nr][nc] === 2 || map[nr][nc] === 6)) nearWater = true;
+  }
+  if (!nearWater) { showMsg("Stand near water to fish!"); return; }
+
+  // Pick random fish weighted by difficulty
+  const roll = Math.random();
+  let cumul = 0;
+  let chosenFish = fishTypes[0];
+  for (const f of fishTypes) {
+    cumul += f.difficulty;
+    if (roll < cumul) { chosenFish = f; break; }
+  }
+  // Rainy bonus: better fish chance
+  if (weather === WEATHER_RAINY || weather === WEATHER_STORMY) {
+    if (Math.random() < 0.3) chosenFish = fishTypes[Math.min(fishTypes.length-1, fishTypes.indexOf(chosenFish)+1)];
+  }
+
+  fishingActive = true;
+  fishingState = {
+    fish: chosenFish,
+    cursorY: 100,
+    cursorDir: 1,
+    cursorSpeed: 2.5 + Math.random()*1.5,
+    targetY: 40 + Math.random()*120,
+    targetH: 40 - (chosenFish.value / 80) * 8, // rarer fish = smaller target
+    timer: 300,
+    phase: 'active',
+    result: null
+  };
+  if (fishingState.targetH < 20) fishingState.targetH = 20;
+
+  const overlay = document.getElementById('fishing-overlay');
+  overlay.style.display = 'block';
+  document.getElementById('fishing-result').style.display = 'none';
+  document.getElementById('fishing-hint').textContent = 'Press SPACE to catch!';
+  document.getElementById('fishing-fish-icon').textContent = chosenFish.icon;
+  energy -= 3;
+}
+
+function updateFishing() {
+  if (!fishingActive || !fishingState) return;
+  if (fishingState.phase !== 'active') return;
+
+  fishingState.cursorY += fishingState.cursorDir * fishingState.cursorSpeed;
+  if (fishingState.cursorY <= 0 || fishingState.cursorY >= 194) fishingState.cursorDir *= -1;
+
+  // Move target (fish bounces)
+  fishingState.targetY += Math.sin(Date.now()/300) * 1.5;
+  fishingState.targetY = Math.max(0, Math.min(200 - fishingState.targetH, fishingState.targetY));
+
+  fishingState.timer--;
+  if (fishingState.timer <= 0) {
+    fishingState.phase = 'missed';
+    fishingState.result = null;
+    document.getElementById('fishing-hint').textContent = 'The fish got away!';
+    document.getElementById('fishing-result').style.display = 'block';
+    document.getElementById('fishing-result').textContent = 'MISS!';
+    document.getElementById('fishing-result').style.color = '#d0021b';
+    setTimeout(endFishing, 1500);
+  }
+
+  // Render fishing bar
+  const target = document.getElementById('fishing-target');
+  target.style.top = fishingState.targetY + 'px';
+  target.style.height = fishingState.targetH + 'px';
+  target.style.borderColor = fishingState.fish.color;
+  target.style.background = fishingState.fish.color + '33';
+
+  const cursor = document.getElementById('fishing-cursor');
+  cursor.style.top = fishingState.cursorY + 'px';
+}
+
+function attemptCatch() {
+  if (!fishingActive || !fishingState || fishingState.phase !== 'active') return;
+  const cY = fishingState.cursorY;
+  const tY = fishingState.targetY;
+  const tH = fishingState.targetH;
+
+  if (cY >= tY && cY <= tY + tH) {
+    // Caught!
+    fishingState.phase = 'caught';
+    const fish = fishingState.fish;
+    document.getElementById('fishing-result').style.display = 'block';
+    document.getElementById('fishing-result').textContent = `Caught ${fish.name}! ($${fish.value})`;
+    document.getElementById('fishing-result').style.color = '#7ed321';
+    document.getElementById('fishing-hint').textContent = '';
+    addToInventory({id:fish.id, name:fish.name, icon:fish.icon, count:1, type:'fish', sellPrice:fish.value});
+    spawnParticles(player.x+TILE/2, player.y, [fish.icon, '\uD83D\uDCA6'], 4);
+    setTimeout(endFishing, 2000);
+  } else {
+    fishingState.phase = 'missed';
+    document.getElementById('fishing-result').style.display = 'block';
+    document.getElementById('fishing-result').textContent = 'MISS! Bad timing...';
+    document.getElementById('fishing-result').style.color = '#d0021b';
+    document.getElementById('fishing-hint').textContent = '';
+    setTimeout(endFishing, 1500);
+  }
+}
+
+function endFishing() {
+  fishingActive = false;
+  fishingState = null;
+  document.getElementById('fishing-overlay').style.display = 'none';
+}
+
+// ===================== DIALOGUE =====================
+function interactWithNPC() {
+  const px = Math.floor((player.x+TILE/2)/TILE), py = Math.floor((player.y+TILE/2)/TILE);
+  for (const npc of npcs) {
+    const dist = Math.abs(px - npc.x) + Math.abs(py - npc.y);
+    if (dist <= 2) {
+      if (activeDialogue && activeDialogue.npcId === npc.id) {
+        // Already talking - check if player wants to gift
+        const item = inventory[selectedSlot];
+        if (item && (item.type === 'crop' || item.type === 'fish')) {
+          // Gift!
+          npc.hearts = Math.min(npc.maxHearts, npc.hearts + 1);
+          showDialogue(npc, npc.giftResponse);
+          item.count--;
+          if (item.count <= 0) inventory[selectedSlot] = null;
+          spawnParticles(npc.x*TILE+TILE/2, npc.y*TILE, ['\u2764\uFE0F','\u2728'], 5);
+          return true;
+        }
+        // Close dialogue
+        closeDialogue();
+        return true;
+      }
+      // Open dialogue
+      const lines = npc.id === 'mayor' && Math.random() < 0.4 ? npc.tips : npc.dialogues;
+      const line = lines[Math.floor(Math.random()*lines.length)];
+      showDialogue(npc, line);
+      return true;
+    }
+  }
+  return false;
+}
+
+function showDialogue(npc, text) {
+  activeDialogue = {npcId: npc.id};
+  dialogueTimer = 300;
+  const box = document.getElementById('dialogue-box');
+  box.style.display = 'block';
+  box.style.borderColor = npc.color;
+  document.getElementById('dialogue-name').textContent = npc.name;
+  document.getElementById('dialogue-name').style.color = npc.color;
+  document.getElementById('dialogue-text').textContent = text;
+  let heartStr = '';
+  for (let i = 0; i < npc.maxHearts; i++) heartStr += i < npc.hearts ? '\u2764\uFE0F ' : '\uD83E\uDD0D ';
+  document.getElementById('dialogue-hearts').textContent = heartStr;
+}
+
+function closeDialogue() {
+  activeDialogue = null;
+  document.getElementById('dialogue-box').style.display = 'none';
+}
+
+// ===================== NPC SHOP (Animals) =====================
+let npcShopOpen = false;
+function openNPCShop() {
+  npcShopOpen = true;
+  const modal = document.getElementById('npc-shop-modal');
+  modal.style.display = 'block';
+  const itemsDiv = document.getElementById('npc-shop-items');
+  itemsDiv.innerHTML = '';
+  animalShopItems.forEach(ai => {
+    const div = document.createElement('div');
+    div.className = 'shop-item';
+    div.innerHTML = `<span>${ai.icon} ${ai.name}</span><span class="price">$${ai.price}</span>`;
+    div.onclick = () => buyAnimal(ai);
+    itemsDiv.appendChild(div);
+  });
+}
+
+function closeNPCShop() {
+  npcShopOpen = false;
+  document.getElementById('npc-shop-modal').style.display = 'none';
+}
+
+function buyAnimal(ai) {
+  if (money < ai.price) { showMsg('Not enough money!'); return; }
+  if (animals.length >= 6) { showMsg('Barn is full! Max 6 animals.'); return; }
+  money -= ai.price;
+  const barnB = buildings.find(b => b.type === 'barn');
+  animals.push({
+    type: ai.type,
+    icon: ai.icon,
+    x: barnB.x + 1 + Math.floor(Math.random()*3),
+    y: barnB.y + barnB.h + 1 + Math.floor(Math.random()*2),
+    fed: false,
+    produceValue: ai.productValue,
+    dir: 0,
+    moveTimer: 60
+  });
+  showMsg(`Bought a ${ai.name}!`);
+  spawnParticles(player.x+TILE/2, player.y, [ai.icon], 3);
+}
+
+// ===================== SKY =====================
+function drawSky() {
+  const sc = seasonColors[season];
+  const grd = ctx.createLinearGradient(0,0,0,H);
+  grd.addColorStop(0, sc.sky[0]); grd.addColorStop(1, sc.sky[1]);
+  ctx.fillStyle = grd; ctx.fillRect(0,0,W,H);
+
+  // Overcast overlay for rain/storm
+  if (weather === WEATHER_RAINY) {
+    ctx.fillStyle = 'rgba(80,80,100,0.25)'; ctx.fillRect(0,0,W,H);
+  } else if (weather === WEATHER_STORMY) {
+    ctx.fillStyle = 'rgba(40,40,60,0.4)'; ctx.fillRect(0,0,W,H);
+    // Lightning flash
+    if (Math.random() < 0.003) {
+      ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.fillRect(0,0,W,H);
+    }
+  } else if (weather === WEATHER_SNOWY) {
+    ctx.fillStyle = 'rgba(200,210,230,0.15)'; ctx.fillRect(0,0,W,H);
+  }
+
+  // Night overlay
+  if (gameTime > 1200 || gameTime < 360) {
+    ctx.fillStyle = `rgba(10,10,30,${gameTime>1200?Math.min(0.6,(gameTime-1200)/240):0.6})`;
+    ctx.fillRect(0,0,W,H);
+    if (gameTime > 1260 || gameTime < 300) {
+      ctx.fillStyle = 'rgba(255,255,255,0.6)';
+      for (let i = 0; i < 30; i++) {
+        const sx = (i*137+day*53)%W, sy = (i*89+day*31)%200;
+        ctx.fillRect(sx, sy, 2, 2);
+      }
+    }
+  }
+
+  // Sun/moon
+  const sunX = W*0.05+W*0.9*((gameTime-360)/960);
+  const sunY = 50+Math.sin((gameTime-360)/960*Math.PI)*-20+20;
+  if (gameTime > 360 && gameTime < 1320) {
+    if (weather === WEATHER_SUNNY) {
+      ctx.fillStyle = '#FFD700'; ctx.beginPath(); ctx.arc(sunX,sunY,12,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = 'rgba(255,215,0,0.2)'; ctx.beginPath(); ctx.arc(sunX,sunY,20,0,Math.PI*2); ctx.fill();
+    } else {
+      // Dim sun behind clouds
+      ctx.fillStyle = 'rgba(255,215,0,0.3)'; ctx.beginPath(); ctx.arc(sunX,sunY,10,0,Math.PI*2); ctx.fill();
+    }
+  }
+}
+
+// ===================== HUD =====================
+function drawHUD() {
+  document.getElementById('season-text').textContent = seasonNames[season];
+  document.getElementById('day-text').textContent = day;
+  document.getElementById('weather-icon').textContent = weatherIcons[weather];
+  document.getElementById('weather-text').textContent = weatherNames[weather];
+  const hours = Math.floor(gameTime/60);
+  const mins = gameTime%60;
+  const ampm = hours>=12?'PM':'AM';
+  const h12 = hours>12?hours-12:(hours===0?12:hours);
+  document.getElementById('time-text').textContent = `${h12}:${Math.floor(mins).toString().padStart(2,'0')} ${ampm}`;
+  document.getElementById('energy-fill-inner').style.width = (energy/maxEnergy*100)+'%';
+  const energyColor = energy < 30 ? 'linear-gradient(90deg,#d0021b,#ff6b35)' : 'linear-gradient(90deg,#7ed321,#4caf50)';
+  document.getElementById('energy-fill-inner').style.background = energyColor;
+  document.getElementById('money-text').textContent = money;
+
+  // Inventory slots
+  const bar = document.getElementById('inventory-bar');
+  if (bar.children.length !== INV_SIZE) {
+    bar.innerHTML = '';
+    for (let i = 0; i < INV_SIZE; i++) {
+      const slot = document.createElement('div');
+      slot.className = 'inv-slot' + (i===selectedSlot?' selected':'');
+      slot.onclick = () => { selectedSlot = i; updateInvUI(); };
+      bar.appendChild(slot);
+    }
+  }
+  updateInvUI();
+}
+
+function updateInvUI() {
+  const slots = document.querySelectorAll('.inv-slot');
+  slots.forEach((s, i) => {
+    s.className = 'inv-slot' + (i===selectedSlot?' selected':'');
+    const item = inventory[i];
+    if (item) {
+      let qualStr = '';
+      if (item.quality && item.quality > 0) {
+        qualStr = `<span class="item-quality">${item.quality === 2 ? '\uD83C\uDF1F' : '\u2B50'}</span>`;
+      }
+      s.innerHTML = `${qualStr}<span class="item-icon">${item.icon}</span>${item.count>1?`<span class="item-count">${item.count}</span>`:''}`;
+    } else {
+      s.innerHTML = '';
+    }
+  });
+}
+
+// ===================== GAME LOGIC =====================
+function movePlayer() {
+  if (fishingActive || shopOpen || npcShopOpen) return;
+  let dx = 0, dy = 0;
+  if (keys.w||keys.ArrowUp) { dy = -player.speed; player.dir = 2; }
+  if (keys.s||keys.ArrowDown) { dy = player.speed; player.dir = 0; }
+  if (keys.a||keys.ArrowLeft) { dx = -player.speed; player.dir = 3; }
+  if (keys.d||keys.ArrowRight) { dx = player.speed; player.dir = 1; }
+
+  const nx = player.x+dx, ny = player.y+dy;
+  const col = Math.floor((nx+TILE/2)/TILE), row = Math.floor((ny+TILE/2)/TILE);
+
+  if (col >= 0 && col < COLS && row >= 0 && row < ROWS) {
+    let blocked = false;
+    for (const b of buildings) {
+      if (col >= b.x && col < b.x+b.w && row >= b.y && row < b.y+b.h) blocked = true;
+    }
+    if (map[row] && map[row][col] === 2) blocked = true;
+    if (map[row] && map[row][col] === 5) blocked = true;
+    if (!blocked) { player.x = nx; player.y = ny; }
+  }
+}
+
+function useTool() {
+  if (energy <= 0) { showMsg("You're too tired!"); return; }
+
+  // Try NPC interaction first
+  if (interactWithNPC()) return;
+
+  const item = inventory[selectedSlot];
+  if (!item) return;
+
+  const col = Math.floor((player.x+TILE/2)/TILE);
+  const row = Math.floor((player.y+TILE/2)/TILE);
+  let tc = col, tr = row;
+  if (player.dir===0) tr++;
+  if (player.dir===2) tr--;
+  if (player.dir===1) tc++;
+  if (player.dir===3) tc--;
+
+  const plot = farmPlots.find(p => p.x===tc && p.y===tr);
+
+  if (item.id === 'hoe' && plot && !plot.tilled) {
+    plot.tilled = true; energy -= 2;
+    showMsg('Tilled the soil!');
+    spawnParticles(tc*TILE+TILE/2, tr*TILE, ['\uD83D\uDCA8','\u2728'], 3);
+  } else if (item.id === 'water' && plot && plot.tilled) {
+    plot.watered = true; energy -= 1;
+    showMsg('Watered!');
+    spawnParticles(tc*TILE+TILE/2, tr*TILE, ['\uD83D\uDCA7','\uD83D\uDCA6'], 3);
+  } else if (item.type === 'seed' && plot && plot.tilled && !plot.crop) {
+    plot.crop = true; plot.cropType = item.crop; plot.growDay = day; plot.stage = 0;
+    plot.wateredStreak = 0; plot.quality = 0; plot.rainBonus = false;
+    item.count--;
+    if (item.count <= 0) inventory[selectedSlot] = null;
+    energy -= 1;
+    showMsg(`Planted ${item.name}!`);
+    spawnParticles(tc*TILE+TILE/2, tr*TILE, ['\uD83C\uDF31','\u2728'], 3);
+  } else if (item.id === 'scythe' && plot && plot.crop) {
+    const cd = cropData[plot.cropType];
+    if (plot.stage >= cd.stages.length-1) {
+      const quality = plot.quality;
+      const basePrice = cd.sellPrice;
+      const finalPrice = Math.floor(basePrice * qualityMultipliers[quality]);
+      const harvestItem = {
+        id: plot.cropType,
+        name: qualityNames[quality] + plot.cropType.charAt(0).toUpperCase()+plot.cropType.slice(1),
+        icon: cd.icon,
+        count: 1,
+        type: 'crop',
+        sellPrice: finalPrice,
+        quality: quality
+      };
+      addToInventory(harvestItem);
+      plot.crop = null; plot.cropType = null; plot.stage = 0; plot.tilled = false; plot.watered = false;
+      plot.wateredStreak = 0; plot.quality = 0; plot.rainBonus = false;
+      energy -= 2;
+      const qLabel = quality > 0 ? ` (${qualityNames[quality]}Star)` : '';
+      showMsg(`Harvested ${harvestItem.name}! ($${finalPrice})${qLabel}`);
+      spawnParticles(tc*TILE+TILE/2, tr*TILE, [cd.icon, '\u2728', '\uD83D\uDCAB'], 5);
+    } else {
+      showMsg('Not ready yet!');
+    }
+  } else if (item.id === 'fishing_rod') {
+    startFishing();
+    return;
+  } else if (item.type === 'feed') {
+    // Feed animals if near barn
+    const barn = buildings.find(b => b.type === 'barn');
+    if (barn) {
+      const px = Math.floor((player.x+TILE/2)/TILE), py = Math.floor((player.y+TILE/2)/TILE);
+      if (Math.abs(px - (barn.x+barn.w/2)) < 4 && Math.abs(py - (barn.y+barn.h)) < 4) {
+        feedAnimals();
+        return;
+      }
+    }
+  }
+
+  // Ship items at shipping bin
+  for (const b of buildings) {
+    if (b.type === 'shipping') {
+      if (tc >= b.x && tc < b.x+b.w && tr >= b.y && tr < b.y+b.h) {
+        if (item.type === 'crop' || item.type === 'fish') {
+          const total = item.sellPrice * item.count;
+          money += total;
+          showMsg(`Sold ${item.count}x ${item.name} for $${total}!`);
+          spawnParticles(tc*TILE+TILE/2, tr*TILE, ['\uD83D\uDCB0','\u2728'], 4);
+          inventory[selectedSlot] = null;
+        }
+      }
+    }
+  }
+
+  // Consumable
+  if (item.type === 'consumable' && item.id === 'energy_drink') {
+    energy = Math.min(maxEnergy, energy + item.energy);
+    item.count--;
+    if (item.count <= 0) inventory[selectedSlot] = null;
+    showMsg('Energy restored!');
+    spawnParticles(player.x+TILE/2, player.y, ['\u26A1','\u2728'], 4);
+  }
+}
+
+function addToInventory(item) {
+  // Try to stack (same id and same quality)
+  for (let i = 0; i < INV_SIZE; i++) {
+    if (inventory[i] && inventory[i].id === item.id && (inventory[i].quality||0) === (item.quality||0)) {
+      inventory[i].count += item.count; return;
+    }
+  }
+  for (let i = 0; i < INV_SIZE; i++) {
+    if (!inventory[i]) { inventory[i] = {...item}; return; }
+  }
+  showMsg('Inventory full!');
+}
+
+function advanceTime() {
+  gameTime += 0.3;
+  if (gameTime >= 1440) {
+    // NEW DAY
+    gameTime = 360;
+    day++;
+    if (day > 28) { day = 1; season = (season+1)%4; }
+    energy = maxEnergy;
+
+    // Collect animal products
+    const produced = collectAnimalProducts();
+    if (produced > 0) showMsg(`Day ${day}: Collected ${produced} animal product${produced>1?'s':''}!`);
+
+    // Grow crops & quality
+    farmPlots.forEach(p => {
+      if (p.crop && p.watered) {
+        const cd = cropData[p.cropType];
+        if (p.stage < cd.stages.length-1) p.stage++;
+        p.wateredStreak++;
+        // Quality calc
+        if (p.wateredStreak >= (cd.stages.length-1)) {
+          p.quality = Math.max(p.quality, 1); // silver
+          if (p.rainBonus) p.quality = 2; // gold
+        }
+      }
+      // Rain auto-waters
+      if (p.crop && (weather === WEATHER_RAINY || weather === WEATHER_STORMY)) {
+        p.watered = true;
+        p.rainBonus = true;
+      } else {
+        p.watered = false;
+      }
+    });
+
+    // Roll new weather for new day
+    rollWeather();
+
+    if (produced === 0) showMsg(`Day ${day} of ${seasonNames[season]}. ${weatherNames[weather]} today!`);
+  }
+}
+
+let msgTimer = 0;
+function showMsg(text) {
+  if (activeDialogue) return; // don't overwrite dialogue
+  const box = document.getElementById('msg-box');
+  box.textContent = text; box.style.display = 'block';
+  msgTimer = 150;
+}
+
+// ===================== SHOP =====================
+let shopOpen = false;
+function openShop() {
+  shopOpen = true;
+  const modal = document.getElementById('shop-modal');
+  modal.style.display = 'block';
+  const itemsDiv = document.getElementById('shop-items');
+  itemsDiv.innerHTML = '';
+  shopItems.forEach(si => {
+    const div = document.createElement('div');
+    div.className = 'shop-item';
+    div.innerHTML = `<span>${si.icon} ${si.name}</span><span class="price">$${si.price}</span>`;
+    div.onclick = () => buyItem(si);
+    itemsDiv.appendChild(div);
+  });
+}
+function closeShop() { shopOpen = false; document.getElementById('shop-modal').style.display = 'none'; }
+function buyItem(si) {
+  if (money >= si.price) {
+    money -= si.price;
+    addToInventory({id:si.id, name:si.name, icon:si.icon, count:1, type:si.type, crop:si.crop, growTime:si.growTime, sellPrice:si.sellPrice, energy:si.energy});
+    showMsg(`Bought ${si.name}!`);
+  } else {
+    showMsg('Not enough money!');
+  }
+}
+
+// ===================== MAIN LOOP =====================
+function gameLoop() {
+  if (!gameStarted) { requestAnimationFrame(gameLoop); return; }
+
+  movePlayer();
+  advanceTime();
+  updateNPCs();
+  updateAnimals();
+  if (fishingActive) updateFishing();
+
+  // === DRAW ===
+  drawSky();
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) drawTile(c, r);
+
+  drawDecorations();
+  farmPlots.forEach(drawFarmPlot);
+  trees.forEach(drawTree);
+  buildings.forEach(drawBuilding);
+
+  // Building labels near player
+  buildings.forEach(b => {
+    const px = Math.floor((player.x+TILE/2)/TILE), py = Math.floor((player.y+TILE/2)/TILE);
+    if (Math.abs(px-(b.x+b.w/2)) < 3 && Math.abs(py-(b.y+b.h)) < 3) {
+      let label = b.name;
+      if (b.type === 'barn' && animals.length > 0) label += ` (${animals.length})`;
+      ctx.fillStyle = 'rgba(0,0,0,0.7)';
+      const labelW = label.length * 6 + 12;
+      ctx.fillRect(b.x*TILE, b.y*TILE-14, labelW, 14);
+      ctx.fillStyle = '#ff6b9d'; ctx.font = '7px "Press Start 2P"';
+      ctx.fillText(label, b.x*TILE+4, b.y*TILE-4);
+    }
+  });
+
+  // Animals
+  drawAnimals();
+
+  // NPCs
+  npcs.forEach(drawNPC);
+
+  // Player
+  drawPlayer();
+
+  // Particles
+  drawParticles();
+
+  // Weather effects (on top)
+  drawWeatherEffects();
+
+  // Fireflies
+  drawFireflies();
+
+  // HUD
+  drawHUD();
+
+  // Message timer
+  if (msgTimer > 0) { msgTimer--; if (msgTimer === 0) document.getElementById('msg-box').style.display = 'none'; }
+  // Dialogue timer
+  if (activeDialogue) {
+    dialogueTimer--;
+    if (dialogueTimer <= 0) closeDialogue();
+  }
+
+  requestAnimationFrame(gameLoop);
+}
+
+// ===================== INPUT =====================
+document.addEventListener('keydown', e => {
+  keys[e.key.toLowerCase()] = true; keys[e.key] = true;
+
+  if (e.key === ' ' && gameStarted) {
+    e.preventDefault();
+    if (fishingActive) { attemptCatch(); return; }
+    if (shopOpen || npcShopOpen) return;
+    if (activeDialogue) { closeDialogue(); return; }
+    useTool();
+  }
+  if (e.key === 'e' || e.key === 'E') {
+    if (shopOpen) { closeShop(); return; }
+    if (npcShopOpen) { closeNPCShop(); return; }
+    // Check near shop
+    const px = Math.floor((player.x+TILE/2)/TILE), py = Math.floor((player.y+TILE/2)/TILE);
+    for (const b of buildings) {
+      if (b.type === 'shop' && Math.abs(px-(b.x+b.w/2)) < 3 && Math.abs(py-(b.y+b.h)) < 2) openShop();
+    }
+    // Check near Farmer Sage for animal shop
+    const sage = npcs.find(n => n.id === 'sage');
+    if (sage && Math.abs(px - sage.x) + Math.abs(py - sage.y) <= 2) {
+      openNPCShop();
+    }
+  }
+  if (e.key === 'f' || e.key === 'F') {
+    if (!fishingActive && gameStarted && !shopOpen && !npcShopOpen) {
+      const item = inventory[selectedSlot];
+      if (item && item.id === 'fishing_rod') {
+        startFishing();
+      } else {
+        showMsg('Equip your Fishing Rod first!');
+      }
+    }
+  }
+  if (e.key === 'Escape') {
+    closeShop(); closeNPCShop(); closeDialogue();
+    if (fishingActive) endFishing();
+  }
+  // Number keys for inventory (1-9, 0=slot10)
+  const num = parseInt(e.key);
+  if (num >= 1 && num <= 9) { selectedSlot = num-1; updateInvUI(); }
+  if (e.key === '0') { selectedSlot = 9; updateInvUI(); }
+});
+
+document.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; keys[e.key] = false; });
+
+// Start button
+document.getElementById('start-btn').addEventListener('click', () => {
+  document.getElementById('title-screen').style.display = 'none';
+  gameStarted = true;
+});
+document.getElementById('shop-close').addEventListener('click', closeShop);
+document.getElementById('npc-shop-close').addEventListener('click', closeNPCShop);
+
+initWorld();
+gameLoop();
+</script>
+</body>
+</html>
