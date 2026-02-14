@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://img.shields.io/badge/BlackRoad-OS-FF0066?style=for-the-badge&logo=github&logoColor=white" alt="BlackRoad OS"/>
+</p>
+
 # .github
 
 [![GitHub](https://img.shields.io/badge/GitHub-BlackRoad-OS-purple?style=for-the-badge&logo=github)](https://github.com/BlackRoad-OS/.github)
