@@ -1,0 +1,115 @@
+name: 🚀 Auto Deploy
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  detect-service:
+    name: Detect Service Type
+    runs-on: ubuntu-latest
+    outputs:
+      service_type: ${{ steps.detect.outputs.service_type }}
+      deploy_target: ${{ steps.detect.outputs.deploy_target }}
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Detect Service Type
+        id: detect
+        run: |
+          if [ -f "next.config.mjs" ] || [ -f "next.config.js" ]; then
+            echo "service_type=nextjs" >> $GITHUB_OUTPUT
+            echo "deploy_target=cloudflare" >> $GITHUB_OUTPUT
+          elif [ -f "Dockerfile" ]; then
+            echo "service_type=docker" >> $GITHUB_OUTPUT
+            echo "deploy_target=railway" >> $GITHUB_OUTPUT
+          elif [ -f "package.json" ]; then
+            echo "service_type=node" >> $GITHUB_OUTPUT
+            echo "deploy_target=railway" >> $GITHUB_OUTPUT
+          elif [ -f "requirements.txt" ]; then
+            echo "service_type=python" >> $GITHUB_OUTPUT
+            echo "deploy_target=railway" >> $GITHUB_OUTPUT
+          else
+            echo "service_type=static" >> $GITHUB_OUTPUT
+            echo "deploy_target=cloudflare" >> $GITHUB_OUTPUT
+          fi
+
+  deploy-cloudflare:
+    name: Deploy to Cloudflare Pages
+    needs: detect-service
+    if: needs.detect-service.outputs.deploy_target == 'cloudflare'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install Dependencies
+        run: npm ci
+      
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+      
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy .next --project-name=${{ github.event.repository.name }}
+
+  deploy-railway:
+    name: Deploy to Railway
+    needs: detect-service
+    if: needs.detect-service.outputs.deploy_target == 'railway'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli
+      
+      - name: Deploy to Railway
+        run: railway up --service ${{ github.event.repository.name }}
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+  health-check:
+    name: Health Check
+    needs: [deploy-cloudflare, deploy-railway]
+    if: always() && (needs.deploy-cloudflare.result == 'success' || needs.deploy-railway.result == 'success')
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Wait for Deployment
+        run: sleep 30
+      
+      - name: Check Health Endpoint
+        run: |
+          URL="${{ secrets.DEPLOY_URL }}/api/health"
+          curl -f $URL || exit 1
+      
+      - name: Notify Success
+        if: success()
+        run: echo "✅ Deployment successful and healthy!"
+      
+      - name: Notify Failure
+        if: failure()
+        run: |
+          echo "❌ Deployment health check failed!"
+          exit 1
