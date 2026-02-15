@@ -29,8 +29,8 @@ python -m codespace_agents.collaborate
 ## 📚 Documentation
 
 - [Codespace Guide](CODESPACE_GUIDE.md) - Getting started
-- [Agent Documentation](codespace-agents/README.md) - Agent details
-- [Model Information](codespace-agents/MODELS.md) - Open source models
+- [Agent Documentation](codespace_agents/README.md) - Agent details
+- [Model Information](codespace_agents/MODELS.md) - Open source models
 
 ## ✨ Features
 

@@ -7,7 +7,7 @@ Coordinates multiple AI agents working together on tasks.
 import asyncio
 import yaml
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime
@@ -58,8 +58,12 @@ class AgentOrchestrator:
     - Facilitate agent-to-agent communication
     """
     
-    def __init__(self, config_dir: str = "codespace-agents/config"):
-        self.config_dir = Path(config_dir)
+    def __init__(self, config_dir: Optional[str] = None):
+        if config_dir is None:
+            # Default to a 'config' directory located alongside this module
+            self.config_dir = Path(__file__).parent / "config"
+        else:
+            self.config_dir = Path(config_dir)
         self.agents: Dict[str, Agent] = {}
         self.conversations: Dict[str, List[AgentMessage]] = {}
         self.message_log: List[AgentMessage] = []
@@ -201,7 +205,7 @@ class AgentOrchestrator:
         
         # Create message
         message = AgentMessage(
-            message_id=str(uuid.uuid4()),
+            message_id=uuid.uuid4().hex,
             from_agent=from_agent_id,
             to_agent=to_agent_id,
             content=content,
@@ -372,8 +376,16 @@ class AgentOrchestrator:
         agent.status = AgentStatus.WORKING
         agent.current_task = task
         
+        # TODO: Implement actual model inference
+        # This requires integration with Ollama API or other model providers.
+        # Example implementation:
+        #   - Use ollama.chat() to call local models
+        #   - Use OpenAI/Anthropic APIs as fallback
+        #   - Parse model response and return structured data
+        # For now, returning mock response for demonstration
+        
         # Build response mentioning agent capabilities
-        response_parts = [f"[{agent.name}] Task received and processed."]
+        response_parts = [f"[{agent.name} - Mock Response] Task received and processed."]
         
         # Add note about agent-to-agent communication
         if requesting_agent_id:

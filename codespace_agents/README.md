@@ -138,7 +138,7 @@ python -m agents.collaborate \
 
 ## Configuration
 
-Each agent is configured in `agents/config/`:
+Each agent is configured in `codespace_agents/config/`:
 - `coder.yaml` - Coder agent settings
 - `designer.yaml` - Designer agent settings
 - `ops.yaml` - Ops agent settings
@@ -148,25 +148,25 @@ Each agent is configured in `agents/config/`:
 ## Development
 
 ### Adding a New Agent
-1. Create configuration in `agents/config/new-agent.yaml`
-2. Implement agent logic in `agents/new_agent.py`
-3. Register in `agents/orchestrator.py`
+1. Create configuration in `codespace_agents/config/new-agent.yaml`
+2. Implement agent logic in `codespace_agents/new_agent.py`
+3. Register in `codespace_agents/orchestrator.py`
 4. Update this README
 
 ### Testing Agents
 ```bash
 # Test individual agent
-python -m agents.test --agent coder
+python -m codespace_agents.test --agent coder
 
 # Test collaboration
-python -m agents.test --scenario collaboration
+python -m codespace_agents.test --scenario collaboration
 ```
 
 ## Integration with Cloudflare Workers
 
 Agents can be deployed as edge workers:
 ```bash
-cd agents/workers
+cd codespace_agents/workers
 wrangler deploy coder-agent
 wrangler deploy designer-agent
 wrangler deploy ops-agent

@@ -33,18 +33,21 @@ export default {
     if (url.pathname === '/ask' && request.method === 'POST') {
       try {
         const body = await request.json();
-        const { task, context } = body;
+        const { task } = body;
 
         if (!task) {
           return Response.json({ error: 'Task is required' }, { status: 400 });
         }
 
-        // TODO: Implement actual model inference
+        // TODO: Implement actual model inference by integrating with:
+        // - Ollama API running on a backend server
+        // - Cloudflare Workers AI
+        // - OpenAI/Anthropic APIs
         // For now, return mock response
         const response = {
           agent: 'coder',
           task,
-          response: `I would help you with: ${task}`,
+          response: `[Mock Response] I would help you with: ${task}. Note: Actual model inference not yet implemented.`,
           model: 'qwen2.5-coder:latest',
           timestamp: new Date().toISOString(),
           // In production, would include:

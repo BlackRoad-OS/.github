@@ -139,10 +139,10 @@ Docs: I'll document the API
 
 ## Model Configuration
 
-Models are configured in `codespace-agents/config/`:
+Models are configured in `codespace_agents/config/`:
 
 ```yaml
-# codespace-agents/config/coder.yaml
+# codespace_agents/config/coder.yaml
 models:
   primary: "qwen2.5-coder:latest"
   fallback:
@@ -169,7 +169,7 @@ Without API keys, only local Ollama models are used.
 Deploy agents as edge workers:
 
 ```bash
-cd codespace-agents/workers
+cd codespace_agents/workers
 
 # Deploy the router
 wrangler deploy agent-router.js
@@ -228,8 +228,8 @@ If ports are in use, modify `.devcontainer/devcontainer.json`:
 
 ## Next Steps
 
-- Explore agent configurations in `codespace-agents/config/`
-- Read about available models in `codespace-agents/MODELS.md`
+- Explore agent configurations in `codespace_agents/config/`
+- Read about available models in `codespace_agents/MODELS.md`
 - Try collaborative sessions with multiple agents
 - Deploy agents to Cloudflare Workers
 - Customize agent prompts and behaviors
@@ -239,7 +239,7 @@ If ports are in use, modify `.devcontainer/devcontainer.json`:
 - Check agent status: `python -m codespace_agents.orchestrator`
 - List models: `ollama list`
 - View logs: Check terminal output for errors
-- Read docs: All docs in `codespace-agents/`
+- Read docs: All docs in `codespace_agents/`
 
 ---
 

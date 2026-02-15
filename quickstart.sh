@@ -23,12 +23,28 @@ if command -v ollama &> /dev/null; then
     if ! pgrep -x "ollama" > /dev/null; then
         echo "  Starting Ollama..."
         ollama serve > /tmp/ollama.log 2>&1 &
-        sleep 3
+        
+        # Wait for Ollama to be ready with retry
+        echo "  Waiting for Ollama to start..."
+        for i in {1..10}; do
+            sleep 2
+            if ollama list >/dev/null 2>&1; then
+                echo "  Ollama is ready!"
+                break
+            fi
+            if [ $i -eq 10 ]; then
+                echo "  ⚠️  Ollama may still be starting. Check /tmp/ollama.log if issues occur."
+            fi
+        done
     fi
     
     # List available models
     echo "  Available models:"
-    ollama list | head -10
+    if ollama list 2>/dev/null | tail -n +2 | head -10; then
+        :
+    else
+        echo "  (No models installed yet - check /tmp/blackroad/logs/ollama_model_pull.log)"
+    fi
 else
     echo "  ⚠️  Ollama not installed yet. Run .devcontainer/setup.sh"
 fi
@@ -72,11 +88,11 @@ echo "  3. Start a collaborative session:"
 echo "     python -m codespace_agents.collaborate"
 echo ""
 echo "  4. Deploy to Cloudflare:"
-echo "     cd codespace-agents/workers && wrangler deploy"
+echo "     cd codespace_agents/workers && wrangler deploy"
 echo ""
 echo "📚 Documentation:"
 echo "  - Getting Started: CODESPACE_GUIDE.md"
-echo "  - Agent Docs: codespace-agents/README.md"
-echo "  - Models: codespace-agents/MODELS.md"
+echo "  - Agent Docs: codespace_agents/README.md"
+echo "  - Models: codespace_agents/MODELS.md"
 echo ""
 echo "================================"

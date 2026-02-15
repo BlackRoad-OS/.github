@@ -1,16 +1,20 @@
 name = "agent-router"
 main = "agent-router.js"
-compatibility_date = "2024-01-27"
+compatibility_date = "2025-01-01"
 
 # KV namespace for agent state
 [[kv_namespaces]]
 binding = "AGENT_KV"
+# NOTE: Replace this placeholder with your actual KV namespace ID before deploying.
+# Create with: wrangler kv:namespace create "AGENT_KV"
 id = "YOUR_KV_NAMESPACE_ID"
 
 # D1 database for collaboration tracking
 [[d1_databases]]
 binding = "AGENT_DB"
 database_name = "blackroad-agents"
+# NOTE: Replace this placeholder with your actual D1 database ID before deploying.
+# Create with: wrangler d1 create blackroad-agents
 database_id = "YOUR_D1_DATABASE_ID"
 
 # Environment variables

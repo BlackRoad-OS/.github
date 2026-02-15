@@ -133,13 +133,13 @@ collaboration:
     - pattern: "document|readme|tutorial"
       target_agent: "docs"
 
-# Rate limiting
+# Note: Rate limiting and cost tracking are configured but not yet implemented.
+# These values are reserved for future functionality.
 rate_limits:
   requests_per_minute: 60
   tokens_per_hour: 1000000
 
-# Cost tracking
 cost_tracking:
-  enabled: true
+  enabled: false  # Not yet implemented
   budget_alert_threshold: 5.00
   currency: "USD"

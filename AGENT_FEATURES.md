@@ -81,10 +81,10 @@ python -m codespace_agents.examples
 | File | What It Covers |
 |------|----------------|
 | `CODESPACE_GUIDE.md` | Getting started guide |
-| `codespace-agents/README.md` | Agent documentation |
-| `codespace-agents/MODELS.md` | Model comparison |
-| `codespace-agents/ARCHITECTURE.md` | System design |
-| `codespace-agents/workers/README.md` | Cloudflare deployment |
+| `codespace_agents/README.md` | Agent documentation |
+| `codespace_agents/MODELS.md` | Model comparison |
+| `codespace_agents/ARCHITECTURE.md` | System design |
+| `codespace_agents/workers/README.md` | Cloudflare deployment |
 
 ### 🎓 **Real World Examples**
 

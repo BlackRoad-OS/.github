@@ -74,13 +74,13 @@
   },
 
   "remoteEnv": {
-    "PYTHONPATH": "${containerWorkspaceFolder}/prototypes/operator:${containerWorkspaceFolder}/prototypes/mcp-server:${containerWorkspaceFolder}/prototypes/dispatcher",
+    "PYTHONPATH": "${containerWorkspaceFolder}",
     "BLACKROAD_ENV": "codespace",
     "NODE_ENV": "development"
   },
 
   "mounts": [
-    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,readonly,type=bind,consistency=cached"
+    "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,readonly,type=bind,consistency=cached"
   ],
 
   "postAttachCommand": "./quickstart.sh"
