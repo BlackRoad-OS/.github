@@ -17,6 +17,7 @@ PROTO_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROTO_ROOT / "operator"))
 sys.path.insert(0, str(PROTO_ROOT / "dispatcher"))
 sys.path.insert(0, str(PROTO_ROOT / "webhooks"))
+sys.path.insert(0, str(PROTO_ROOT / "sessions"))
 
 
 @dataclass
@@ -67,6 +68,9 @@ class BlackRoadMCP:
         self._operator = None
         self._dispatcher = None
         self._webhook_receiver = None
+        self._session_registry = None
+        self._collaboration_hub = None
+        self._shared_memory = None
         self._signal_history: List[Dict[str, Any]] = []
 
         # Define tools
@@ -236,6 +240,213 @@ class BlackRoadMCP:
                     "required": ["node"]
                 }
             ),
+            # Session Management Tools
+            Tool(
+                name="session_register",
+                description="Register a new session in the mesh for discovery and collaboration.",
+                input_schema={
+                    "type": "object",
+                    "properties": {
+                        "session_id": {
+                            "type": "string",
+                            "description": "Unique session identifier"
+                        },
+                        "agent_name": {
+                            "type": "string",
+                            "description": "Agent name (e.g., 'Cece', 'Agent-1')"
+                        },
+                        "agent_type": {
+                            "type": "string",
+                            "description": "Agent type (e.g., 'Claude', 'GPT-4')"
+                        },
+                        "human_user": {
+                            "type": "string",
+                            "description": "Associated human user"
+                        },
+                        "capabilities": {
+                            "type": "array",
+                            "items": {"type": "string"},
+                            "description": "Session capabilities"
+                        }
+                    },
+                    "required": ["session_id", "agent_name", "agent_type"]
+                }
+            ),
+            Tool(
+                name="session_list",
+                description="List all active sessions in the mesh.",
+                input_schema={
+                    "type": "object",
+                    "properties": {
+                        "include_offline": {
+                            "type": "boolean",
+                            "description": "Include offline sessions"
+                        }
+                    }
+                }
+            ),
+            Tool(
+                name="session_ping",
+                description="Ping a session to check if it's alive and send a collaborative ping message.",
+                input_schema={
+                    "type": "object",
+                    "properties": {
+                        "from_session": {
+                            "type": "string",
+                            "description": "Your session ID"
+                        },
+                        "to_session": {
+                            "type": "string",
+                            "description": "Target session ID to ping"
+                        }
+                    },
+                    "required": ["from_session", "to_session"]
+                }
+            ),
+            Tool(
+                name="collab_send",
+                description="Send a collaboration message to another session.",
+                input_schema={
+                    "type": "object",
+                    "properties": {
+                        "from_session": {
+                            "type": "string",
+                            "description": "Your session ID"
+                        },
+                        "to_session": {
+                            "type": "string",
+                            "description": "Target session ID"
+                        },
+                        "message_type": {
+                            "type": "string",
+                            "enum": ["ping", "request", "response", "notification", "task_offer", "task_accept", "sync", "handoff"],
+                            "description": "Type of message"
+                        },
+                        "subject": {
+                            "type": "string",
+                            "description": "Message subject"
+                        },
+                        "body": {
+                            "type": "string",
+                            "description": "Message body"
+                        },
+                        "data": {
+                            "type": "object",
+                            "description": "Additional data",
+                            "additionalProperties": True
+                        }
+                    },
+                    "required": ["from_session", "to_session", "subject", "body"]
+                }
+            ),
+            Tool(
+                name="collab_broadcast",
+                description="Broadcast a message to all active sessions.",
+                input_schema={
+                    "type": "object",
+                    "properties": {
+                        "from_session": {
+                            "type": "string",
+                            "description": "Your session ID"
+                        },
+                        "subject": {
+                            "type": "string",
+                            "description": "Message subject"
+                        },
+                        "body": {
+                            "type": "string",
+                            "description": "Message body"
+                        }
+                    },
+                    "required": ["from_session", "subject", "body"]
+                }
+            ),
+            Tool(
+                name="collab_get_messages",
+                description="Get collaboration messages for a session.",
+                input_schema={
+                    "type": "object",
+                    "properties": {
+                        "session_id": {
+                            "type": "string",
+                            "description": "Session ID to get messages for"
+                        },
+                        "message_type": {
+                            "type": "string",
+                            "enum": ["ping", "request", "response", "broadcast", "notification", "task_offer", "task_accept", "sync", "handoff"],
+                            "description": "Filter by message type"
+                        }
+                    },
+                    "required": ["session_id"]
+                }
+            ),
+            Tool(
+                name="memory_set",
+                description="Store a value in shared memory accessible by all sessions.",
+                input_schema={
+                    "type": "object",
+                    "properties": {
+                        "session_id": {
+                            "type": "string",
+                            "description": "Your session ID"
+                        },
+                        "key": {
+                            "type": "string",
+                            "description": "Memory key"
+                        },
+                        "value": {
+                            "description": "Value to store (any type)"
+                        },
+                        "memory_type": {
+                            "type": "string",
+                            "enum": ["state", "fact", "decision", "task", "context", "note", "config"],
+                            "description": "Type of memory entry"
+                        },
+                        "tags": {
+                            "type": "array",
+                            "items": {"type": "string"},
+                            "description": "Tags for searching"
+                        }
+                    },
+                    "required": ["session_id", "key", "value"]
+                }
+            ),
+            Tool(
+                name="memory_get",
+                description="Get a value from shared memory.",
+                input_schema={
+                    "type": "object",
+                    "properties": {
+                        "key": {
+                            "type": "string",
+                            "description": "Memory key"
+                        }
+                    },
+                    "required": ["key"]
+                }
+            ),
+            Tool(
+                name="memory_search",
+                description="Search shared memory by pattern or tags.",
+                input_schema={
+                    "type": "object",
+                    "properties": {
+                        "pattern": {
+                            "type": "string",
+                            "description": "Key pattern (supports * wildcard)"
+                        },
+                        "tags": {
+                            "type": "array",
+                            "items": {"type": "string"},
+                            "description": "Tags to search for"
+                        },
+                        "session_id": {
+                            "type": "string",
+                            "description": "Filter by session ID"
+                        }
+                    }
+                }
+            ),
         ]
 
     def _define_resources(self) -> List[Resource]:
@@ -310,6 +521,39 @@ class BlackRoadMCP:
             except ImportError as e:
                 print(f"Warning: Could not load WebhookReceiver: {e}", file=sys.stderr)
         return self._webhook_receiver
+
+    @property
+    def session_registry(self):
+        """Lazy load the Session Registry."""
+        if self._session_registry is None:
+            try:
+                from sessions.registry import SessionRegistry
+                self._session_registry = SessionRegistry()
+            except ImportError as e:
+                print(f"Warning: Could not load SessionRegistry: {e}", file=sys.stderr)
+        return self._session_registry
+
+    @property
+    def collaboration_hub(self):
+        """Lazy load the Collaboration Hub."""
+        if self._collaboration_hub is None:
+            try:
+                from sessions.collaboration import CollaborationHub
+                self._collaboration_hub = CollaborationHub(self.session_registry)
+            except ImportError as e:
+                print(f"Warning: Could not load CollaborationHub: {e}", file=sys.stderr)
+        return self._collaboration_hub
+
+    @property
+    def shared_memory(self):
+        """Lazy load the Shared Memory."""
+        if self._shared_memory is None:
+            try:
+                from sessions.memory import SharedMemory
+                self._shared_memory = SharedMemory()
+            except ImportError as e:
+                print(f"Warning: Could not load SharedMemory: {e}", file=sys.stderr)
+        return self._shared_memory
 
     # =========================================================================
     # Tool Implementations
@@ -537,6 +781,215 @@ class BlackRoadMCP:
         return {"node": node, "config": config}
 
     # =========================================================================
+    # Session Management Tool Implementations
+    # =========================================================================
+
+    async def tool_session_register(
+        self,
+        session_id: str,
+        agent_name: str,
+        agent_type: str,
+        human_user: Optional[str] = None,
+        capabilities: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
+        """Register a new session."""
+        if not self.session_registry:
+            return {"error": "Session registry not available"}
+
+        session = self.session_registry.register(
+            session_id=session_id,
+            agent_name=agent_name,
+            agent_type=agent_type,
+            human_user=human_user,
+            capabilities=capabilities or [],
+        )
+
+        return {
+            "success": True,
+            "session": session.to_dict(),
+            "message": f"Registered session {session_id}",
+        }
+
+    async def tool_session_list(self, include_offline: bool = False) -> Dict[str, Any]:
+        """List active sessions."""
+        if not self.session_registry:
+            return {"error": "Session registry not available"}
+
+        sessions = self.session_registry.list_sessions(include_offline=include_offline)
+
+        return {
+            "sessions": [s.to_dict() for s in sessions],
+            "count": len(sessions),
+        }
+
+    async def tool_session_ping(self, from_session: str, to_session: str) -> Dict[str, Any]:
+        """Ping a session."""
+        if not self.collaboration_hub:
+            return {"error": "Collaboration hub not available"}
+
+        # Update registry ping
+        if self.session_registry:
+            self.session_registry.ping(from_session)
+
+        # Send collaboration ping
+        message = self.collaboration_hub.ping_session(from_session, to_session)
+
+        return {
+            "success": True,
+            "message": message.to_dict(),
+            "signal": message.format_signal(),
+        }
+
+    async def tool_collab_send(
+        self,
+        from_session: str,
+        to_session: str,
+        subject: str,
+        body: str,
+        message_type: str = "request",
+        data: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """Send a collaboration message."""
+        if not self.collaboration_hub:
+            return {"error": "Collaboration hub not available"}
+
+        from sessions.collaboration import MessageType
+
+        msg_type = MessageType(message_type)
+
+        message = self.collaboration_hub.send(
+            from_session=from_session,
+            to_session=to_session,
+            type=msg_type,
+            subject=subject,
+            body=body,
+            data=data,
+        )
+
+        return {
+            "success": True,
+            "message": message.to_dict(),
+            "signal": message.format_signal(),
+        }
+
+    async def tool_collab_broadcast(
+        self,
+        from_session: str,
+        subject: str,
+        body: str,
+        data: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """Broadcast a message to all sessions."""
+        if not self.collaboration_hub:
+            return {"error": "Collaboration hub not available"}
+
+        message = self.collaboration_hub.broadcast(
+            from_session=from_session,
+            subject=subject,
+            body=body,
+            data=data,
+        )
+
+        return {
+            "success": True,
+            "message": message.to_dict(),
+            "signal": message.format_signal(),
+        }
+
+    async def tool_collab_get_messages(
+        self,
+        session_id: str,
+        message_type: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Get messages for a session."""
+        if not self.collaboration_hub:
+            return {"error": "Collaboration hub not available"}
+
+        from sessions.collaboration import MessageType
+
+        msg_type = MessageType(message_type) if message_type else None
+
+        messages = self.collaboration_hub.get_messages(
+            session_id=session_id,
+            message_type=msg_type,
+        )
+
+        return {
+            "messages": [msg.to_dict() for msg in messages],
+            "count": len(messages),
+        }
+
+    async def tool_memory_set(
+        self,
+        session_id: str,
+        key: str,
+        value: Any,
+        memory_type: str = "state",
+        tags: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
+        """Store a value in shared memory."""
+        if not self.shared_memory:
+            return {"error": "Shared memory not available"}
+
+        from sessions.memory import MemoryType
+
+        mem_type = MemoryType(memory_type)
+
+        entry = self.shared_memory.set(
+            session_id=session_id,
+            key=key,
+            value=value,
+            type=mem_type,
+            tags=tags or [],
+        )
+
+        return {
+            "success": True,
+            "entry": entry.to_dict(),
+            "message": f"Stored {key} in shared memory",
+        }
+
+    async def tool_memory_get(self, key: str) -> Dict[str, Any]:
+        """Get a value from shared memory."""
+        if not self.shared_memory:
+            return {"error": "Shared memory not available"}
+
+        value = self.shared_memory.get(key)
+
+        if value is None:
+            return {"found": False, "key": key}
+
+        return {
+            "found": True,
+            "key": key,
+            "value": value,
+        }
+
+    async def tool_memory_search(
+        self,
+        pattern: Optional[str] = None,
+        tags: Optional[List[str]] = None,
+        session_id: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Search shared memory."""
+        if not self.shared_memory:
+            return {"error": "Shared memory not available"}
+
+        if pattern:
+            entries = self.shared_memory.search(pattern)
+        elif tags:
+            entries = self.shared_memory.get_by_tags(tags)
+        elif session_id:
+            entries = self.shared_memory.get_by_session(session_id)
+        else:
+            return {"error": "Specify pattern, tags, or session_id"}
+
+        return {
+            "entries": [e.to_dict() for e in entries],
+            "count": len(entries),
+        }
+
+    # =========================================================================
     # Resource Implementations
     # =========================================================================
 
@@ -648,6 +1101,16 @@ class BlackRoadMCP:
             "process_webhook": self.tool_process_webhook,
             "get_signals": self.tool_get_signals,
             "get_node_config": self.tool_get_node_config,
+            # Session management tools
+            "session_register": self.tool_session_register,
+            "session_list": self.tool_session_list,
+            "session_ping": self.tool_session_ping,
+            "collab_send": self.tool_collab_send,
+            "collab_broadcast": self.tool_collab_broadcast,
+            "collab_get_messages": self.tool_collab_get_messages,
+            "memory_set": self.tool_memory_set,
+            "memory_get": self.tool_memory_get,
+            "memory_search": self.tool_memory_search,
         }
 
         if tool_name not in tool_map:

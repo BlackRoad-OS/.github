@@ -1,0 +1,104 @@
+{
+  "entries": {
+    "c1e9fd53-77ac-4139-9d9b-1e9cca8c322f": {
+      "entry_id": "c1e9fd53-77ac-4139-9d9b-1e9cca8c322f",
+      "type": "state",
+      "key": "project_plan",
+      "value": {
+        "phase": "design",
+        "tasks": [
+          "api-design",
+          "database-schema",
+          "frontend-mockups"
+        ],
+        "deadline": "2026-02-01"
+      },
+      "session_id": "cece-001",
+      "timestamp": "2026-01-27T21:11:11.492758",
+      "ttl": null,
+      "tags": [
+        "project",
+        "active",
+        "design"
+      ],
+      "metadata": {}
+    },
+    "f628f9f0-2488-412d-8080-2142d48aae5a": {
+      "entry_id": "f628f9f0-2488-412d-8080-2142d48aae5a",
+      "type": "task",
+      "key": "task_api-design",
+      "value": {
+        "status": "completed",
+        "owner": "agent-002",
+        "completed_at": "2026-01-27"
+      },
+      "session_id": "agent-002",
+      "timestamp": "2026-01-27T21:11:11.492905",
+      "ttl": null,
+      "tags": [
+        "task",
+        "completed"
+      ],
+      "metadata": {}
+    },
+    "9bedbbff-8385-4324-89ce-8a3dbd89772a": {
+      "entry_id": "9bedbbff-8385-4324-89ce-8a3dbd89772a",
+      "type": "state",
+      "key": "implementation_plan",
+      "value": {
+        "feature": "user-auth",
+        "steps": [
+          "design",
+          "implement",
+          "test",
+          "review"
+        ]
+      },
+      "session_id": "planner-001",
+      "timestamp": "2026-01-27T21:11:11.494364",
+      "ttl": null,
+      "tags": [
+        "plan",
+        "auth"
+      ],
+      "metadata": {}
+    },
+    "baac04e5-3913-459d-851d-fe03887f5605": {
+      "entry_id": "baac04e5-3913-459d-851d-fe03887f5605",
+      "type": "state",
+      "key": "code_user-auth",
+      "value": {
+        "file": "auth.py",
+        "lines": 250,
+        "tests": "passing"
+      },
+      "session_id": "developer-001",
+      "timestamp": "2026-01-27T21:11:11.495052",
+      "ttl": null,
+      "tags": [
+        "code",
+        "ready-for-review"
+      ],
+      "metadata": {}
+    },
+    "5f0e106f-385c-4fdb-be39-ff23112215f3": {
+      "entry_id": "5f0e106f-385c-4fdb-be39-ff23112215f3",
+      "type": "decision",
+      "key": "review_user-auth",
+      "value": {
+        "status": "approved",
+        "issues": 0,
+        "suggestions": 2
+      },
+      "session_id": "reviewer-001",
+      "timestamp": "2026-01-27T21:11:11.496007",
+      "ttl": null,
+      "tags": [
+        "review",
+        "approved"
+      ],
+      "metadata": {}
+    }
+  },
+  "updated_at": "2026-01-27T21:11:11.496065"
+}
