@@ -1,131 +1,206 @@
-# Health check for all mesh nodes
-# Monitors service availability
+# ═══════════════════════════════════════════════════════════════════
+# Health Check — Full Mesh + Tunnel + Service Monitoring
+# Probes all 4 tunnels, 30+ domains, every service endpoint
+# ═══════════════════════════════════════════════════════════════════
 
 name: Health Check
 
 on:
   schedule:
-    # Run every 15 minutes
-    - cron: '*/15 * * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch:
     inputs:
-      node:
-        description: 'Node to check (or "all")'
+      target:
+        description: 'Target to check'
         required: false
         default: 'all'
-        type: string
+        type: choice
+        options:
+          - all
+          - tunnels
+          - services
+          - dns
+          - edge
 
 env:
-  # Node endpoints (would come from secrets in production)
-  LUCIDIA_ENDPOINT: ${{ vars.LUCIDIA_ENDPOINT || 'http://lucidia.local:8080' }}
-  SHELLFISH_ENDPOINT: ${{ vars.SHELLFISH_ENDPOINT || 'https://api.blackroad.dev' }}
+  API_ENDPOINT: ${{ vars.API_ENDPOINT || 'https://api.blackroad.ai' }}
 
 jobs:
-  # Check core nodes
-  check-nodes:
-    name: Check Nodes
+  # ─── Edge Gateway Health ───────────────────────────────────────
+  check-edge:
+    name: Edge Gateway
     runs-on: ubuntu-latest
+    if: inputs.target == 'all' || inputs.target == 'edge' || inputs.target == ''
     outputs:
-      status: ${{ steps.summary.outputs.status }}
-
+      status: ${{ steps.edge.outputs.status }}
+      latency: ${{ steps.edge.outputs.latency }}
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Check Lucidia (Primary)
-        id: lucidia
-        continue-on-error: true
+      - name: Check API Gateway
+        id: edge
         run: |
-          echo "🔍 Checking Lucidia..."
-          # curl -sf "$LUCIDIA_ENDPOINT/health" || echo "status=unhealthy" >> $GITHUB_OUTPUT
-          echo "status=healthy" >> $GITHUB_OUTPUT
-          echo "✓ Lucidia: healthy"
-
-      - name: Check Shellfish (Cloud Gateway)
-        id: shellfish
-        continue-on-error: true
-        run: |
-          echo "🔍 Checking Shellfish..."
-          # curl -sf "$SHELLFISH_ENDPOINT/health" || echo "status=unhealthy" >> $GITHUB_OUTPUT
-          echo "status=healthy" >> $GITHUB_OUTPUT
-          echo "✓ Shellfish: healthy"
-
-      - name: Summary
-        id: summary
-        run: |
-          echo "📊 NODE HEALTH"
-          echo "=============="
-          echo "Lucidia:   ${{ steps.lucidia.outputs.status || 'unknown' }}"
-          echo "Shellfish: ${{ steps.shellfish.outputs.status || 'unknown' }}"
-
-          # Determine overall status
-          if [[ "${{ steps.lucidia.outputs.status }}" == "unhealthy" ]] || [[ "${{ steps.shellfish.outputs.status }}" == "unhealthy" ]]; then
-            echo "status=degraded" >> $GITHUB_OUTPUT
-          else
+          START=$(date +%s%N)
+          HTTP_CODE=$(curl -sf -o /dev/null -w "%{http_code}" --connect-timeout 5 --max-time 10 \
+            "$API_ENDPOINT/health" 2>/dev/null || echo "000")
+          END=$(date +%s%N)
+          LATENCY=$(( (END - START) / 1000000 ))
+          echo "Edge: $HTTP_CODE (${LATENCY}ms)"
+          echo "latency=$LATENCY" >> $GITHUB_OUTPUT
+          if [ "$HTTP_CODE" = "200" ]; then
             echo "status=healthy" >> $GITHUB_OUTPUT
+          else
+            echo "status=unhealthy" >> $GITHUB_OUTPUT
           fi
 
-  # Check external services
-  check-services:
-    name: Check Services
+      - name: Check Auth & AI endpoints
+        continue-on-error: true
+        run: |
+          for ep in /v1/auth/login /v1/ai/complete /v1/ai/embed; do
+            CODE=$(curl -sf -o /dev/null -w "%{http_code}" --connect-timeout 5 \
+              "$API_ENDPOINT$ep" -X POST -d '{}' -H "Content-Type: application/json" 2>/dev/null || echo "000")
+            echo "  $ep: $CODE"
+          done
+
+      - name: Check Webhook receivers
+        continue-on-error: true
+        run: |
+          for src in github stripe salesforce slack cloudflare figma google; do
+            CODE=$(curl -sf -o /dev/null -w "%{http_code}" --connect-timeout 5 \
+              "$API_ENDPOINT/v1/webhooks/$src" -X POST -d '{}' \
+              -H "Content-Type: application/json" 2>/dev/null || echo "000")
+            echo "  webhook/$src: $CODE"
+          done
+
+  # ─── Tunnel Health (All 4) ────────────────────────────────────
+  check-tunnels:
+    name: Tunnel ${{ matrix.tunnel }}
     runs-on: ubuntu-latest
-
+    if: inputs.target == 'all' || inputs.target == 'tunnels' || inputs.target == ''
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - tunnel: blackroad-primary
+            node: lucidia
+            endpoints: "api.blackroad.ai metrics.blackroad.ai auth.blackroad.ai vault.blackroad.ai inference.blackroad.ai gov.blackroad.ai"
+          - tunnel: blackroad-storage
+            node: aria
+            endpoints: "storage.blackroad.ai gdrive.blackroad.ai backup.blackroad.ai"
+          - tunnel: blackroad-agents
+            node: alice
+            endpoints: "agents.blackroad.ai ai.blackroad.ai mcp.blackroad.ai"
+          - tunnel: blackroad-compute
+            node: octavia
+            endpoints: "jobs.blackroad.ai content.blackroad.ai social.blackroad.ai game.blackroad.ai figma.blackroad.ai assets.blackroad.ai lab.blackroad.ai"
     steps:
-      - name: Check GitHub API
+      - name: Probe tunnel endpoints
+        id: check
         run: |
-          echo "🔍 Checking GitHub API..."
-          curl -sf "https://api.github.com/rate_limit" > /dev/null && echo "✓ GitHub: healthy" || echo "✗ GitHub: unhealthy"
+          HEALTHY=0
+          TOTAL=0
+          for domain in ${{ matrix.endpoints }}; do
+            TOTAL=$((TOTAL + 1))
+            CODE=$(curl -sf -o /dev/null -w "%{http_code}" --connect-timeout 5 --max-time 10 \
+              "https://${domain}/health" 2>/dev/null || echo "000")
+            if [ "$CODE" = "200" ]; then
+              echo "  [OK]  ${domain}"
+              HEALTHY=$((HEALTHY + 1))
+            else
+              echo "  [$CODE] ${domain}"
+            fi
+          done
+          echo "healthy=$HEALTHY" >> $GITHUB_OUTPUT
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
 
-      - name: Check Cloudflare
+  # ─── DNS Resolution ────────────────────────────────────────────
+  check-dns:
+    name: DNS Resolution
+    runs-on: ubuntu-latest
+    if: inputs.target == 'all' || inputs.target == 'dns' || inputs.target == ''
+    outputs:
+      resolved: ${{ steps.dns.outputs.resolved }}
+      failed: ${{ steps.dns.outputs.failed }}
+    steps:
+      - name: Check all 30+ domains
+        id: dns
         run: |
-          echo "🔍 Checking Cloudflare..."
-          curl -sf "https://www.cloudflare.com/cdn-cgi/trace" > /dev/null && echo "✓ Cloudflare: healthy" || echo "✗ Cloudflare: unhealthy"
+          DOMAINS="api edge metrics auth vault inference gov ssh storage storage-console gdrive backup db redis agents ai mcp hailo-alice jobs content social game meta figma assets lab cdn learn docs prometheus"
+          RESOLVED=0
+          FAILED=0
+          for name in $DOMAINS; do
+            RESULT=$(dig +short "${name}.blackroad.ai" 2>/dev/null | head -1)
+            if [ -n "$RESULT" ]; then
+              echo "  [OK]  ${name}.blackroad.ai"
+              RESOLVED=$((RESOLVED + 1))
+            else
+              echo "  [--]  ${name}.blackroad.ai"
+              FAILED=$((FAILED + 1))
+            fi
+          done
+          echo "resolved=$RESOLVED" >> $GITHUB_OUTPUT
+          echo "failed=$FAILED" >> $GITHUB_OUTPUT
 
-  # Update status badge
+  # ─── External Services ─────────────────────────────────────────
+  check-services:
+    name: External Services
+    runs-on: ubuntu-latest
+    if: inputs.target == 'all' || inputs.target == 'services' || inputs.target == ''
+    steps:
+      - name: Check GitHub + Cloudflare + Tailscale
+        run: |
+          for svc in "https://api.github.com/rate_limit" "https://www.cloudflare.com/cdn-cgi/trace" "https://controlplane.tailscale.com/key"; do
+            CODE=$(curl -sf -o /dev/null -w "%{http_code}" --connect-timeout 5 "$svc" 2>/dev/null || echo "000")
+            echo "$svc: $CODE"
+          done
+
+  # ─── Update Status ────────────────────────────────────────────
   update-status:
     name: Update Status
     runs-on: ubuntu-latest
-    needs: [check-nodes, check-services]
+    needs: [check-edge, check-tunnels, check-dns, check-services]
     if: always()
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: Update status file
+      - name: Write status
         run: |
-          cat > .STATUS << 'EOF'
-          # BlackRoad Status
-
+          cat > .STATUS << EOF
+          # BlackRoad System Status
           Last check: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
-
-          ## Mesh Status: ${{ needs.check-nodes.outputs.status || 'unknown' }}
-
-          ## Recent Checks
-          - Nodes: ${{ needs.check-nodes.result }}
-          - Services: ${{ needs.check-services.result }}
-
-          ## Signals
-          📡 health_check completed
+          Edge: ${{ needs.check-edge.outputs.status || 'unknown' }} (${{ needs.check-edge.outputs.latency || '?' }}ms)
+          DNS resolved: ${{ needs.check-dns.outputs.resolved || '?' }}
+          DNS failed: ${{ needs.check-dns.outputs.failed || '?' }}
+          Signal: health_check_complete
           EOF
-
-      - name: Commit status
+      - name: Commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .STATUS
-          git diff --cached --quiet || git commit -m "📊 Update health status"
-          # git push || true
+          git diff --cached --quiet || git commit -m "Update health status"
 
-  # Alert on degraded status
+  # ─── Alert ─────────────────────────────────────────────────────
   alert:
     name: Alert
     runs-on: ubuntu-latest
-    needs: [check-nodes]
-    if: needs.check-nodes.outputs.status == 'degraded'
-
+    needs: [check-edge, check-tunnels]
+    if: always() && needs.check-edge.outputs.status == 'unhealthy'
     steps:
-      - name: Send alert
+      - name: Emit alert
         run: |
-          echo "⚠️ ALERT: Mesh status degraded"
-          echo ""
-          echo "Some nodes are unhealthy. Check the logs for details."
-          # Would send to Slack, PagerDuty, etc.
+          echo "ALERT: Edge gateway unhealthy"
+          echo "Signal: OS → OS : health_alert, status=degraded"
+      - name: Create issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo,
+              labels: 'health-alert', state: 'open',
+            });
+            if (existing.data.length === 0) {
+              await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo,
+                title: `Health Alert: Edge unhealthy (${new Date().toISOString()})`,
+                body: `Edge: ${{ needs.check-edge.outputs.status }}\nDNS failed: ${{ needs.check-dns.outputs.failed || '?' }}`,
+                labels: ['health-alert', 'automated'],
+              });
+            }

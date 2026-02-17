@@ -1,0 +1,171 @@
+# ═══════════════════════════════════════════════════════════════════
+# BlackRoad Tunnel Failover & Auto-Reconnect Configuration
+# ═══════════════════════════════════════════════════════════════════
+
+failover:
+  version: "1.0"
+
+# ─── Cloudflared Resilience Settings ─────────────────────────────
+cloudflared_settings:
+  global:
+    retries: 5
+    grace_period: 30s
+    protocol: quic
+    max_edge_connections: 4
+    ha_connections: 4
+    no_autoupdate: true
+    metrics: "0.0.0.0:2000"
+
+  per_tunnel:
+    blackroad-primary:
+      edge_connections: 4
+      grace_period: 30s
+    blackroad-storage:
+      edge_connections: 4
+      grace_period: 60s
+    blackroad-agents:
+      edge_connections: 4
+      grace_period: 120s
+    blackroad-compute:
+      edge_connections: 4
+      grace_period: 60s
+
+# ─── Origin Health Probes ────────────────────────────────────────
+health_probes:
+  blackroad-primary:
+    - target: http://localhost:8080/health
+      interval: 10s
+      timeout: 5s
+      unhealthy_threshold: 3
+      service: operator
+    - target: http://localhost:9090/health
+      interval: 15s
+      timeout: 5s
+      unhealthy_threshold: 3
+      service: metrics
+    - target: http://localhost:8087/health
+      interval: 10s
+      timeout: 5s
+      unhealthy_threshold: 3
+      service: auth
+    - target: http://localhost:5000/health
+      interval: 30s
+      timeout: 10s
+      unhealthy_threshold: 2
+      service: hailo
+
+  blackroad-storage:
+    - target: http://localhost:9000/minio/health/live
+      interval: 10s
+      timeout: 5s
+      unhealthy_threshold: 3
+      service: minio
+    - target: tcp://localhost:5432
+      interval: 15s
+      timeout: 5s
+      unhealthy_threshold: 3
+      service: postgres
+    - target: tcp://localhost:6379
+      interval: 10s
+      timeout: 3s
+      unhealthy_threshold: 3
+      service: redis
+
+  blackroad-agents:
+    - target: http://localhost:8082/health
+      interval: 10s
+      timeout: 5s
+      unhealthy_threshold: 3
+      service: agent-runtime
+    - target: http://localhost:8083/health
+      interval: 15s
+      timeout: 5s
+      unhealthy_threshold: 3
+      service: mcp-server
+    - target: http://localhost:5000/health
+      interval: 30s
+      timeout: 10s
+      unhealthy_threshold: 2
+      service: hailo
+
+  blackroad-compute:
+    - target: http://localhost:8081/health
+      interval: 10s
+      timeout: 5s
+      unhealthy_threshold: 3
+      service: job-worker
+    - target: http://localhost:5000/health
+      interval: 30s
+      timeout: 10s
+      unhealthy_threshold: 2
+      service: hailo
+
+# ─── Failover Chains ────────────────────────────────────────────
+failover_chains:
+  api_routing:
+    primary:   { tunnel: blackroad-primary, service: "http://lucidia:8080" }
+    fallback:
+      - { tunnel: blackroad-agents, service: "http://alice:8080", after: 30s }
+      - { edge_only: true, service: workers_ai_classify, condition: all_origins_down }
+
+  ai_inference:
+    primary:   { tunnel: blackroad-agents, service: "http://alice:5000" }
+    fallback:
+      - { tunnel: blackroad-primary, service: "http://lucidia:5000", after: 10s }
+      - { tunnel: blackroad-compute, service: "http://octavia:5000", after: 20s }
+      - { edge_only: true, service: workers_ai, condition: all_hailo_down }
+
+  storage:
+    primary:   { tunnel: blackroad-storage, service: "http://aria:9000" }
+    fallback:
+      - { edge_only: true, service: r2_direct, after: 60s }
+
+  database:
+    primary:   { tunnel: blackroad-storage, service: "tcp://aria:5432" }
+    fallback:
+      - { edge_only: true, service: d1_edge, after: 30s }
+
+# ─── Recovery ────────────────────────────────────────────────────
+recovery:
+  auto_restart:
+    enabled: true
+    max_restarts: 5
+    window: 300s
+    backoff: { initial: 5s, max: 60s, multiplier: 2 }
+
+  self_healing:
+    - trigger: tunnel_down > 300s
+      action: restart_cloudflared
+      signal: "🔄 OS → CLD : tunnel_auto_restart"
+    - trigger: origin_service_down
+      action: restart_service_via_ssh
+      signal: "🔄 OS → HW : restart_service"
+    - trigger: all_tunnels_down
+      action: alert_and_escalate
+      signal: "🚨 OS → OS : all_tunnels_down"
+
+# ─── Monitoring ──────────────────────────────────────────────────
+monitoring:
+  prometheus:
+    scrape_targets:
+      - { job: cloudflared-lucidia, target: "lucidia.blackroad.ts.net:2000" }
+      - { job: cloudflared-aria, target: "aria.blackroad.ts.net:2000" }
+      - { job: cloudflared-alice, target: "alice.blackroad.ts.net:2000" }
+      - { job: cloudflared-octavia, target: "octavia.blackroad.ts.net:2000" }
+
+    alerts:
+      - { name: tunnel_down, expr: "cloudflared_tunnel_active_sessions == 0", for: 2m, severity: critical }
+      - { name: high_error_rate, expr: "rate(cloudflared_tunnel_request_errors[5m]) > 0.05", for: 5m, severity: warning }
+      - { name: high_latency, expr: "cloudflared_tunnel_response_time_seconds > 2", for: 3m, severity: warning }
+      - { name: origin_unhealthy, expr: "cloudflared_tunnel_origin_health == 0", for: 1m, severity: critical }
+
+# ─── Edge Protection ────────────────────────────────────────────
+edge_protection:
+  waf: { enabled: true, managed_rules: true }
+  ddos: { enabled: true, sensitivity: medium }
+  rate_limiting:
+    global: 10000/min
+    per_ip: 1000/min
+    per_api_key: 5000/min
+  ssl: { mode: full_strict, min_version: "1.2", always_https: true }
+  caching: { browser_ttl: 3600, edge_ttl: 86400, bypass_cookie: session_id }

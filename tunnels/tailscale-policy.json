@@ -1,0 +1,102 @@
+{
+  "tagOwners": {
+    "tag:primary":   ["autogroup:admin"],
+    "tag:compute":   ["autogroup:admin"],
+    "tag:storage":   ["autogroup:admin"],
+    "tag:agents":    ["autogroup:admin"],
+    "tag:mobile":    ["autogroup:admin"],
+    "tag:dev":       ["autogroup:admin"],
+    "tag:server":    ["autogroup:admin"]
+  },
+
+  "groups": {
+    "group:admins":    ["admin@blackroad.ai"],
+    "group:operators": ["admin@blackroad.ai", "ops@blackroad.ai"],
+    "group:devs":      ["admin@blackroad.ai", "dev@blackroad.ai"]
+  },
+
+  "acls": [
+    {
+      "action": "accept",
+      "src":    ["group:admins"],
+      "dst":    ["*:*"]
+    },
+    {
+      "action": "accept",
+      "src":    ["tag:server", "tag:primary", "tag:compute", "tag:storage", "tag:agents"],
+      "dst":    ["tag:server", "tag:primary", "tag:compute", "tag:storage", "tag:agents"]
+    },
+    {
+      "action": "accept",
+      "src":    ["tag:primary"],
+      "dst":    ["*:*"]
+    },
+    {
+      "action": "accept",
+      "src":    ["tag:compute"],
+      "dst":    ["tag:storage:5432,6379,9000"]
+    },
+    {
+      "action": "accept",
+      "src":    ["tag:agents"],
+      "dst":    ["tag:storage:5432,6379,9000", "tag:primary:8080,9090"]
+    },
+    {
+      "action": "accept",
+      "src":    ["tag:dev"],
+      "dst":    ["tag:server:80,443,3000,5000,8080-8110,9000,9090,9100"]
+    },
+    {
+      "action": "accept",
+      "src":    ["tag:mobile"],
+      "dst":    ["tag:primary:8080"]
+    },
+    {
+      "action": "accept",
+      "src":    ["group:operators"],
+      "dst":    ["tag:server:22"]
+    },
+    {
+      "action": "accept",
+      "src":    ["tag:primary"],
+      "dst":    ["tag:server:9100"]
+    }
+  ],
+
+  "ssh": [
+    {
+      "action": "accept",
+      "src":    ["group:admins"],
+      "dst":    ["tag:server"],
+      "users":  ["root", "pi", "autogroup:nonroot"]
+    },
+    {
+      "action": "accept",
+      "src":    ["group:operators"],
+      "dst":    ["tag:server"],
+      "users":  ["pi"]
+    }
+  ],
+
+  "nodeAttrs": [
+    { "target": ["lucidia"],  "attr": ["tag:primary", "tag:server"] },
+    { "target": ["octavia"],  "attr": ["tag:compute", "tag:server"] },
+    { "target": ["aria"],     "attr": ["tag:storage", "tag:server"] },
+    { "target": ["alice"],    "attr": ["tag:agents", "tag:server"] },
+    { "target": ["arcadia"],  "attr": ["tag:mobile"] },
+    { "target": ["cecilia"],  "attr": ["tag:dev"] }
+  ],
+
+  "autoApprovers": {
+    "routes": {
+      "192.168.1.0/24": ["tag:primary"],
+      "10.0.0.0/8":     ["tag:server"]
+    }
+  },
+
+  "dns": {
+    "nameservers":   ["100.100.100.100"],
+    "searchDomains": ["blackroad.ts.net"],
+    "magicDNS":      true
+  }
+}
