@@ -90,40 +90,100 @@ orgs:
         url: https://github.com/BlackRoad-AI/agents
 
   # ─────────────────────────────────────────────────────────────────
-  # CLD - Edge/Cloud Computing
+  # CLD - Edge/Cloud Computing (Enhanced)
   # ─────────────────────────────────────────────────────────────────
   CLD:
     name: BlackRoad-Cloud
     code: CLD
-    status: planned
-    description: Edge compute, Cloudflare, CDN
+    status: active
+    description: Edge compute, Cloudflare platform, CDN, tunnels, API gateway
     github: https://github.com/BlackRoad-Cloud
     primary_node: shellfish
 
     services:
-      worker:
-        description: Cloudflare Worker API
+      api_gateway:
+        description: Primary API gateway (auth, rate limiting, routing)
         type: external
         endpoint: https://api.blackroad.ai
         health: https://api.blackroad.ai/health
+        edge_endpoint: https://edge.blackroad.ai
+        openapi: workers/api-gateway/openapi.yaml
 
       kv:
-        description: Edge KV storage
+        description: Edge KV storage (5 namespaces)
         type: external
-        endpoint: https://api.blackroad.ai/kv
+        endpoint: https://api.blackroad.ai/v1/kv
+        health: https://api.blackroad.ai/health
         provider: cloudflare
+        namespaces: [CACHE, SESSIONS, RATE_LIMITS, CONFIG, API_KEYS]
 
       d1:
-        description: Edge database
+        description: Edge D1 database (9 tables)
         type: external
-        endpoint: https://api.blackroad.ai/db
+        endpoint: https://api.blackroad.ai/v1/db
+        health: https://api.blackroad.ai/health
         provider: cloudflare
+        schema: workers/api-gateway/schema.sql
 
       r2:
-        description: Object storage
+        description: R2 object storage (S3-compatible)
         type: external
-        endpoint: https://storage.blackroad.ai
+        endpoint: https://api.blackroad.ai/v1/storage
+        health: https://api.blackroad.ai/health
         provider: cloudflare
+        cdn: https://cdn.blackroad.ai
+
+      vectorize:
+        description: Vector embeddings index (semantic search)
+        type: external
+        endpoint: https://api.blackroad.ai/v1/vectorize
+        provider: cloudflare
+
+      ai:
+        description: Workers AI (completion, embeddings, classification)
+        type: external
+        endpoint: https://api.blackroad.ai/v1/ai
+        provider: cloudflare
+        models:
+          - "@cf/meta/llama-3.1-8b-instruct"
+          - "@cf/baai/bge-base-en-v1.5"
+          - "@cf/huggingface/distilbert-sst-2-int8"
+
+      queues:
+        description: Async message queues (webhooks, analytics, signals)
+        type: internal
+        provider: cloudflare
+        queues: [blackroad-webhooks, blackroad-analytics, blackroad-signals, blackroad-dlq]
+
+      websocket:
+        description: Real-time WebSocket signal streaming
+        type: external
+        endpoint: wss://api.blackroad.ai/ws
+        provider: cloudflare
+
+      webhooks:
+        description: Webhook ingestion (7 providers)
+        type: external
+        endpoint: https://api.blackroad.ai/v1/webhooks
+        providers: [github, stripe, salesforce, slack, cloudflare, figma, google]
+
+    tunnels:
+      blackroad-primary:
+        origin: lucidia
+        config: tunnels/cloudflared-lucidia.yaml
+        services_exposed: 15
+      blackroad-storage:
+        origin: aria
+        config: tunnels/cloudflared-aria.yaml
+        services_exposed: 7
+      blackroad-agents:
+        origin: alice
+        config: tunnels/cloudflared-alice.yaml
+        services_exposed: 7
+      blackroad-compute:
+        origin: octavia
+        config: tunnels/cloudflared-octavia.yaml
+        services_exposed: 11
 
     repos:
       - name: workers
@@ -132,6 +192,9 @@ orgs:
       - name: infra
         description: Infrastructure as code
         url: https://github.com/BlackRoad-Cloud/infra
+      - name: tunnels
+        description: Tunnel configurations
+        url: https://github.com/BlackRoad-Cloud/tunnels
 
   # ─────────────────────────────────────────────────────────────────
   # HW - Hardware / IoT
@@ -580,3 +643,249 @@ rules:
     org: AI
     service: router
     priority: 50
+
+  # Edge API routing
+  - pattern: "api|gateway|endpoint|rest"
+    org: CLD
+    service: api_gateway
+    priority: 80
+
+  - pattern: "tunnel|mesh|node|health"
+    org: CLD
+    service: api_gateway
+    priority: 80
+
+  - pattern: "webhook|event|hook"
+    org: CLD
+    service: webhooks
+    priority: 90
+
+  - pattern: "vector|embedding|semantic|search"
+    org: CLD
+    service: vectorize
+    priority: 80
+
+  - pattern: "websocket|realtime|stream|ws"
+    org: CLD
+    service: websocket
+    priority: 90
+
+  - pattern: "cache|kv|session"
+    org: CLD
+    service: kv
+    priority: 80
+
+  - pattern: "storage|upload|download|file|asset"
+    org: CLD
+    service: r2
+    priority: 70
+
+  - pattern: "database|query|sql|table"
+    org: CLD
+    service: d1
+    priority: 70
+
+  # Security routing
+  - pattern: "auth|login|token|jwt|secret|vault"
+    org: SEC
+    service: auth
+    priority: 90
+
+  # Backup and archive
+  - pattern: "backup|archive|restore|snapshot"
+    org: ARC
+    service: backup
+    priority: 80
+
+  # Game and metaverse
+  - pattern: "game|play|metaverse|vr|ar|unity"
+    org: INT
+    service: game
+    priority: 80
+
+  # Education
+  - pattern: "learn|course|tutorial|documentation"
+    org: EDU
+    service: courses
+    priority: 70
+
+  # Governance
+  - pattern: "governance|proposal|vote|dao"
+    org: GOV
+    service: governance
+    priority: 80
+
+
+# ═══════════════════════════════════════════════════════════════════
+# EDGE API ENDPOINTS (Unified)
+# All external traffic flows through the API Gateway Worker
+# ═══════════════════════════════════════════════════════════════════
+
+edge_api:
+  base_url: https://api.blackroad.ai
+  openapi: workers/api-gateway/openapi.yaml
+  version: v1
+
+  endpoints:
+    # Public (no auth)
+    - path: /health
+      method: GET
+      auth: none
+      description: Edge health check
+
+    - path: /v1/status
+      method: GET
+      auth: none
+      description: Full system status
+
+    - path: /v1/auth/login
+      method: POST
+      auth: none
+      description: Login with email/password
+
+    - path: /v1/auth/register
+      method: POST
+      auth: none
+      description: Register new user
+
+    - path: /v1/auth/refresh
+      method: POST
+      auth: none
+      description: Refresh JWT token
+
+    # Webhooks (signature-verified)
+    - path: /v1/webhooks/{source}
+      method: POST
+      auth: signature
+      sources: [github, stripe, salesforce, slack, cloudflare, figma, google]
+
+    # AI (authenticated)
+    - path: /v1/ai/complete
+      method: POST
+      auth: required
+      tunnel: blackroad-agents → alice:8080
+
+    - path: /v1/ai/embed
+      method: POST
+      auth: required
+      tunnel: blackroad-agents → alice:8080
+
+    - path: /v1/ai/classify
+      method: POST
+      auth: required
+      edge: Workers AI
+
+    - path: /v1/ai/agents
+      method: [GET, POST]
+      auth: required
+      tunnel: blackroad-agents → alice:8082
+
+    # Routing & Signals
+    - path: /v1/route
+      method: POST
+      auth: required
+      tunnel: blackroad-primary → lucidia:8080
+
+    - path: /v1/signals
+      method: [GET, POST]
+      auth: required
+      edge: D1 + Queue
+
+    - path: /v1/metrics
+      method: GET
+      auth: required
+      tunnel: blackroad-primary → lucidia:9090
+
+    # Edge Data
+    - path: /v1/kv/{key}
+      method: [GET, PUT, DELETE]
+      auth: required
+      edge: KV
+
+    - path: /v1/db/{table}
+      method: [GET, POST]
+      auth: required
+      edge: D1
+
+    - path: /v1/storage/{key}
+      method: [GET, PUT, DELETE, HEAD]
+      auth: required
+      edge: R2
+
+    - path: /v1/vectorize
+      method: POST
+      auth: required
+      edge: Vectorize
+
+    # WebSocket
+    - path: /ws
+      method: GET (upgrade)
+      auth: none
+      edge: Durable Object (WebSocketRoom)
+
+    # Org Proxies
+    - path: /v1/hw/*
+      auth: required
+      tunnel: blackroad-primary → lucidia
+    - path: /v1/sec/*
+      auth: required
+      tunnel: blackroad-primary → lucidia
+    - path: /v1/fnd/*
+      auth: required
+      tunnel: blackroad-primary → lucidia
+    - path: /v1/gov/*
+      auth: required
+      tunnel: blackroad-primary → lucidia
+    - path: /v1/ven/*
+      auth: required
+      tunnel: blackroad-primary → lucidia
+    - path: /v1/bbx/*
+      auth: required
+      tunnel: blackroad-primary → lucidia
+    - path: /v1/med/*
+      auth: required
+      tunnel: blackroad-compute → octavia
+    - path: /v1/int/*
+      auth: required
+      tunnel: blackroad-compute → octavia
+    - path: /v1/stu/*
+      auth: required
+      tunnel: blackroad-compute → octavia
+    - path: /v1/lab/*
+      auth: required
+      tunnel: blackroad-compute → octavia
+    - path: /v1/edu/*
+      auth: required
+      tunnel: blackroad-storage → aria
+    - path: /v1/arc/*
+      auth: required
+      tunnel: blackroad-storage → aria
+
+
+# ═══════════════════════════════════════════════════════════════════
+# TUNNEL TOPOLOGY
+# ═══════════════════════════════════════════════════════════════════
+
+tunnels:
+  mesh_config: tunnels/mesh-topology.yaml
+
+  active_tunnels:
+    - name: blackroad-primary
+      node: lucidia
+      config: tunnels/cloudflared-lucidia.yaml
+      domains: [api.blackroad.ai, metrics.blackroad.ai, auth.blackroad.ai, vault.blackroad.ai, inference.blackroad.ai, gov.blackroad.ai, ssh.blackroad.ai, prometheus.blackroad.ai]
+
+    - name: blackroad-storage
+      node: aria
+      config: tunnels/cloudflared-aria.yaml
+      domains: [storage.blackroad.ai, storage-console.blackroad.ai, gdrive.blackroad.ai, backup.blackroad.ai, db.blackroad.ai, redis.blackroad.ai]
+
+    - name: blackroad-agents
+      node: alice
+      config: tunnels/cloudflared-alice.yaml
+      domains: [agents.blackroad.ai, ai.blackroad.ai, mcp.blackroad.ai, hailo-alice.blackroad.ai]
+
+    - name: blackroad-compute
+      node: octavia
+      config: tunnels/cloudflared-octavia.yaml
+      domains: [jobs.blackroad.ai, content.blackroad.ai, social.blackroad.ai, game.blackroad.ai, meta.blackroad.ai, figma.blackroad.ai, assets.blackroad.ai, lab.blackroad.ai]

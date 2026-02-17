@@ -1,11 +1,13 @@
 # shellfish - Gateway Node Configuration
-# Role: Edge routing, CDN, external API gateway
+# Role: Edge routing, CDN, external API gateway, async processing
+# Enhanced: Full Cloudflare platform with Queues, Vectorize, Analytics, Durable Objects
 
 node:
   name: shellfish
   role: gateway
   status: planned
   type: cloud
+  version: "2.0"
 
 platform:
   provider: Cloudflare
@@ -15,88 +17,381 @@ platform:
     - D1
     - R2
     - AI
+    - Queues
+    - Durable Objects
+    - Analytics Engine
+    - Vectorize
+    - Hyperdrive
+    - Pages
+    - Tunnels
 
 network:
   domains:
-    - api.blackroad.ai
-    - app.blackroad.ai
-    - cdn.blackroad.ai
+    primary:
+      - api.blackroad.ai
+      - edge.blackroad.ai
+    services:
+      - ai.blackroad.ai
+      - agents.blackroad.ai
+      - mcp.blackroad.ai
+      - storage.blackroad.ai
+      - storage-console.blackroad.ai
+      - metrics.blackroad.ai
+      - auth.blackroad.ai
+      - vault.blackroad.ai
+      - inference.blackroad.ai
+      - gov.blackroad.ai
+      - jobs.blackroad.ai
+      - content.blackroad.ai
+      - social.blackroad.ai
+      - game.blackroad.ai
+      - meta.blackroad.ai
+      - figma.blackroad.ai
+      - assets.blackroad.ai
+      - lab.blackroad.ai
+      - gdrive.blackroad.ai
+      - backup.blackroad.ai
+      - learn.blackroad.ai
+      - docs.blackroad.ai
+    infrastructure:
+      - ssh.blackroad.ai
+      - ssh-aria.blackroad.ai
+      - ssh-alice.blackroad.ai
+      - ssh-octavia.blackroad.ai
+      - prometheus.blackroad.ai
+      - cdn.blackroad.ai
+    tcp:
+      - db.blackroad.ai
+      - redis.blackroad.ai
 
+# ─── Workers ─────────────────────────────────────────────────────
 workers:
-  blackroad-api:
+  blackroad-api-gateway:
+    description: Primary API gateway with auth, rate limiting, routing
+    config: workers/api-gateway/wrangler.toml
     routes:
       - pattern: "api.blackroad.ai/*"
+      - pattern: "edge.blackroad.ai/*"
     bindings:
       kv:
         - name: CACHE
-          id: xxx
+          description: API response cache
+        - name: SESSIONS
+          description: User sessions
+        - name: RATE_LIMITS
+          description: Rate limiting counters
+        - name: CONFIG
+          description: Dynamic configuration
+        - name: API_KEYS
+          description: API key store
       d1:
         - name: DB
           database_name: blackroad
       r2:
-        - name: STORAGE
+        - name: ASSETS
           bucket_name: blackroad-assets
+        - name: UPLOADS
+          bucket_name: blackroad-uploads
       ai:
         - name: AI
+      queues:
+        - name: WEBHOOK_QUEUE
+          queue: blackroad-webhooks
+        - name: ANALYTICS_QUEUE
+          queue: blackroad-analytics
+        - name: SIGNAL_QUEUE
+          queue: blackroad-signals
+      analytics:
+        - name: ANALYTICS
+      vectorize:
+        - name: VECTORIZE
+          index: blackroad-embeddings
+      durable_objects:
+        - name: RATE_LIMITER
+          class: RateLimiter
+        - name: SESSION_MANAGER
+          class: SessionManager
+        - name: WEBSOCKET_ROOM
+          class: WebSocketRoom
+      services:
+        - name: ORIGIN_PRIMARY
+          service: blackroad-tunnel-lucidia
+          description: Tunnel to lucidia (primary)
+        - name: ORIGIN_STORAGE
+          service: blackroad-tunnel-aria
+          description: Tunnel to aria (storage)
+        - name: ORIGIN_AGENTS
+          service: blackroad-tunnel-alice
+          description: Tunnel to alice (agents)
+        - name: ORIGIN_COMPUTE
+          service: blackroad-tunnel-octavia
+          description: Tunnel to octavia (compute)
 
-  blackroad-router:
+  blackroad-webhook-receiver:
+    description: Dedicated webhook ingestion worker
     routes:
-      - pattern: "app.blackroad.ai/*"
+      - pattern: "webhooks.blackroad.ai/*"
     bindings:
-      service:
-        - name: ORIGIN
-          service: blackroad-tunnel
+      queues:
+        - name: WEBHOOK_QUEUE
+          queue: blackroad-webhooks
 
+  blackroad-asset-proxy:
+    description: CDN asset proxy with R2 origin
+    routes:
+      - pattern: "cdn.blackroad.ai/*"
+    bindings:
+      r2:
+        - name: ASSETS
+          bucket_name: blackroad-assets
+      kv:
+        - name: CACHE
+
+  blackroad-cron-worker:
+    description: Scheduled tasks — health checks, metrics, key rotation
+    triggers:
+      crons:
+        - "*/5 * * * *"    # Health check nodes every 5 min
+        - "0 * * * *"      # Hourly metrics aggregation
+        - "0 0 * * *"      # Daily API key rotation
+        - "0 6 * * *"      # Daily report generation
+
+# ─── Tunnels ─────────────────────────────────────────────────────
 tunnels:
   blackroad-primary:
     origin: lucidia.blackroad.ts.net
+    config: tunnels/cloudflared-lucidia.yaml
     routes:
       - hostname: api.blackroad.ai
-        path: /v1/*
+        path: /v1/route*
         service: http://lucidia:8080
+      - hostname: api.blackroad.ai
+        path: /v1/bridge*
+        service: http://lucidia:8080
+      - hostname: api.blackroad.ai
+        path: /v1/metrics*
+        service: http://lucidia:9090
+      - hostname: api.blackroad.ai
+        path: /v1/auth*
+        service: http://lucidia:8087
+      - hostname: api.blackroad.ai
+        path: /v1/inference*
+        service: http://lucidia:5000
+      - hostname: api.blackroad.ai
+        path: /v1/sensors*
+        service: http://lucidia:8085
+      - hostname: api.blackroad.ai
+        path: /v1/mesh*
+        service: http://lucidia:8086
+      - hostname: api.blackroad.ai
+        path: /v1/salesforce*
+        service: http://lucidia:8091
+      - hostname: api.blackroad.ai
+        path: /v1/stripe*
+        service: http://lucidia:8092
+      - hostname: api.blackroad.ai
+        path: /v1/crm*
+        service: http://lucidia:8091
+      - hostname: api.blackroad.ai
+        path: /v1/governance*
+        service: http://lucidia:8096
+      - hostname: api.blackroad.ai
+        path: /v1/portfolio*
+        service: http://lucidia:8101
+      - hostname: api.blackroad.ai
+        path: /v1/enterprise*
+        service: http://lucidia:8102
+      - hostname: api.blackroad.ai
+        path: /v1/secret*
+        service: http://lucidia:8200
+      - hostname: ssh.blackroad.ai
+        service: ssh://lucidia:22
 
   blackroad-storage:
     origin: aria.blackroad.ts.net
+    config: tunnels/cloudflared-aria.yaml
     routes:
       - hostname: storage.blackroad.ai
         service: http://aria:9000
+      - hostname: storage-console.blackroad.ai
+        service: http://aria:9001
+      - hostname: api.blackroad.ai
+        path: /v1/gdrive*
+        service: http://aria:8097
+      - hostname: api.blackroad.ai
+        path: /v1/backup*
+        service: http://aria:8098
+      - hostname: db.blackroad.ai
+        service: tcp://aria:5432
+      - hostname: redis.blackroad.ai
+        service: tcp://aria:6379
 
+  blackroad-agents:
+    origin: alice.blackroad.ts.net
+    config: tunnels/cloudflared-alice.yaml
+    routes:
+      - hostname: api.blackroad.ai
+        path: /v1/agents*
+        service: http://alice:8082
+      - hostname: api.blackroad.ai
+        path: /v1/complete*
+        service: http://alice:8080
+      - hostname: api.blackroad.ai
+        path: /v1/embed*
+        service: http://alice:8080
+      - hostname: api.blackroad.ai
+        path: /v1/mcp*
+        service: http://alice:8083
+      - hostname: api.blackroad.ai
+        path: /v1/hailo*
+        service: http://alice:5000
+
+  blackroad-compute:
+    origin: octavia.blackroad.ts.net
+    config: tunnels/cloudflared-octavia.yaml
+    routes:
+      - hostname: api.blackroad.ai
+        path: /v1/jobs*
+        service: http://octavia:8081
+      - hostname: api.blackroad.ai
+        path: /v1/content*
+        service: http://octavia:8093
+      - hostname: api.blackroad.ai
+        path: /v1/social*
+        service: http://octavia:8094
+      - hostname: api.blackroad.ai
+        path: /v1/game*
+        service: http://octavia:8095
+      - hostname: api.blackroad.ai
+        path: /v1/figma*
+        service: http://octavia:8099
+      - hostname: api.blackroad.ai
+        path: /v1/assets*
+        service: http://octavia:8100
+      - hostname: api.blackroad.ai
+        path: /v1/experiments*
+        service: http://octavia:8090
+
+# ─── KV Namespaces ───────────────────────────────────────────────
 kv_namespaces:
   CACHE:
     description: API response cache
     ttl_default: 3600
   SESSIONS:
-    description: User sessions
+    description: User sessions + refresh tokens
     ttl_default: 86400
   RATE_LIMITS:
     description: Rate limiting counters
     ttl_default: 60
+  CONFIG:
+    description: Dynamic runtime configuration
+    ttl_default: 0
+  API_KEYS:
+    description: API key store with scopes
+    ttl_default: 0
 
+# ─── D1 Databases ────────────────────────────────────────────────
 d1_databases:
   blackroad:
     description: Edge database
+    schema: workers/api-gateway/schema.sql
     tables:
       - users
       - sessions
       - api_keys
+      - signals
       - audit_log
+      - routing_rules
+      - webhooks
+      - node_health
+      - metrics_hourly
 
+# ─── R2 Buckets ──────────────────────────────────────────────────
 r2_buckets:
   blackroad-assets:
-    description: Static assets
+    description: Static assets and CDN origin
     public: true
     cors: true
+    custom_domain: cdn.blackroad.ai
   blackroad-uploads:
-    description: User uploads
+    description: User uploads (authenticated)
     public: false
 
+# ─── Queues ──────────────────────────────────────────────────────
+queues:
+  blackroad-webhooks:
+    description: Inbound webhook processing queue
+    max_batch_size: 10
+    max_batch_timeout: 30
+    dead_letter_queue: blackroad-dlq
+  blackroad-analytics:
+    description: Analytics event processing
+    max_batch_size: 50
+    max_batch_timeout: 60
+  blackroad-signals:
+    description: Inter-org signal fanout
+    max_batch_size: 10
+    max_batch_timeout: 10
+  blackroad-dlq:
+    description: Dead letter queue for failed messages
+    max_batch_size: 10
+    max_batch_timeout: 300
+
+# ─── Vectorize ───────────────────────────────────────────────────
+vectorize:
+  blackroad-embeddings:
+    description: Semantic search index for docs, code, knowledge
+    dimensions: 768
+    metric: cosine
+
+# ─── Durable Objects ─────────────────────────────────────────────
+durable_objects:
+  RateLimiter:
+    description: Per-key sliding window rate limiter
+    storage: transactional
+  SessionManager:
+    description: Server-side session store with strong consistency
+    storage: transactional
+  WebSocketRoom:
+    description: Real-time signal broadcasting via WebSocket rooms
+    storage: transactional
+
+# ─── Analytics Engine ────────────────────────────────────────────
+analytics_engine:
+  datasets:
+    - name: ANALYTICS
+      description: Request-level analytics (latency, status, geo)
+
+# ─── Secrets ─────────────────────────────────────────────────────
+secrets:
+  - JWT_SECRET
+  - STRIPE_WEBHOOK_SECRET
+  - GITHUB_WEBHOOK_SECRET
+  - ANTHROPIC_API_KEY
+  - SALESFORCE_CLIENT_SECRET
+  - GOOGLE_CREDENTIALS
+
+# ─── Environment ─────────────────────────────────────────────────
 environment:
   NODE_NAME: shellfish
   NODE_ROLE: gateway
   ENVIRONMENT: production
+  API_VERSION: v1
+  CORS_ORIGIN: "*"
 
+# ─── Signals ─────────────────────────────────────────────────────
 signals:
   emit:
     - "🌐 CLD → OS : request_routed, path=${path}, edge=${colo}"
     - "⚠️ CLD → OS : rate_limited, ip=${ip}"
     - "📊 CLD → OS : traffic_report, requests=${count}, p50=${p50}ms"
+    - "📡 CLD → OS : webhook_received, source=${source}"
+    - "🚀 CLD → OS : worker_deployed, worker=${name}, version=${version}"
+    - "🔄 CLD → OS : tunnel_status, tunnel=${tunnel}, status=${status}"
+    - "🧠 CLD → AI : ai_request, model=${model}, tokens=${tokens}"
+    - "💾 CLD → ARC : object_stored, key=${key}, size=${size}"
+    - "🔐 CLD → SEC : auth_event, type=${type}, user=${user}"
+  receive:
+    - "🔄 OS → CLD : purge_cache, pattern=${pattern}"
+    - "🛑 OS → CLD : block_ip, ip=${ip}, duration=${duration}"
+    - "📢 OS → CLD : broadcast_signal, signal=${signal}"

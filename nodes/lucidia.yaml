@@ -27,11 +27,24 @@ network:
     ip: 100.x.x.1
   cloudflare:
     tunnel: blackroad-primary
+    config: tunnels/cloudflared-lucidia.yaml
     routes:
       - hostname: api.blackroad.ai
         service: http://localhost:8080
+      - hostname: metrics.blackroad.ai
+        service: http://localhost:9090
+      - hostname: auth.blackroad.ai
+        service: http://localhost:8087
+      - hostname: vault.blackroad.ai
+        service: http://localhost:8200
+      - hostname: inference.blackroad.ai
+        service: http://localhost:5000
+      - hostname: gov.blackroad.ai
+        service: http://localhost:8096
       - hostname: ssh.blackroad.ai
         service: ssh://localhost:22
+      - hostname: prometheus.blackroad.ai
+        service: http://localhost:9100
 
 services:
   blackroad-operator:

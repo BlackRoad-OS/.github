@@ -1,0 +1,130 @@
+# ═══════════════════════════════════════════════════════════════════
+# Cloudflare Tunnel — lucidia (Primary Node)
+# Exposes core services: operator, metrics, auth, governance, vault
+# ═══════════════════════════════════════════════════════════════════
+#
+# Install:  curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64 -o /usr/local/bin/cloudflared && chmod +x /usr/local/bin/cloudflared
+# Auth:     cloudflared tunnel login
+# Create:   cloudflared tunnel create blackroad-primary
+# Run:      cloudflared tunnel --config /etc/cloudflared/lucidia.yaml run
+# Service:  systemctl enable --now cloudflared
+
+tunnel: blackroad-primary
+credentials-file: /etc/cloudflared/blackroad-primary.json
+
+# ─── Origin server configuration ─────────────────────────────────
+originRequest:
+  connectTimeout: 30s
+  tlsTimeout: 10s
+  tcpKeepAlive: 30s
+  noHappyEyeballs: false
+  keepAliveConnections: 10
+  keepAliveTimeout: 90s
+  httpHostHeader: ""
+  originServerName: ""
+  noTLSVerify: false
+
+# ─── Ingress rules ──────────────────────────────────────────────
+ingress:
+  # ── Core API (Operator) ──
+  - hostname: api.blackroad.ai
+    path: /v1/route.*
+    service: http://localhost:8080
+    originRequest:
+      connectTimeout: 10s
+
+  - hostname: api.blackroad.ai
+    path: /v1/bridge.*
+    service: http://localhost:8080
+
+  - hostname: api.blackroad.ai
+    path: /health
+    service: http://localhost:8080
+
+  # ── Metrics Dashboard ──
+  - hostname: api.blackroad.ai
+    path: /v1/metrics.*
+    service: http://localhost:9090
+
+  - hostname: metrics.blackroad.ai
+    service: http://localhost:9090
+    originRequest:
+      connectTimeout: 10s
+
+  # ── Authentication ──
+  - hostname: api.blackroad.ai
+    path: /v1/auth.*
+    service: http://localhost:8087
+
+  - hostname: auth.blackroad.ai
+    service: http://localhost:8087
+
+  # ── Secrets Vault ──
+  - hostname: api.blackroad.ai
+    path: /v1/secret.*
+    service: http://localhost:8200
+
+  - hostname: vault.blackroad.ai
+    service: http://localhost:8200
+    originRequest:
+      noTLSVerify: true
+
+  # ── Hailo AI Inference ──
+  - hostname: api.blackroad.ai
+    path: /v1/inference.*
+    service: http://localhost:5000
+
+  - hostname: inference.blackroad.ai
+    service: http://localhost:5000
+    originRequest:
+      connectTimeout: 60s
+
+  # ── Hardware / Sensors ──
+  - hostname: api.blackroad.ai
+    path: /v1/sensors.*
+    service: http://localhost:8085
+
+  - hostname: api.blackroad.ai
+    path: /v1/mesh.*
+    service: http://localhost:8086
+
+  # ── Foundation (Salesforce / Stripe / CRM) ──
+  - hostname: api.blackroad.ai
+    path: /v1/salesforce.*
+    service: http://localhost:8091
+
+  - hostname: api.blackroad.ai
+    path: /v1/stripe.*
+    service: http://localhost:8092
+
+  - hostname: api.blackroad.ai
+    path: /v1/crm.*
+    service: http://localhost:8091
+
+  # ── Governance ──
+  - hostname: api.blackroad.ai
+    path: /v1/governance.*
+    service: http://localhost:8096
+
+  - hostname: gov.blackroad.ai
+    service: http://localhost:8096
+
+  # ── Ventures / Blackbox ──
+  - hostname: api.blackroad.ai
+    path: /v1/portfolio.*
+    service: http://localhost:8101
+
+  - hostname: api.blackroad.ai
+    path: /v1/enterprise.*
+    service: http://localhost:8102
+
+  # ── SSH access ──
+  - hostname: ssh.blackroad.ai
+    service: ssh://localhost:22
+
+  # ── Prometheus metrics scrape ──
+  - hostname: prometheus.blackroad.ai
+    service: http://localhost:9100
+
+  # ── Catch-all ──
+  - service: http_status:404
