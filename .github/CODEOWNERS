@@ -1,0 +1,36 @@
+# ═══════════════════════════════════════════════════════════════════
+# CODEOWNERS — Enforce code review for security-critical paths
+# ═══════════════════════════════════════════════════════════════════
+#
+# These owners will be automatically requested for review when
+# someone opens a pull request that modifies code they own.
+#
+# Order matters: later matches take precedence.
+
+# ─── Default: core team reviews everything ───────────────────────
+* @BlackRoad-OS/core
+
+# ─── Workflows require security review ───────────────────────────
+.github/workflows/ @BlackRoad-OS/security @BlackRoad-OS/core
+.github/dependabot.yml @BlackRoad-OS/security
+
+# ─── API Gateway (auth, rate-limiting, crypto) ───────────────────
+workers/api-gateway/src/ @BlackRoad-OS/security @BlackRoad-OS/core
+workers/api-gateway/wrangler.toml @BlackRoad-OS/security
+
+# ─── Database schema changes ─────────────────────────────────────
+workers/api-gateway/schema.sql @BlackRoad-OS/security @BlackRoad-OS/core
+
+# ─── Tunnel configs (network access) ─────────────────────────────
+tunnels/ @BlackRoad-OS/security @BlackRoad-OS/infra
+tunnels/tailscale-policy.json @BlackRoad-OS/security
+
+# ─── Node configs (infrastructure) ───────────────────────────────
+nodes/ @BlackRoad-OS/infra @BlackRoad-OS/core
+
+# ─── Routing rules ───────────────────────────────────────────────
+routes/ @BlackRoad-OS/core
+
+# ─── Security policy itself ──────────────────────────────────────
+SECURITY.md @BlackRoad-OS/security
+.github/CODEOWNERS @BlackRoad-OS/security

@@ -75,6 +75,15 @@ export default {
     const ctx_req = buildContext(request);
 
     try {
+      // Request body size limit (10MB)
+      const contentLength = parseInt(request.headers.get("Content-Length") || "0");
+      if (contentLength > 10 * 1024 * 1024) {
+        return Response.json(
+          { error: "payload_too_large", message: "Request body exceeds 10MB limit" },
+          { status: 413, headers: corsHeaders(request.headers.get("Origin")) },
+        );
+      }
+
       // CORS preflight
       if (request.method === "OPTIONS") {
         return handleCORS(request);
@@ -96,12 +105,12 @@ export default {
       // Track analytics
       ctx.waitUntil(trackAnalytics(env, ctx_req, response));
 
-      return addCORSHeaders(response);
+      return addCORSHeaders(response, request.headers.get("Origin"));
     } catch (err: any) {
       ctx.waitUntil(trackError(env, ctx_req, err));
       return Response.json(
-        { error: "internal_error", message: err.message, requestId: ctx_req.requestId },
-        { status: 500, headers: corsHeaders() },
+        { error: "internal_error", message: "An unexpected error occurred", requestId: ctx_req.requestId },
+        { status: 500, headers: corsHeaders(request.headers.get("Origin")) },
       );
     }
   },
@@ -267,11 +276,15 @@ async function authenticate(request: Request, env: Env): Promise<AuthResult> {
 async function handleLogin(request: Request, env: Env): Promise<Response> {
   const { email, password } = await request.json() as { email: string; password: string };
 
+  if (!email || !password || typeof email !== "string" || typeof password !== "string") {
+    return Response.json({ error: "invalid_request", message: "Email and password required" }, { status: 400, headers: corsHeaders() });
+  }
+
   const user = await env.DB.prepare(
     "SELECT id, email, password_hash, role FROM users WHERE email = ?",
   ).bind(email).first();
 
-  if (!user) {
+  if (!user || !await verifyPassword(password, user.password_hash as string)) {
     return Response.json({ error: "invalid_credentials" }, { status: 401, headers: corsHeaders() });
   }
 
@@ -290,6 +303,19 @@ async function handleLogin(request: Request, env: Env): Promise<Response> {
 
 async function handleRegister(request: Request, env: Env): Promise<Response> {
   const { email, name, password } = await request.json() as { email: string; name: string; password: string };
+
+  if (!email || !name || !password) {
+    return Response.json({ error: "invalid_request", message: "Email, name, and password required" }, { status: 400, headers: corsHeaders() });
+  }
+  if (typeof email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return Response.json({ error: "invalid_email" }, { status: 400, headers: corsHeaders() });
+  }
+  if (typeof password !== "string" || password.length < 8) {
+    return Response.json({ error: "weak_password", message: "Password must be at least 8 characters" }, { status: 400, headers: corsHeaders() });
+  }
+  if (typeof name !== "string" || name.length > 100) {
+    return Response.json({ error: "invalid_name" }, { status: 400, headers: corsHeaders() });
+  }
 
   const existing = await env.DB.prepare("SELECT id FROM users WHERE email = ?").bind(email).first();
   if (existing) {
@@ -481,8 +507,28 @@ async function handleWebSocket(
   env: Env,
   ctx: RequestContext,
 ): Promise<Response> {
+  // Require authentication for WebSocket upgrade
   const url = new URL(request.url);
+  const token = url.searchParams.get("token") || request.headers.get("Sec-WebSocket-Protocol") || "";
+
+  const payload = await verifyJWT(token, env.JWT_SECRET);
+  if (!payload) {
+    return Response.json(
+      { error: "unauthorized", message: "Valid JWT required for WebSocket connection" },
+      { status: 401, headers: corsHeaders() },
+    );
+  }
+
+  const ALLOWED_ROOMS = ["signals", "metrics", "alerts", "chat", "status"];
   const room = url.searchParams.get("room") || "signals";
+  if (!ALLOWED_ROOMS.includes(room)) {
+    return Response.json(
+      { error: "forbidden", message: "Invalid room" },
+      { status: 403, headers: corsHeaders() },
+    );
+  }
+
+  ctx.userId = payload.sub;
   const id = env.WEBSOCKET_ROOM.idFromName(room);
   const roomObj = env.WEBSOCKET_ROOM.get(id);
   return roomObj.fetch(request);
@@ -571,21 +617,41 @@ async function handleKV(request: Request, env: Env): Promise<Response> {
   }
 }
 
+const ALLOWED_TABLES = [
+  "users", "sessions", "api_keys", "signals", "audit_log",
+  "routing_rules", "webhooks", "node_health", "metrics_hourly",
+];
+
+const FORBIDDEN_SQL_PATTERNS = /\b(DROP|ALTER|CREATE|TRUNCATE|DELETE\s+FROM|UPDATE\s+\w+\s+SET|INSERT\s+INTO)\b/i;
+
 async function handleD1(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url);
   const table = url.pathname.replace("/v1/db/", "").split("/")[0];
 
+  if (!ALLOWED_TABLES.includes(table)) {
+    return Response.json(
+      { error: "forbidden", message: "Access to this table is not allowed" },
+      { status: 403, headers: corsHeaders() },
+    );
+  }
+
   switch (request.method) {
     case "GET": {
-      const limit = parseInt(url.searchParams.get("limit") || "50");
-      const offset = parseInt(url.searchParams.get("offset") || "0");
+      const limit = Math.min(Math.max(parseInt(url.searchParams.get("limit") || "50"), 1), 1000);
+      const offset = Math.max(parseInt(url.searchParams.get("offset") || "0"), 0);
       const results = await env.DB.prepare(
-        `SELECT * FROM ${table} LIMIT ? OFFSET ?`,
+        "SELECT * FROM " + table + " LIMIT ? OFFSET ?",
       ).bind(limit, offset).all();
       return Response.json(results, { headers: corsHeaders() });
     }
     case "POST": {
       const { query, params } = await request.json() as { query: string; params?: any[] };
+      if (FORBIDDEN_SQL_PATTERNS.test(query)) {
+        return Response.json(
+          { error: "forbidden", message: "Destructive queries are not allowed via API" },
+          { status: 403, headers: corsHeaders() },
+        );
+      }
       const stmt = env.DB.prepare(query);
       const result = params ? await stmt.bind(...params).run() : await stmt.run();
       return Response.json(result, { headers: corsHeaders() });
@@ -691,9 +757,22 @@ async function handleWebhookIngress(
       break;
     }
     case "stripe": {
-      const signature = request.headers.get("Stripe-Signature") || "";
-      if (!signature) {
+      const sigHeader = request.headers.get("Stripe-Signature") || "";
+      if (!sigHeader) {
         return Response.json({ error: "missing_signature" }, { status: 403, headers: corsHeaders() });
+      }
+      const timestampMatch = sigHeader.match(/t=(\d+)/);
+      const sigMatch = sigHeader.match(/v1=([a-f0-9]+)/);
+      if (!timestampMatch || !sigMatch) {
+        return Response.json({ error: "invalid_signature_format" }, { status: 403, headers: corsHeaders() });
+      }
+      const signedPayload = `${timestampMatch[1]}.${body}`;
+      if (!await verifyHMAC(signedPayload, `sha256=${sigMatch[1]}`, env.STRIPE_WEBHOOK_SECRET)) {
+        return Response.json({ error: "invalid_signature" }, { status: 403, headers: corsHeaders() });
+      }
+      // Reject if timestamp is older than 5 minutes (replay protection)
+      if (Math.abs(Date.now() / 1000 - parseInt(timestampMatch[1])) > 300) {
+        return Response.json({ error: "timestamp_expired" }, { status: 403, headers: corsHeaders() });
       }
       break;
     }
@@ -923,22 +1002,39 @@ function buildContext(request: Request): RequestContext {
   };
 }
 
-function corsHeaders(): Record<string, string> {
+const ALLOWED_ORIGINS = [
+  "https://blackroad.ai",
+  "https://app.blackroad.ai",
+  "https://admin.blackroad.ai",
+  "https://docs.blackroad.ai",
+  "https://api.blackroad.ai",
+];
+
+function corsHeaders(origin?: string | null): Record<string, string> {
+  const allowedOrigin = origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
   return {
-    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Origin": allowedOrigin,
     "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-API-Key",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-API-Key, X-Request-ID",
+    "Access-Control-Allow-Credentials": "true",
     "Access-Control-Max-Age": "86400",
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "X-XSS-Protection": "1; mode=block",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
   };
 }
 
 function handleCORS(request: Request): Response {
-  return new Response(null, { status: 204, headers: corsHeaders() });
+  const origin = request.headers.get("Origin");
+  return new Response(null, { status: 204, headers: corsHeaders(origin) });
 }
 
-function addCORSHeaders(response: Response): Response {
+function addCORSHeaders(response: Response, origin?: string | null): Response {
   const headers = new Headers(response.headers);
-  for (const [key, value] of Object.entries(corsHeaders())) {
+  for (const [key, value] of Object.entries(corsHeaders(origin))) {
     headers.set(key, value);
   }
   return new Response(response.body, { status: response.status, headers });
@@ -955,8 +1051,34 @@ async function hash(input: string): Promise<string> {
   return Array.from(new Uint8Array(buffer)).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-async function hashPassword(password: string): Promise<string> {
-  return hash(password + "blackroad-salt");
+async function hashPassword(password: string, salt?: string): Promise<string> {
+  const passwordSalt = salt || Array.from(crypto.getRandomValues(new Uint8Array(16)))
+    .map((b) => b.toString(16).padStart(2, "0")).join("");
+  const keyMaterial = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(password),
+    "PBKDF2",
+    false,
+    ["deriveBits"],
+  );
+  const derivedBits = await crypto.subtle.deriveBits(
+    { name: "PBKDF2", salt: new TextEncoder().encode(passwordSalt), iterations: 100000, hash: "SHA-256" },
+    keyMaterial,
+    256,
+  );
+  const derivedHash = Array.from(new Uint8Array(derivedBits))
+    .map((b) => b.toString(16).padStart(2, "0")).join("");
+  return `pbkdf2:100000:${passwordSalt}:${derivedHash}`;
+}
+
+async function verifyPassword(password: string, stored: string): Promise<boolean> {
+  if (stored.startsWith("pbkdf2:")) {
+    const [, , salt] = stored.split(":");
+    const computed = await hashPassword(password, salt);
+    return computed === stored;
+  }
+  // Legacy fallback for old SHA-256 hashes — re-hash on next login
+  return await hash(password + "blackroad-salt") === stored;
 }
 
 async function verifyJWT(token: string, secret: string): Promise<{ sub: string; role: string } | null> {

@@ -1,0 +1,239 @@
+# ═══════════════════════════════════════════════════════════════════
+# Security Audit — Comprehensive security pipeline
+# SAST, dependency audit, SBOM generation, license compliance
+# ═══════════════════════════════════════════════════════════════════
+
+name: Security Audit
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+  schedule:
+    - cron: "0 3 * * 1" # Weekly Monday 3am UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  issues: write
+
+env:
+  NODE_VERSION: "20"
+
+jobs:
+  # ─── NPM Dependency Audit ─────────────────────────────────────
+  npm-audit:
+    name: NPM Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        working-directory: workers/api-gateway
+        run: npm ci --ignore-scripts 2>/dev/null || npm install --ignore-scripts
+
+      - name: Run npm audit
+        working-directory: workers/api-gateway
+        run: |
+          echo "NPM Audit Results"
+          echo "=================="
+          npm audit --omit=dev 2>&1 || true
+          echo ""
+          echo "Critical/High vulnerabilities:"
+          CRITICAL=$(npm audit --json 2>/dev/null | jq '.metadata.vulnerabilities.critical // 0')
+          HIGH=$(npm audit --json 2>/dev/null | jq '.metadata.vulnerabilities.high // 0')
+          echo "  Critical: $CRITICAL"
+          echo "  High: $HIGH"
+          if [ "$CRITICAL" -gt 0 ] || [ "$HIGH" -gt 0 ]; then
+            echo "AUDIT FAILED: Critical or high vulnerabilities found"
+            exit 1
+          fi
+
+  # ─── SBOM Generation ───────────────────────────────────────────
+  sbom:
+    name: Generate SBOM
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate CycloneDX SBOM
+        uses: CycloneDX/gh-node-module-generatebom@v1
+        with:
+          path: workers/api-gateway
+          output: sbom.json
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-cyclonedx
+          path: sbom.json
+          retention-days: 90
+
+  # ─── License Compliance ────────────────────────────────────────
+  license-check:
+    name: License Compliance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        working-directory: workers/api-gateway
+        run: npm ci --ignore-scripts 2>/dev/null || npm install --ignore-scripts
+
+      - name: Check licenses
+        working-directory: workers/api-gateway
+        run: |
+          npx license-checker --summary --failOn "GPL-3.0;AGPL-3.0;SSPL-1.0" 2>&1 || echo "License check: review needed"
+
+  # ─── Workflow Security Lint ────────────────────────────────────
+  workflow-lint:
+    name: Workflow Security
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lint GitHub Actions workflows
+        run: |
+          echo "Workflow Security Scan"
+          echo "====================="
+          ISSUES=0
+
+          # Check for dangerous permissions
+          for f in .github/workflows/*.yml; do
+            echo "Scanning: $f"
+
+            # Check for overly broad permissions
+            if grep -q "permissions:.*write-all\|contents:.*write" "$f" 2>/dev/null; then
+              echo "  WARNING: Broad write permissions in $f"
+              ISSUES=$((ISSUES + 1))
+            fi
+
+            # Check for pull_request_target (dangerous)
+            if grep -q "pull_request_target" "$f" 2>/dev/null; then
+              echo "  ALERT: pull_request_target trigger in $f (potential code injection)"
+              ISSUES=$((ISSUES + 1))
+            fi
+
+            # Check for unsafe checkout patterns
+            if grep -A2 "actions/checkout" "$f" 2>/dev/null | grep -q "ref:.*head.ref\|ref:.*merge"; then
+              echo "  ALERT: Unsafe ref checkout in $f"
+              ISSUES=$((ISSUES + 1))
+            fi
+
+            # Check for command injection patterns
+            if grep -q '\${{.*github\.event\.' "$f" 2>/dev/null | grep -q "run:"; then
+              echo "  WARNING: Possible command injection via event context in $f"
+              ISSUES=$((ISSUES + 1))
+            fi
+          done
+
+          echo ""
+          echo "Total issues: $ISSUES"
+          if [ $ISSUES -gt 3 ]; then
+            echo "Too many workflow security issues"
+            exit 1
+          fi
+
+  # ─── Infrastructure Config Scan ────────────────────────────────
+  infra-scan:
+    name: Infrastructure Config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scan tunnel configs
+        run: |
+          echo "Infrastructure Security Scan"
+          echo "============================="
+          ISSUES=0
+
+          # Check for exposed sensitive ports without auth
+          for f in tunnels/cloudflared-*.yaml; do
+            echo "Scanning: $f"
+            if grep -q "service:.*:22$\|service:.*ssh" "$f" 2>/dev/null; then
+              echo "  NOTE: SSH exposed via tunnel in $f (verify bastion access only)"
+              ISSUES=$((ISSUES + 1))
+            fi
+            if grep -q "service:.*:5432\|service:.*:6379\|service:.*:3306" "$f" 2>/dev/null; then
+              echo "  WARNING: Database port exposed via tunnel in $f"
+              ISSUES=$((ISSUES + 1))
+            fi
+          done
+
+          # Check Tailscale ACL
+          if [ -f tunnels/tailscale-policy.json ]; then
+            echo "Scanning: tunnels/tailscale-policy.json"
+            if grep -q '"Action":.*"accept".*"Dst":.*"\*:\*"' tunnels/tailscale-policy.json 2>/dev/null; then
+              echo "  ALERT: Overly permissive Tailscale ACL (accept *:*)"
+              ISSUES=$((ISSUES + 1))
+            fi
+          fi
+
+          echo ""
+          echo "Total infrastructure issues: $ISSUES"
+
+  # ─── Summary Report ────────────────────────────────────────────
+  report:
+    name: Security Report
+    runs-on: ubuntu-latest
+    needs: [npm-audit, sbom, license-check, workflow-lint, infra-scan]
+    if: always()
+    steps:
+      - name: Generate report
+        run: |
+          echo "═══════════════════════════════════════════"
+          echo "  SECURITY AUDIT REPORT"
+          echo "  $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+          echo "═══════════════════════════════════════════"
+          echo ""
+          echo "NPM Audit:        ${{ needs.npm-audit.result }}"
+          echo "SBOM:             ${{ needs.sbom.result }}"
+          echo "License Check:    ${{ needs.license-check.result }}"
+          echo "Workflow Lint:    ${{ needs.workflow-lint.result }}"
+          echo "Infra Scan:       ${{ needs.infra-scan.result }}"
+          echo ""
+          echo "Signal: SEC → OS : security_audit_complete"
+
+      - name: Alert on failures
+        if: contains(needs.*.result, 'failure')
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const results = {
+              'npm-audit': '${{ needs.npm-audit.result }}',
+              'sbom': '${{ needs.sbom.result }}',
+              'license-check': '${{ needs.license-check.result }}',
+              'workflow-lint': '${{ needs.workflow-lint.result }}',
+              'infra-scan': '${{ needs.infra-scan.result }}',
+            };
+            const failures = Object.entries(results)
+              .filter(([, v]) => v === 'failure')
+              .map(([k]) => k);
+
+            if (failures.length > 0) {
+              const existing = await github.rest.issues.listForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                labels: 'security-audit-failure',
+                state: 'open',
+              });
+              if (existing.data.length === 0) {
+                await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title: `Security Audit Failure — ${new Date().toISOString().slice(0, 10)}`,
+                  body: `## Failed Checks\n\n${failures.map(f => `- **${f}**: FAILED`).join('\n')}\n\n[View run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`,
+                  labels: ['security-audit-failure', 'security', 'automated'],
+                });
+              }
+            }

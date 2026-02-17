@@ -1,0 +1,79 @@
+# ═══════════════════════════════════════════════════════════════════
+# Dependabot Configuration — Automated Dependency Updates
+# Covers all package ecosystems in the BlackRoad ecosystem
+# ═══════════════════════════════════════════════════════════════════
+
+version: 2
+
+updates:
+  # ─── NPM (API Gateway Worker) ──────────────────────────────────
+  - package-ecosystem: npm
+    directory: /workers/api-gateway
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: America/New_York
+    open-pull-requests-limit: 10
+    reviewers:
+      - BlackRoad-OS/security
+    labels:
+      - dependencies
+      - security
+      - automated
+    commit-message:
+      prefix: "deps"
+      include: scope
+    # Group minor + patch updates together
+    groups:
+      production-dependencies:
+        dependency-type: production
+        update-types:
+          - minor
+          - patch
+      dev-dependencies:
+        dependency-type: development
+        update-types:
+          - minor
+          - patch
+
+  # ─── Python (Prototypes + Tools) ───────────────────────────────
+  - package-ecosystem: pip
+    directory: /prototypes
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: America/New_York
+    open-pull-requests-limit: 5
+    reviewers:
+      - BlackRoad-OS/security
+    labels:
+      - dependencies
+      - python
+      - automated
+    commit-message:
+      prefix: "deps(py)"
+
+  # ─── GitHub Actions ────────────────────────────────────────────
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: America/New_York
+    open-pull-requests-limit: 5
+    reviewers:
+      - BlackRoad-OS/security
+    labels:
+      - dependencies
+      - github-actions
+      - automated
+    commit-message:
+      prefix: "ci"
+    groups:
+      actions-minor:
+        update-types:
+          - minor
+          - patch

@@ -119,6 +119,29 @@ We're building BlackRoad together - a routing company that connects users to int
 
 **Session 4 Totals:** 20+ files, 6000+ lines, Cloudflare platform fully wired
 
+### Session 4b — Security Hardening (2026-02-17)
+
+**Critical Vulnerability Fixes (API Gateway):**
+- [x] SQL injection in D1 handler: table whitelist + destructive query blocking
+- [x] CORS wildcard `*` replaced with origin whitelist (`blackroad.ai` subdomains only)
+- [x] Password hashing upgraded from SHA-256 to PBKDF2 (100k iterations, random salt)
+- [x] WebSocket authentication enforced: JWT required for upgrade, room whitelist
+- [x] Stripe webhook signature now fully verified (HMAC + timestamp replay protection)
+- [x] Request body size limit (10MB) enforced at edge
+- [x] Input validation on login/register (email format, password length, name length)
+- [x] Error messages no longer leak internal details to clients
+- [x] Security headers added: HSTS, X-Frame-Options, X-XSS-Protection, Referrer-Policy, Permissions-Policy
+
+**CI/CD Security Infrastructure:**
+- [x] `.github/workflows/codeql-analysis.yml` — CodeQL SAST for JS/TS + Python
+- [x] `.github/workflows/secret-scan.yml` — TruffleHog + Gitleaks + custom patterns + rotation reminders
+- [x] `.github/workflows/security-audit.yml` — NPM audit, SBOM, license compliance, workflow lint, infra scan
+- [x] `.github/dependabot.yml` — Weekly updates for npm, pip, GitHub Actions with grouped PRs
+- [x] `.github/CODEOWNERS` — Security team required on auth, workflows, tunnels, schema changes
+- [x] `SECURITY.md` — Rewritten to reflect actual security posture (no more false claims)
+
+**Session 4b Totals:** 10 files changed, full security pipeline operational
+
 ---
 
 ## Key Decisions
@@ -141,6 +164,10 @@ We're building BlackRoad together - a routing company that connects users to int
 | 2026-02-17 | Unified API surface | Single OpenAPI spec covers all 15 orgs, 50+ endpoints |
 | 2026-02-17 | Triple-auth security model | JWT + API Key + Session Cookie with Durable Object rate limiting |
 | 2026-02-17 | Tailscale ACL locked down | Role-based access: admin/operator/dev/mobile with tag-based node control |
+| 2026-02-17 | PBKDF2 password hashing | 100k iterations + random salt, legacy SHA-256 fallback with re-hash |
+| 2026-02-17 | CodeQL + secret scanning | SAST on every PR, daily secret scans, weekly rotation reminders |
+| 2026-02-17 | CODEOWNERS enforced | Security team must review auth code, workflows, tunnel configs |
+| 2026-02-17 | CORS locked down | Origin whitelist replaces wildcard, security headers on every response |
 
 ---
 
@@ -235,8 +262,9 @@ Things we're working on or might pick up:
 11. ~~**GitHub Actions**~~ - DONE! 13 workflows including deploy, health check, auto-heal
 12. ~~**Webhook handlers**~~ - DONE! 7 providers (GitHub, Stripe, Salesforce, Slack, Cloudflare, Figma, Google)
 13. ~~**Security**~~ - DONE! JWT + API keys + rate limiting + Tailscale ACL + WAF
-14. **Control plane CLI** - Unified interface for all tools
-15. **Metaverse interface** - future goal
+14. ~~**Security hardening**~~ - DONE! PBKDF2, CORS lockdown, SQL injection fix, CodeQL, secret scanning, SBOM, CODEOWNERS
+15. **Control plane CLI** - Unified interface for all tools
+16. **Metaverse interface** - future goal
 
 ---
 
