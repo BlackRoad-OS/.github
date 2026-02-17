@@ -1,35 +1,92 @@
 # Cloudflare Workers
 
 > **Edge compute. 300+ locations. Milliseconds from users.**
+> **Now with full API gateway, tunnels to every node, and the complete Cloudflare platform.**
 
 ```
 Org: BlackRoad-Cloud (CLD)
 Node: shellfish (gateway)
 Runtime: V8 Isolates
 Latency: <50ms worldwide
+Workers: 4 (api-gateway, webhook-receiver, asset-proxy, cron-worker)
+Tunnels: 4 (lucidia, aria, alice, octavia)
 ```
 
 ---
 
-## What It Does
+## Architecture
 
 ```
-┌─────────────┐         ┌─────────────┐         ┌─────────────┐
-│    User     │  ────→  │ Cloudflare  │  ────→  │   Origin    │
-│  (anywhere) │  edge   │   Worker    │  tunnel │  (Pi mesh)  │
-└─────────────┘         └─────────────┘         └─────────────┘
-                              │
-                    ┌─────────┴─────────┐
-                    │   Edge Services   │
-                    │  KV  D1  R2  AI   │
-                    └───────────────────┘
+                              ┌──────────────────────────────────────────┐
+                              │        Cloudflare Edge (300+ PoPs)       │
+┌───────────┐                 │                                          │
+│   User    │ ──── HTTPS ───→ │  ┌────────────────────────────────────┐  │
+│ (anywhere)│                 │  │     blackroad-api-gateway Worker   │  │
+└───────────┘                 │  │                                    │  │
+                              │  │  ┌──────┐ ┌──────┐ ┌───────────┐  │  │
+┌───────────┐                 │  │  │ Auth │ │ Rate │ │  Routing  │  │  │
+│ WebSocket │ ──── WSS ────→  │  │  │ JWT  │ │Limit │ │ Classify  │  │  │
+│  Client   │                 │  │  └──────┘ └──────┘ └───────────┘  │  │
+└───────────┘                 │  └──────────────┬─────────────────────┘  │
+                              │                 │                        │
+                              │  ┌──────────────┴─────────────────────┐  │
+                              │  │         Edge Services              │  │
+                              │  │  KV   D1   R2   AI   Queues       │  │
+                              │  │  Vectorize   Durable Objects       │  │
+                              │  │  Analytics Engine                  │  │
+                              │  └──────────────┬─────────────────────┘  │
+                              └─────────────────┼────────────────────────┘
+                                                │
+                          ┌─────────────────────┼─────────────────────┐
+                          │        Cloudflare Tunnels (4)             │
+                          │                                           │
+                ┌─────────┴──────┐  ┌──────────┴──┐  ┌──────┴──────┐
+                │  blackroad-    │  │  blackroad-  │  │  blackroad- │
+                │  primary       │  │  storage     │  │  agents     │  ...
+                └───────┬────────┘  └──────┬───────┘  └──────┬──────┘
+                        │                  │                  │
+          ┌─────────────┴────┐    ┌────────┴──────┐   ┌──────┴───────┐
+          │    lucidia       │    │     aria      │   │    alice     │
+          │  (primary)       │    │  (storage)    │   │  (agents)   │
+          │                  │    │               │   │             │
+          │  Operator  8080  │    │  MinIO  9000  │   │ Agents 8082 │
+          │  Metrics   9090  │    │  PG     5432  │   │ AI     8080 │
+          │  Auth      8087  │    │  Redis  6379  │   │ MCP    8083 │
+          │  Vault     8200  │    │  GDrive 8097  │   │ Hailo  5000 │
+          │  Hailo     5000  │    │  Backup 8098  │   └─────────────┘
+          │  Sensors   8085  │    └───────────────┘
+          │  Mesh      8086  │
+          │  SF        8091  │    ┌───────────────┐
+          │  Stripe    8092  │    │   octavia     │
+          │  Gov       8096  │    │  (compute)    │
+          │  Portfolio 8101  │    │               │
+          │  Enterprise8102  │    │  Jobs    8081 │
+          └──────────────────┘    │  Content 8093 │
+                                  │  Social  8094 │
+            ← Tailscale Mesh →    │  Game    8095 │
+                                  │  Figma   8099 │
+                                  │  Assets  8100 │
+                                  │  Lab     8090 │
+                                  └───────────────┘
 ```
 
-1. **Workers** - Code at the edge
-2. **KV** - Key-value storage
-3. **D1** - SQLite at the edge
-4. **R2** - Object storage (S3-compatible)
-5. **Tunnels** - Secure connection to Pi cluster
+---
+
+## What's Included
+
+| Component | Description | Count |
+|-----------|-------------|-------|
+| **Workers** | Edge compute functions | 4 |
+| **KV** | Key-value namespaces | 5 |
+| **D1** | SQLite database tables | 9 |
+| **R2** | Object storage buckets | 2 |
+| **Queues** | Async message queues | 4 |
+| **Durable Objects** | Stateful edge actors | 3 |
+| **Vectorize** | Vector search index | 1 |
+| **Analytics Engine** | Request-level analytics | 1 |
+| **Workers AI** | LLM, embeddings, classification | 3 models |
+| **Tunnels** | Secure origin connections | 4 |
+| **Domains** | Routed subdomains | 30+ |
 
 ---
 
@@ -42,237 +99,255 @@ npm install -g wrangler
 # Login
 wrangler login
 
-# Create worker
-wrangler init blackroad-api
+# Clone the worker
+cd workers/api-gateway
 
 # Develop locally
 wrangler dev
 
-# Deploy
+# Deploy to staging
+wrangler deploy --env staging
+
+# Deploy to production
 wrangler deploy
 ```
 
 ---
 
-## Worker Structure
+## Worker Directory
 
 ```
-blackroad-api/
-├── src/
-│   ├── index.ts          ← Entry point
-│   ├── router.ts         ← Request routing
-│   ├── handlers/
-│   │   ├── api.ts        ← API endpoints
-│   │   ├── auth.ts       ← Authentication
-│   │   └── proxy.ts      ← Proxy to origin
-│   └── utils/
-│       ├── response.ts
-│       └── cors.ts
-├── wrangler.toml         ← Config
-└── package.json
-```
+workers/
+└── api-gateway/
+    ├── src/
+    │   └── index.ts         ← Full API gateway (auth, rate limit, routing, proxy)
+    ├── wrangler.toml        ← All bindings (KV, D1, R2, AI, Queues, DO, Vectorize)
+    ├── schema.sql           ← D1 database schema (9 tables)
+    └── openapi.yaml         ← OpenAPI 3.1 spec (all endpoints)
 
----
-
-## Example Worker
-
-```typescript
-// src/index.ts
-export interface Env {
-  KV: KVNamespace;
-  DB: D1Database;
-  BUCKET: R2Bucket;
-  AI: any;
-}
-
-export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
-    const url = new URL(request.url);
-
-    // Route requests
-    switch (url.pathname) {
-      case "/api/route":
-        return handleRoute(request, env);
-
-      case "/api/status":
-        return handleStatus(env);
-
-      default:
-        // Proxy to origin via tunnel
-        return proxyToOrigin(request, env);
-    }
-  },
-};
-
-async function handleRoute(request: Request, env: Env) {
-  const { query } = await request.json();
-
-  // Use Workers AI for classification
-  const result = await env.AI.run("@cf/meta/llama-2-7b-chat-int8", {
-    messages: [{ role: "user", content: query }],
-  });
-
-  return Response.json({
-    destination: classifyResponse(result),
-    signal: "🎯 CLD → AI : routed",
-  });
-}
-
-async function handleStatus(env: Env) {
-  // Get from KV cache
-  const status = await env.KV.get("system_status", "json");
-
-  return Response.json({
-    status: "healthy",
-    cached: status,
-    edge: request.cf?.colo, // Which edge location
-  });
-}
+tunnels/
+├── cloudflared-lucidia.yaml  ← Primary node tunnel (15 services)
+├── cloudflared-aria.yaml     ← Storage node tunnel (7 services)
+├── cloudflared-alice.yaml    ← Agent node tunnel (7 services)
+├── cloudflared-octavia.yaml  ← Compute node tunnel (11 services)
+└── mesh-topology.yaml        ← Full mesh topology + DNS mapping
 ```
 
 ---
 
-## Wrangler Config
+## API Endpoints
 
-```toml
-# wrangler.toml
-name = "blackroad-api"
-main = "src/index.ts"
-compatibility_date = "2024-01-01"
+### Public (No Auth)
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/health` | Edge health check (KV, D1, R2) |
+| GET | `/v1/status` | Full system + node status |
+| POST | `/v1/auth/login` | Login → JWT token |
+| POST | `/v1/auth/register` | Register new user |
+| POST | `/v1/auth/refresh` | Refresh JWT token |
 
-# KV Namespaces
-[[kv_namespaces]]
-binding = "KV"
-id = "xxx"
+### Webhooks (Signature-Verified)
+| Method | Path | Source |
+|--------|------|--------|
+| POST | `/v1/webhooks/github` | X-Hub-Signature-256 |
+| POST | `/v1/webhooks/stripe` | Stripe-Signature |
+| POST | `/v1/webhooks/salesforce` | - |
+| POST | `/v1/webhooks/slack` | - |
+| POST | `/v1/webhooks/cloudflare` | - |
+| POST | `/v1/webhooks/figma` | - |
+| POST | `/v1/webhooks/google` | - |
 
-# D1 Database
-[[d1_databases]]
-binding = "DB"
-database_name = "blackroad"
-database_id = "xxx"
+### AI (Authenticated)
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/v1/ai/complete` | Text completion (Llama 3.1) |
+| POST | `/v1/ai/embed` | Text → vector embeddings |
+| POST | `/v1/ai/classify` | Text classification |
+| GET/POST | `/v1/ai/agents` | Autonomous agent management |
 
-# R2 Bucket
-[[r2_buckets]]
-binding = "BUCKET"
-bucket_name = "blackroad-storage"
+### Edge Data (Authenticated)
+| Method | Path | Service |
+|--------|------|---------|
+| GET/PUT/DELETE | `/v1/kv/{key}` | KV Store |
+| GET/POST | `/v1/db/{table}` | D1 Database |
+| GET/PUT/DELETE/HEAD | `/v1/storage/{key}` | R2 Storage |
+| POST | `/v1/vectorize` | Vector search |
 
-# Workers AI
-[ai]
-binding = "AI"
+### Org Proxies (Authenticated → Tunnel → Origin)
+| Path | Tunnel | Origin |
+|------|--------|--------|
+| `/v1/hw/*` | blackroad-primary | lucidia |
+| `/v1/sec/*` | blackroad-primary | lucidia |
+| `/v1/fnd/*` | blackroad-primary | lucidia |
+| `/v1/gov/*` | blackroad-primary | lucidia |
+| `/v1/ven/*` | blackroad-primary | lucidia |
+| `/v1/bbx/*` | blackroad-primary | lucidia |
+| `/v1/med/*` | blackroad-compute | octavia |
+| `/v1/int/*` | blackroad-compute | octavia |
+| `/v1/stu/*` | blackroad-compute | octavia |
+| `/v1/lab/*` | blackroad-compute | octavia |
+| `/v1/edu/*` | blackroad-storage | aria |
+| `/v1/arc/*` | blackroad-storage | aria |
 
-# Environment variables
-[vars]
-ENVIRONMENT = "production"
+### WebSocket
+| Path | Description |
+|------|-------------|
+| `wss://api.blackroad.ai/ws?room=signals` | Real-time signal stream |
 
-# Secrets (set via wrangler secret put)
-# STRIPE_KEY
-# SF_TOKEN
+---
 
-# Routes
-routes = [
-  { pattern = "api.blackroad.ai/*", zone_name = "blackroad.ai" }
-]
+## Authentication
 
-# Tunnel to origin
-[[services]]
-binding = "ORIGIN"
-service = "blackroad-tunnel"
+Three methods supported:
+
+```bash
+# 1. JWT Bearer Token
+curl -H "Authorization: Bearer <token>" https://api.blackroad.ai/v1/ai/complete
+
+# 2. API Key
+curl -H "X-API-Key: <key>" https://api.blackroad.ai/v1/ai/complete
+
+# 3. Session Cookie (browser)
+curl -b "session_id=<id>" https://api.blackroad.ai/v1/ai/complete
 ```
+
+---
+
+## Tunnels
+
+4 Cloudflare Tunnels connecting edge to Pi cluster:
+
+```
+blackroad-primary  → lucidia  (15 services, 8 domains)
+blackroad-storage  → aria     (7 services, 6 domains)
+blackroad-agents   → alice    (7 services, 4 domains)
+blackroad-compute  → octavia  (11 services, 8 domains)
+```
+
+### Setup a tunnel:
+
+```bash
+# On the Pi node
+curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64 \
+  -o /usr/local/bin/cloudflared && chmod +x /usr/local/bin/cloudflared
+
+# Authenticate
+cloudflared tunnel login
+
+# Create
+cloudflared tunnel create blackroad-primary
+
+# Run with config
+cloudflared tunnel --config /etc/cloudflared/lucidia.yaml run
+
+# Enable as systemd service
+cloudflared service install
+systemctl enable --now cloudflared
+```
+
+---
+
+## Durable Objects
+
+| Object | Purpose |
+|--------|---------|
+| `RateLimiter` | Per-key sliding window rate limiting (1000 req/min) |
+| `SessionManager` | Server-side session store with strong consistency |
+| `WebSocketRoom` | Real-time signal broadcasting via rooms |
+
+---
+
+## Queues
+
+| Queue | Purpose | Batch |
+|-------|---------|-------|
+| `blackroad-webhooks` | Inbound webhook processing | 10 / 30s |
+| `blackroad-analytics` | Request analytics events | 50 / 60s |
+| `blackroad-signals` | Inter-org signal fanout | 10 / 10s |
+| `blackroad-dlq` | Dead letter (failed messages) | 10 / 300s |
+
+---
+
+## Scheduled Tasks (CRON)
+
+| Schedule | Task |
+|----------|------|
+| `*/5 * * * *` | Health check all 4 nodes |
+| `0 * * * *` | Hourly metrics aggregation |
+| `0 0 * * *` | Daily API key rotation |
 
 ---
 
 ## Edge Services
 
-### KV (Key-Value)
+### KV (5 Namespaces)
 ```typescript
-// Write
-await env.KV.put("user:123", JSON.stringify(userData), {
-  expirationTtl: 3600, // 1 hour
-});
+// CACHE — API response cache (TTL: 1h)
+await env.CACHE.put("user:123", JSON.stringify(data), { expirationTtl: 3600 });
+const user = await env.CACHE.get("user:123", "json");
 
-// Read
-const user = await env.KV.get("user:123", "json");
-
-// List
-const keys = await env.KV.list({ prefix: "user:" });
+// SESSIONS — User sessions (TTL: 24h)
+// RATE_LIMITS — Rate limiting counters (TTL: 60s)
+// CONFIG — Dynamic configuration (persistent)
+// API_KEYS — API key store (persistent)
 ```
 
-### D1 (SQLite)
-```typescript
-// Query
-const results = await env.DB.prepare(
-  "SELECT * FROM users WHERE email = ?"
-).bind(email).all();
-
-// Insert
-await env.DB.prepare(
-  "INSERT INTO users (email, name) VALUES (?, ?)"
-).bind(email, name).run();
+### D1 (9 Tables)
+```sql
+-- users, sessions, api_keys, signals, audit_log,
+-- routing_rules, webhooks, node_health, metrics_hourly
+SELECT * FROM signals ORDER BY created_at DESC LIMIT 50;
 ```
 
-### R2 (Object Storage)
+### R2 (2 Buckets)
 ```typescript
-// Upload
-await env.BUCKET.put("files/doc.pdf", fileData, {
-  customMetadata: { userId: "123" },
-});
+// blackroad-assets — Public CDN (cdn.blackroad.ai)
+await env.ASSETS.put("files/doc.pdf", fileData);
 
-// Download
-const object = await env.BUCKET.get("files/doc.pdf");
-const data = await object.arrayBuffer();
-
-// List
-const list = await env.BUCKET.list({ prefix: "files/" });
+// blackroad-uploads — Private user uploads
+await env.UPLOADS.put("user/123/photo.jpg", imageData);
 ```
 
 ### Workers AI
 ```typescript
-// Text generation
-const response = await env.AI.run("@cf/meta/llama-2-7b-chat-int8", {
-  messages: [{ role: "user", content: "Hello" }],
+// Text completion
+const result = await env.AI.run("@cf/meta/llama-3.1-8b-instruct", {
+  messages: [{ role: "user", content: prompt }],
 });
 
 // Embeddings
-const embeddings = await env.AI.run("@cf/baai/bge-base-en-v1.5", {
-  text: "Document to embed",
+const vectors = await env.AI.run("@cf/baai/bge-base-en-v1.5", {
+  text: ["Document to embed"],
 });
 
-// Image generation
-const image = await env.AI.run("@cf/stabilityai/stable-diffusion-xl-base-1.0", {
-  prompt: "A bridge connecting clouds",
+// Classification
+const label = await env.AI.run("@cf/huggingface/distilbert-sst-2-int8", {
+  text: "Classify this text",
 });
+```
+
+### Vectorize
+```typescript
+// Upsert vectors
+await env.VECTORIZE.upsert([{ id: "doc-1", values: [...], metadata: { title: "Doc" } }]);
+
+// Query similar
+const matches = await env.VECTORIZE.query(queryVector, { topK: 10 });
 ```
 
 ---
 
-## Tunnels (Connect to Pi Cluster)
+## Deployment
 
 ```bash
-# Install cloudflared on Pi
-curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64 -o cloudflared
-chmod +x cloudflared
+# Deploy all workers (staging)
+gh workflow run deploy-worker.yml -f worker=all -f environment=staging
 
-# Authenticate
-./cloudflared tunnel login
+# Deploy single worker (production)
+gh workflow run deploy-worker.yml -f worker=api-gateway -f environment=production
 
-# Create tunnel
-./cloudflared tunnel create blackroad-mesh
-
-# Configure
-cat > ~/.cloudflared/config.yml << EOF
-tunnel: blackroad-mesh
-credentials-file: /home/pi/.cloudflared/xxx.json
-
-ingress:
-  - hostname: api.blackroad.ai
-    service: http://localhost:8080
-  - hostname: ssh.blackroad.ai
-    service: ssh://localhost:22
-  - service: http_status:404
-EOF
-
-# Run
-./cloudflared tunnel run blackroad-mesh
+# Deploy with canary rollout (10% → monitor → 100%)
+gh workflow run deploy-worker.yml -f worker=all -f environment=production -f canary=true
 ```
 
 ---
@@ -280,27 +355,36 @@ EOF
 ## CLI Commands
 
 ```bash
-# Deploy worker
-wrangler deploy
-
-# Tail logs
-wrangler tail
-
-# Dev mode (local)
-wrangler dev
+# Worker operations
+wrangler dev                    # Local development
+wrangler deploy                 # Deploy to production
+wrangler tail                   # Stream live logs
+wrangler deploy --env staging   # Deploy to staging
 
 # KV operations
-wrangler kv:key put --binding=KV "key" "value"
-wrangler kv:key get --binding=KV "key"
+wrangler kv:key put --binding=CACHE "key" "value"
+wrangler kv:key get --binding=CACHE "key"
+wrangler kv:key list --binding=CACHE --prefix="user:"
 
 # D1 operations
+wrangler d1 execute blackroad --file=./schema.sql
 wrangler d1 execute blackroad --command "SELECT * FROM users"
 
 # R2 operations
-wrangler r2 object put blackroad-storage/file.txt --file=./file.txt
+wrangler r2 object put blackroad-assets/file.txt --file=./file.txt
+wrangler r2 object get blackroad-assets/file.txt
+
+# Queue operations
+wrangler queues list
 
 # Secrets
-wrangler secret put STRIPE_KEY
+wrangler secret put JWT_SECRET
+wrangler secret put STRIPE_WEBHOOK_SECRET
+wrangler secret put GITHUB_WEBHOOK_SECRET
+
+# Tunnel status
+cloudflared tunnel info blackroad-primary
+cloudflared tunnel list
 ```
 
 ---
@@ -308,12 +392,17 @@ wrangler secret put STRIPE_KEY
 ## Signals
 
 ```
-🚀 CLD → OS : worker_deployed, name=blackroad-api, version=v1.2.3
-🌐 CLD → OS : tunnel_connected, node=lucidia, status=healthy
+🚀 CLD → OS : worker_deployed, worker=api-gateway, version=v2.0.0
+🌐 CLD → OS : request_routed, path=/v1/ai/complete, edge=SFO
+📡 CLD → OS : webhook_received, source=github
+⚠️ CLD → OS : rate_limited, ip=x.x.x.x, blocked=true
 📊 CLD → OS : traffic_report, requests=1M, p50=12ms, p99=45ms
-⚠️ CLD → OS : rate_limit, ip=x.x.x.x, blocked=true
+🔄 CLD → OS : tunnel_status, tunnel=blackroad-primary, status=healthy
+🧠 CLD → AI : ai_request, model=llama-3.1, tokens=150
+💾 CLD → ARC : object_stored, key=assets/logo.png, size=45KB
+🔐 CLD → SEC : auth_event, type=login, user=admin@blackroad.ai
 ```
 
 ---
 
-*The edge is closer than you think.*
+*The edge is closer than you think. Now it's the gateway to everything.*

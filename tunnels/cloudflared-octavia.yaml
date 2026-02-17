@@ -1,0 +1,99 @@
+# ═══════════════════════════════════════════════════════════════════
+# Cloudflare Tunnel — octavia (Compute Node)
+# Exposes: Job worker, data pipelines, Hailo inference, content, media
+# ═══════════════════════════════════════════════════════════════════
+#
+# Create:   cloudflared tunnel create blackroad-compute
+# Run:      cloudflared tunnel --config /etc/cloudflared/octavia.yaml run
+
+tunnel: blackroad-compute
+credentials-file: /etc/cloudflared/blackroad-compute.json
+
+originRequest:
+  connectTimeout: 30s
+  tlsTimeout: 10s
+  tcpKeepAlive: 30s
+  keepAliveConnections: 10
+  keepAliveTimeout: 90s
+
+ingress:
+  # ── Job Worker API ──
+  - hostname: api.blackroad.ai
+    path: /v1/jobs.*
+    service: http://localhost:8081
+
+  - hostname: jobs.blackroad.ai
+    service: http://localhost:8081
+
+  # ── Hailo Inference (compute) ──
+  - hostname: api.blackroad.ai
+    path: /v1/compute/inference.*
+    service: http://localhost:5000
+    originRequest:
+      connectTimeout: 60s
+
+  - hostname: hailo-octavia.blackroad.ai
+    service: http://localhost:5000
+
+  # ── Content Management (MED) ──
+  - hostname: api.blackroad.ai
+    path: /v1/content.*
+    service: http://localhost:8093
+
+  - hostname: content.blackroad.ai
+    service: http://localhost:8093
+
+  # ── Social Media Automation (MED) ──
+  - hostname: api.blackroad.ai
+    path: /v1/social.*
+    service: http://localhost:8094
+
+  - hostname: social.blackroad.ai
+    service: http://localhost:8094
+
+  # ── Game Server (INT) ──
+  - hostname: api.blackroad.ai
+    path: /v1/game.*
+    service: http://localhost:8095
+
+  - hostname: game.blackroad.ai
+    service: http://localhost:8095
+
+  # ── Metaverse Gateway (INT) ──
+  - hostname: meta.blackroad.ai
+    service: http://localhost:8095
+
+  # ── Figma Integration (STU) ──
+  - hostname: api.blackroad.ai
+    path: /v1/figma.*
+    service: http://localhost:8099
+
+  - hostname: figma.blackroad.ai
+    service: http://localhost:8099
+
+  # ── Asset Pipeline (STU) ──
+  - hostname: api.blackroad.ai
+    path: /v1/assets.*
+    service: http://localhost:8100
+
+  - hostname: assets.blackroad.ai
+    service: http://localhost:8100
+
+  # ── Experiments (LAB) ──
+  - hostname: api.blackroad.ai
+    path: /v1/experiments.*
+    service: http://localhost:8090
+
+  - hostname: lab.blackroad.ai
+    service: http://localhost:8090
+
+  # ── Prometheus metrics ──
+  - hostname: octavia-metrics.blackroad.ai
+    service: http://localhost:9100
+
+  # ── SSH ──
+  - hostname: ssh-octavia.blackroad.ai
+    service: ssh://localhost:22
+
+  # ── Catch-all ──
+  - service: http_status:404

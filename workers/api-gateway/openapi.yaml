@@ -1,0 +1,1110 @@
+openapi: "3.1.0"
+info:
+  title: BlackRoad Unified API
+  version: "2.0.0"
+  description: |
+    Unified API surface for the entire BlackRoad ecosystem.
+    All requests flow through the Cloudflare Workers API Gateway at the edge,
+    then tunnel to origin nodes via Cloudflare Tunnels + Tailscale mesh.
+
+    ## Authentication
+    - **Bearer Token (JWT)**: `Authorization: Bearer <token>`
+    - **API Key**: `X-API-Key: <key>`
+    - **Session Cookie**: `Cookie: session_id=<id>`
+
+    ## Rate Limits
+    - Default: 1000 requests/minute per API key or IP
+    - Burst: 100 requests/second
+    - WebSocket: 50 concurrent connections per user
+
+    ## Edge Infrastructure
+    - 300+ Cloudflare PoPs worldwide
+    - <50ms latency to any user
+    - Automatic failover across origin nodes
+  contact:
+    name: BlackRoad-OS
+    url: https://github.com/BlackRoad-OS
+  license:
+    name: MIT
+
+servers:
+  - url: https://api.blackroad.ai
+    description: Production (Cloudflare Edge)
+  - url: https://staging-api.blackroad.ai
+    description: Staging
+  - url: http://localhost:8787
+    description: Local development (wrangler dev)
+
+tags:
+  - name: Auth
+    description: Authentication & session management
+  - name: AI
+    description: "AI completion, embeddings, classification (Org: AI)"
+  - name: Agents
+    description: "Autonomous AI agents (Org: AI)"
+  - name: Signals
+    description: "Inter-org signal bus (Org: OS)"
+  - name: Routing
+    description: "Request classification & routing (Org: OS)"
+  - name: Metrics
+    description: "KPI dashboard & monitoring (Org: OS)"
+  - name: Edge Data
+    description: "KV, D1, R2, Vectorize (Org: CLD)"
+  - name: Storage
+    description: "Object storage & backups (Org: ARC)"
+  - name: Hardware
+    description: "Hailo inference, sensors, mesh (Org: HW)"
+  - name: Security
+    description: "Auth service & secrets vault (Org: SEC)"
+  - name: Foundation
+    description: "Salesforce, Stripe, CRM (Org: FND)"
+  - name: Media
+    description: "Content & social automation (Org: MED)"
+  - name: Interactive
+    description: "Game server & metaverse (Org: INT)"
+  - name: Education
+    description: "Courses & documentation (Org: EDU)"
+  - name: Studio
+    description: "Figma & asset pipeline (Org: STU)"
+  - name: Labs
+    description: "Experiments & R&D (Org: LAB)"
+  - name: Governance
+    description: "Proposals & voting (Org: GOV)"
+  - name: Ventures
+    description: "Portfolio management (Org: VEN)"
+  - name: Enterprise
+    description: "Blackbox enterprise API (Org: BBX)"
+  - name: Webhooks
+    description: Inbound webhook receivers
+  - name: WebSocket
+    description: Real-time WebSocket connections
+  - name: Health
+    description: System health & status
+
+paths:
+  # ═══ HEALTH ═══
+  /health:
+    get:
+      tags: [Health]
+      summary: Edge health check
+      description: Returns health status of all edge services (KV, D1, R2)
+      responses:
+        "200":
+          description: All systems healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+        "503":
+          description: One or more systems degraded
+
+  /v1/status:
+    get:
+      tags: [Health]
+      summary: Full system status
+      description: Returns status of all nodes, tunnels, and services
+      responses:
+        "200":
+          description: System status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SystemStatus"
+
+  # ═══ AUTH ═══
+  /v1/auth/login:
+    post:
+      tags: [Auth]
+      summary: Login with email/password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+
+  /v1/auth/register:
+    post:
+      tags: [Auth]
+      summary: Register new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, name, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                name:
+                  type: string
+                password:
+                  type: string
+                  format: password
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "409":
+          description: Email already exists
+
+  /v1/auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Refresh JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refreshToken]
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        "200":
+          description: New token issued
+        "401":
+          description: Invalid refresh token
+
+  # ═══ AI ═══
+  /v1/ai/complete:
+    post:
+      tags: [AI]
+      summary: AI text completion
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [prompt]
+              properties:
+                prompt:
+                  type: string
+                model:
+                  type: string
+                  default: "@cf/meta/llama-3.1-8b-instruct"
+                stream:
+                  type: boolean
+                  default: false
+      responses:
+        "200":
+          description: Completion result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AICompletionResponse"
+
+  /v1/ai/embed:
+    post:
+      tags: [AI]
+      summary: Generate text embeddings
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                texts:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        "200":
+          description: Embedding vectors
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmbeddingResponse"
+
+  /v1/ai/classify:
+    post:
+      tags: [AI]
+      summary: Text classification
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text, labels]
+              properties:
+                text:
+                  type: string
+                labels:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        "200":
+          description: Classification result
+
+  # ═══ AGENTS ═══
+  /v1/ai/agents:
+    get:
+      tags: [Agents]
+      summary: List running agents
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Agent list
+
+    post:
+      tags: [Agents]
+      summary: Launch a new agent
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [task]
+              properties:
+                task:
+                  type: string
+                capabilities:
+                  type: array
+                  items:
+                    type: string
+                timeout:
+                  type: integer
+                  default: 300
+      responses:
+        "201":
+          description: Agent launched
+
+  /v1/ai/agents/{agentId}:
+    get:
+      tags: [Agents]
+      summary: Get agent status
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: agentId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Agent status
+
+    delete:
+      tags: [Agents]
+      summary: Stop an agent
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: agentId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Agent stopped
+
+  # ═══ SIGNALS ═══
+  /v1/signals:
+    get:
+      tags: [Signals]
+      summary: List recent signals
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Recent signals
+
+    post:
+      tags: [Signals]
+      summary: Emit a signal
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [signal]
+              properties:
+                signal:
+                  type: string
+                  example: "🚀 CLD → OS : worker_deployed"
+                metadata:
+                  type: object
+      responses:
+        "200":
+          description: Signal emitted
+
+  # ═══ ROUTING ═══
+  /v1/route:
+    post:
+      tags: [Routing]
+      summary: Classify and route a request
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [query]
+              properties:
+                query:
+                  type: string
+      responses:
+        "200":
+          description: Routing decision
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoutingResponse"
+
+  /v1/bridge:
+    get:
+      tags: [Routing]
+      summary: Control plane status
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Bridge status
+
+  # ═══ METRICS ═══
+  /v1/metrics:
+    get:
+      tags: [Metrics]
+      summary: Get system metrics
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [1h, 6h, 24h, 7d, 30d]
+            default: 24h
+      responses:
+        "200":
+          description: Metrics data
+
+  # ═══ EDGE DATA (KV) ═══
+  /v1/kv/{key}:
+    get:
+      tags: [Edge Data]
+      summary: Read from KV store
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Value
+        "404":
+          description: Key not found
+
+    put:
+      tags: [Edge Data]
+      summary: Write to KV store
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: ttl
+          in: query
+          schema:
+            type: integer
+            default: 3600
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+      responses:
+        "200":
+          description: Stored
+
+    delete:
+      tags: [Edge Data]
+      summary: Delete from KV store
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deleted
+
+  # ═══ EDGE DATA (D1) ═══
+  /v1/db/{table}:
+    get:
+      tags: [Edge Data]
+      summary: Query D1 table
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: table
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        "200":
+          description: Query results
+
+    post:
+      tags: [Edge Data]
+      summary: Execute D1 query
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: table
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [query]
+              properties:
+                query:
+                  type: string
+                params:
+                  type: array
+      responses:
+        "200":
+          description: Query result
+
+  # ═══ EDGE DATA (R2 Storage) ═══
+  /v1/storage/{key}:
+    get:
+      tags: [Edge Data]
+      summary: Download object from R2
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Object data
+        "404":
+          description: Object not found
+
+    put:
+      tags: [Edge Data]
+      summary: Upload object to R2
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        "201":
+          description: Object stored
+
+    delete:
+      tags: [Edge Data]
+      summary: Delete object from R2
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Object deleted
+
+    head:
+      tags: [Edge Data]
+      summary: Object metadata
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Object metadata headers
+
+  # ═══ VECTORIZE ═══
+  /v1/vectorize:
+    post:
+      tags: [Edge Data]
+      summary: Vector operations (upsert, query, delete)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [action]
+              properties:
+                action:
+                  type: string
+                  enum: [upsert, query, delete]
+                vectors:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      values:
+                        type: array
+                        items:
+                          type: number
+                      metadata:
+                        type: object
+                query:
+                  type: array
+                  items:
+                    type: number
+                topK:
+                  type: integer
+                  default: 10
+      responses:
+        "200":
+          description: Operation result
+
+  # ═══ WEBHOOKS ═══
+  /v1/webhooks/github:
+    post:
+      tags: [Webhooks]
+      summary: GitHub webhook receiver
+      description: Verified via X-Hub-Signature-256
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Webhook received and queued
+
+  /v1/webhooks/stripe:
+    post:
+      tags: [Webhooks]
+      summary: Stripe webhook receiver
+      description: Verified via Stripe-Signature header
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Webhook received and queued
+
+  /v1/webhooks/salesforce:
+    post:
+      tags: [Webhooks]
+      summary: Salesforce webhook receiver
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Webhook received and queued
+
+  /v1/webhooks/slack:
+    post:
+      tags: [Webhooks]
+      summary: Slack webhook receiver
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Webhook received and queued
+
+  /v1/webhooks/cloudflare:
+    post:
+      tags: [Webhooks]
+      summary: Cloudflare webhook receiver
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Webhook received and queued
+
+  /v1/webhooks/figma:
+    post:
+      tags: [Webhooks]
+      summary: Figma webhook receiver
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Webhook received and queued
+
+  /v1/webhooks/google:
+    post:
+      tags: [Webhooks]
+      summary: Google Drive webhook receiver
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Webhook received and queued
+
+  # ═══ ORG-SPECIFIC PROXIES ═══
+
+  # HW
+  /v1/hw/inference:
+    post:
+      tags: [Hardware]
+      summary: Hailo-8 AI inference
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [model, input]
+              properties:
+                model:
+                  type: string
+                input:
+                  type: object
+      responses:
+        "200":
+          description: Inference result
+
+  /v1/hw/sensors:
+    get:
+      tags: [Hardware]
+      summary: Read sensor data
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Sensor readings
+
+  /v1/hw/mesh:
+    get:
+      tags: [Hardware]
+      summary: Node mesh status
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Mesh topology and health
+
+  # SEC
+  /v1/sec/auth:
+    post:
+      tags: [Security]
+      summary: Internal auth service
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Auth result
+
+  /v1/sec/vault/{path}:
+    get:
+      tags: [Security]
+      summary: Read secret
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: path
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Secret value
+
+  # FND
+  /v1/fnd/salesforce:
+    get:
+      tags: [Foundation]
+      summary: Salesforce data sync
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Salesforce data
+
+  /v1/fnd/stripe:
+    get:
+      tags: [Foundation]
+      summary: Stripe billing data
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Billing data
+
+  /v1/fnd/crm:
+    get:
+      tags: [Foundation]
+      summary: CRM data
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: CRM records
+
+  # MED
+  /v1/med/content:
+    get:
+      tags: [Media]
+      summary: Content pipeline
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Content list
+
+  /v1/med/social:
+    get:
+      tags: [Media]
+      summary: Social media accounts
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Social data
+
+  # INT
+  /v1/int/game:
+    get:
+      tags: [Interactive]
+      summary: Game server status
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Game data
+
+  /v1/int/metaverse:
+    get:
+      tags: [Interactive]
+      summary: Metaverse gateway
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Metaverse status
+
+  # EDU
+  /v1/edu/courses:
+    get:
+      tags: [Education]
+      summary: Course catalog
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Course list
+
+  /v1/edu/docs:
+    get:
+      tags: [Education]
+      summary: Documentation
+      responses:
+        "200":
+          description: Documentation index
+
+  # STU
+  /v1/stu/figma:
+    get:
+      tags: [Studio]
+      summary: Figma integration
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Figma data
+
+  /v1/stu/assets:
+    get:
+      tags: [Studio]
+      summary: Asset pipeline
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Asset list
+
+  # LAB
+  /v1/lab/experiments:
+    get:
+      tags: [Labs]
+      summary: Active experiments
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Experiment list
+
+  # GOV
+  /v1/gov/governance:
+    get:
+      tags: [Governance]
+      summary: Active proposals
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Proposal list
+
+  # VEN
+  /v1/ven/portfolio:
+    get:
+      tags: [Ventures]
+      summary: Portfolio data
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Portfolio
+
+  # BBX
+  /v1/bbx/enterprise:
+    get:
+      tags: [Enterprise]
+      summary: Enterprise API
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Enterprise data
+
+  # ═══ WEBSOCKET ═══
+  /ws:
+    get:
+      tags: [WebSocket]
+      summary: WebSocket connection
+      description: |
+        Upgrade to WebSocket for real-time signal streaming.
+        Connect with `?room=signals` for system signals or custom room names.
+      parameters:
+        - name: room
+          in: query
+          schema:
+            type: string
+            default: signals
+      responses:
+        "101":
+          description: WebSocket upgrade
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded]
+        checks:
+          type: object
+          properties:
+            kv:
+              type: string
+            d1:
+              type: string
+            r2:
+              type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    SystemStatus:
+      type: object
+      properties:
+        system:
+          type: object
+        nodes:
+          type: object
+        edge:
+          type: object
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        refreshToken:
+          type: string
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+            email:
+              type: string
+            role:
+              type: string
+
+    AICompletionResponse:
+      type: object
+      properties:
+        result:
+          type: object
+        model:
+          type: string
+        edge:
+          type: string
+        cached:
+          type: boolean
+
+    EmbeddingResponse:
+      type: object
+      properties:
+        embeddings:
+          type: object
+        dimensions:
+          type: integer
+
+    RoutingResponse:
+      type: object
+      properties:
+        destination:
+          type: object
+          properties:
+            org:
+              type: string
+            service:
+              type: string
+            endpoint:
+              type: string
+        confidence:
+          type: number
+        signal:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        requestId:
+          type: string
