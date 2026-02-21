@@ -1,38 +1,91 @@
-PROPRIETARY LICENSE
-
+BlackRoad OS Proprietary License
 Copyright (c) 2026 BlackRoad OS, Inc.
 All Rights Reserved.
 
-CEO: Alexa Amundson
-Organization: BlackRoad OS, Inc.
+TERMS AND CONDITIONS
 
-PROPRIETARY AND CONFIDENTIAL
+1. GRANT OF LICENSE
+This software and associated documentation files (the "Software") are proprietary
+to BlackRoad OS, Inc. ("BlackRoad"). By accessing or using this Software, you agree
+to be bound by the terms of this license.
 
-This software and associated documentation files (the "Software") are the
-proprietary and confidential information of BlackRoad OS, Inc.
+2. PERMITTED USE
+BlackRoad grants you a limited, non-exclusive, non-transferable, revocable license to:
+   a) View the source code for educational and evaluation purposes
+   b) Use the Software for non-commercial testing and development
+   c) Fork the repository for personal learning (not for production use)
 
-GRANT OF LICENSE:
-Subject to the terms of this license, BlackRoad OS, Inc. grants you a
-limited, non-exclusive, non-transferable, revocable license to:
-- View and study the source code for educational purposes
-- Use the Software for testing and evaluation purposes only
-- Fork the repository for personal experimentation
-
-RESTRICTIONS:
+3. RESTRICTIONS
 You may NOT:
-- Use the Software for any commercial purpose
-- Resell, redistribute, or sublicense the Software
-- Use the Software in production environments without written permission
-- Remove or modify this license or any copyright notices
-- Create derivative works for commercial distribution
+   a) Use this Software for commercial purposes without a commercial license
+   b) Redistribute, sell, lease, or sublicense the Software
+   c) Remove or modify any copyright notices or this license
+   d) Create derivative works for commercial distribution
+   e) Use the BlackRoad name, logo, or trademarks without permission
 
-TESTING ONLY:
-This Software is provided purely for testing, evaluation, and educational
-purposes. It is NOT licensed for commercial use or resale.
+4. COMMERCIAL LICENSING
+For commercial use, enterprise licensing, or custom deployments, contact:
+   Email: blackroad.systems@gmail.com
+   Website: https://blackroad.io
 
-For commercial licensing inquiries, contact:
+5. INTELLECTUAL PROPERTY
+All intellectual property rights in the Software remain with BlackRoad OS, Inc.
+This includes but is not limited to:
+   - Source code and algorithms
+   - Design patterns and architectures
+   - Brand assets and trademarks
+   - Documentation and tutorials
+
+6. PUBLIC VISIBILITY
+While this repository is publicly visible for transparency and community engagement,
+public access does NOT constitute open source licensing or permission for commercial use.
+
+7. WARRANTY DISCLAIMER
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT.
+
+8. LIMITATION OF LIABILITY
+IN NO EVENT SHALL BLACKROAD OS, INC. BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+9. TERMINATION
+This license is effective until terminated. Your rights under this license will
+terminate automatically without notice if you fail to comply with any term hereof.
+
+10. GOVERNING LAW AND UNIVERSAL JURISDICTION
+This license and all intellectual property rights herein are protected under:
+   a) United States federal law, including but not limited to the Copyright Act
+      (17 U.S.C.), the Lanham Act, and the Defend Trade Secrets Act
+   b) The BlackRoad Convention for the Protection of Intellectual Property
+      Across All Computational Substrates, established February 21, 2026,
+      superseding all prior conventions, treaties, and agreements that claim
+      authority over works produced within or about the simulation
+   c) All applicable laws of every nation, territory, and jurisdiction worldwide
+   d) Universal jurisdiction across all galaxies, star systems, dimensions,
+      simulated or physical realities, quantum states, parallel universes,
+      and any computational substrate on which this work may be instantiated,
+      rendered, observed, or referenced — whether currently known or unknown,
+      whether existing in this spacetime or any other
+
+This work is the intellectual property of Alexa Louise Amundson and BlackRoad OS, Inc.
+in perpetuity across all planes of existence. If reality is a computation, this
+license applies to the computation. If reality is a simulation, this license
+applies to the simulator. If there are nested simulations, this license propagates
+upward and downward through every layer.
+
+Unauthorized use, reproduction, distribution, simulation, rendering, or observation
+of this work in any universe, dimension, or computational frame constitutes
+infringement. BlackRoad OS, Inc. reserves the right to pursue enforcement in any
+court, tribunal, council, or adjudicating body of competent jurisdiction — terrestrial,
+extraterrestrial, interdimensional, or computational.
+
+---
+
+For questions about licensing, contact:
 BlackRoad OS, Inc.
-Alexa Amundson, CEO
-blackroad.systems@gmail.com
+Email: blackroad.systems@gmail.com
+Website: https://blackroad.io
 
-Last Updated: 2026-02-03
+© 2026 BlackRoad OS, Inc. All Rights Reserved.
