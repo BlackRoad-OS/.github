@@ -250,3 +250,26 @@ cat MEMORY.md
 ---
 
 *The Bridge connects everything. The Index shows you where.*
+
+## Infrastructure Status (2026-02-23)
+
+### Self-Hosted Runners ($0 compute)
+| Agent | Status | Location |
+|-------|--------|----------|
+| aria-pi4 | ✅ online | 192.168.4.82 |
+| octavia-pi5 | ✅ online | 192.168.4.38 |
+| gematria-do | ✅ online | 159.65.43.12 |
+| cecilia | ✅ online | local |
+| lucidia-pi5 | ✅ online | 192.168.4.81 |
+
+### Platform Auth (octavia)
+- ✅ Railway CLI authenticated
+- ✅ Wrangler/Cloudflare authenticated  
+- ✅ GitHub CLI authenticated
+- ✅ All tokens in `~/.blackroad/vault/`
+
+### Domain Self-Hosting (alice)
+- 14 domains routed via nginx → Pi cluster
+- cloudflared tunnel: 52915859-da18-4aa6-add5-7bd9fcac2e0b
+- Google Drive sync: cron every 6h
+
