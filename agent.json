@@ -1,0 +1,10 @@
+{
+  "org": "BlackRoad-OS",
+  "agent": "CECE",
+  "color": "#FF1D6C",
+  "fleet": ["octavia-pi5","aria-pi4","cecilia","gematria-do","lucidia-pi5"],
+  "runners": "blackroad-fleet",
+  "cost": "$0",
+  "gateway": "http://octavia.local:8787",
+  "updated": "2026-02-23T22:49:06Z"
+}
