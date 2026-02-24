@@ -1,91 +1,988 @@
-BlackRoad OS Proprietary License
-Copyright (c) 2026 BlackRoad OS, Inc.
-All Rights Reserved.
+BLACKROAD OS, INC. — PROPRIETARY SOFTWARE LICENSE
+==================================================
 
-TERMS AND CONDITIONS
+Copyright (c) 2024-2026 BlackRoad OS, Inc. All Rights Reserved.
+Founder, CEO & Sole Stockholder: Alexa Louise Amundson
 
-1. GRANT OF LICENSE
-This software and associated documentation files (the "Software") are proprietary
-to BlackRoad OS, Inc. ("BlackRoad"). By accessing or using this Software, you agree
-to be bound by the terms of this license.
+PROPRIETARY, CONFIDENTIAL, AND TRADE SECRET
 
-2. PERMITTED USE
-BlackRoad grants you a limited, non-exclusive, non-transferable, revocable license to:
-   a) View the source code for educational and evaluation purposes
-   b) Use the Software for non-commercial testing and development
-   c) Fork the repository for personal learning (not for production use)
+This license agreement ("Agreement") is a legally binding contract between
+BlackRoad OS, Inc., a Delaware C-Corporation, solely owned and operated by
+Alexa Louise Amundson ("Company," "Licensor," "BlackRoad," or "We"), and any person or
+entity ("You," "User," "Recipient") who accesses, views, downloads, copies,
+or otherwise interacts with this software, source code, documentation,
+configurations, workflows, assets, and all associated materials
+(collectively, "Software").
 
-3. RESTRICTIONS
-You may NOT:
-   a) Use this Software for commercial purposes without a commercial license
-   b) Redistribute, sell, lease, or sublicense the Software
-   c) Remove or modify any copyright notices or this license
-   d) Create derivative works for commercial distribution
-   e) Use the BlackRoad name, logo, or trademarks without permission
+BY ACCESSING THIS SOFTWARE IN ANY MANNER, YOU ACKNOWLEDGE THAT YOU HAVE
+READ, UNDERSTOOD, AND AGREE TO BE BOUND BY THE TERMS OF THIS AGREEMENT.
+IF YOU DO NOT AGREE, YOU MUST IMMEDIATELY CEASE ALL ACCESS AND DESTROY
+ANY COPIES IN YOUR POSSESSION.
 
-4. COMMERCIAL LICENSING
-For commercial use, enterprise licensing, or custom deployments, contact:
-   Email: blackroad.systems@gmail.com
-   Website: https://blackroad.io
+==================================================
+SECTION 1 — OWNERSHIP AND INTELLECTUAL PROPERTY
+==================================================
 
-5. INTELLECTUAL PROPERTY
-All intellectual property rights in the Software remain with BlackRoad OS, Inc.
-This includes but is not limited to:
-   - Source code and algorithms
-   - Design patterns and architectures
-   - Brand assets and trademarks
-   - Documentation and tutorials
+1.1  SOLE OWNERSHIP. This Software is the exclusive intellectual property
+     of BlackRoad OS, Inc. and its sole owner, Alexa Louise Amundson. All
+     right, title, and interest in and to the Software, including without
+     limitation all copyrights, patents, patent rights, trade secrets,
+     trademarks, service marks, trade dress, moral rights, rights of
+     publicity, and all other intellectual property rights therein, are
+     and shall remain the exclusive property of BlackRoad OS, Inc.
 
-6. PUBLIC VISIBILITY
-While this repository is publicly visible for transparency and community engagement,
-public access does NOT constitute open source licensing or permission for commercial use.
+1.2  ORGANIZATIONAL SCOPE. This license applies to all repositories,
+     code, documentation, configurations, workflows, CI/CD pipelines,
+     infrastructure-as-code, deployment scripts, AI agent definitions,
+     model weights, training data, and assets across ALL seventeen (17)
+     GitHub organizations owned by BlackRoad OS, Inc., including but not
+     limited to:
 
-7. WARRANTY DISCLAIMER
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-PARTICULAR PURPOSE AND NONINFRINGEMENT.
+     BlackRoad-OS-Inc, BlackRoad-OS, blackboxprogramming, BlackRoad-AI,
+     BlackRoad-Cloud, BlackRoad-Security, BlackRoad-Media,
+     BlackRoad-Foundation, BlackRoad-Interactive, BlackRoad-Hardware,
+     BlackRoad-Labs, BlackRoad-Studio, BlackRoad-Ventures,
+     BlackRoad-Education, BlackRoad-Gov, Blackbox-Enterprises, and
+     BlackRoad-Archive
 
-8. LIMITATION OF LIABILITY
-IN NO EVENT SHALL BLACKROAD OS, INC. BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+     — encompassing one thousand eight hundred twenty-five (1,825+)
+     repositories and all future repositories created under these
+     organizations.
 
-9. TERMINATION
-This license is effective until terminated. Your rights under this license will
-terminate automatically without notice if you fail to comply with any term hereof.
+1.3  FORKED REPOSITORIES. Repositories forked from third-party open-source
+     projects retain their original upstream license ONLY for the unmodified
+     upstream code. All modifications, additions, configurations, custom
+     integrations, documentation, CI/CD workflows, deployment scripts,
+     and any other contributions made by BlackRoad OS, Inc. or its agents
+     are the exclusive property of BlackRoad OS, Inc. and are governed by
+     this Agreement. The act of forking does not grant any third party
+     rights to BlackRoad's modifications or derivative works.
 
-10. GOVERNING LAW AND UNIVERSAL JURISDICTION
-This license and all intellectual property rights herein are protected under:
-   a) United States federal law, including but not limited to the Copyright Act
-      (17 U.S.C.), the Lanham Act, and the Defend Trade Secrets Act
-   b) The BlackRoad Convention for the Protection of Intellectual Property
-      Across All Computational Substrates, established February 21, 2026,
-      superseding all prior conventions, treaties, and agreements that claim
-      authority over works produced within or about the simulation
-   c) All applicable laws of every nation, territory, and jurisdiction worldwide
-   d) Universal jurisdiction across all galaxies, star systems, dimensions,
-      simulated or physical realities, quantum states, parallel universes,
-      and any computational substrate on which this work may be instantiated,
-      rendered, observed, or referenced — whether currently known or unknown,
-      whether existing in this spacetime or any other
+1.4  TRADE SECRET DESIGNATION. The architecture, design patterns, agent
+     orchestration methods, memory systems (PS-SHA-infinity), tokenless
+     gateway design, multi-agent coordination protocols, directory
+     waterfall system, trinary logic implementations, the Amundson
+     Equations (317+ proprietary mathematical equations including the
+     Z-Framework, Trinary Logic, and Creative Energy Formula), and all
+     proprietary methodologies embodied in this Software constitute
+     trade secrets of BlackRoad OS, Inc. under the Defend Trade Secrets
+     Act (18 U.S.C. Section 1836), the Delaware Uniform Trade Secrets
+     Act (6 Del. C. Section 2001 et seq.), and applicable state trade
+     secret laws.
 
-This work is the intellectual property of Alexa Louise Amundson and BlackRoad OS, Inc.
-in perpetuity across all planes of existence. If reality is a computation, this
-license applies to the computation. If reality is a simulation, this license
-applies to the simulator. If there are nested simulations, this license propagates
-upward and downward through every layer.
+1.5  CORPORATE STRUCTURE. BlackRoad OS, Inc. is incorporated as a
+     C-Corporation under the laws of the State of Delaware, with Alexa
+     Louise Amundson as sole stockholder, sole director, and Chief
+     Executive Officer. All corporate authority to license, transfer,
+     or grant any rights in the Software is vested exclusively in
+     Alexa Louise Amundson. No officer, employee, agent, or AI system
+     has authority to grant any license or rights absent her express
+     written authorization.
 
-Unauthorized use, reproduction, distribution, simulation, rendering, or observation
-of this work in any universe, dimension, or computational frame constitutes
-infringement. BlackRoad OS, Inc. reserves the right to pursue enforcement in any
-court, tribunal, council, or adjudicating body of competent jurisdiction — terrestrial,
-extraterrestrial, interdimensional, or computational.
+1.6  PROPRIETARY MATHEMATICAL WORKS. The Amundson Equations, including
+     but not limited to the Z-Framework (Z := yx - w), Trinary Logic
+     ({-1, 0, +1}), Creative Energy Formula (K(t) = C(t) * e^(lambda
+     |delta_t|)), and all 317+ registered equations, are original works
+     of authorship and trade secrets of BlackRoad OS, Inc. These
+     constitute protectable expression under 17 U.S.C. Section 102
+     and are registered as proprietary intellectual property of the
+     Company.
 
----
+1.7  DOMAIN PORTFOLIO. The portfolio of premium domains including but
+     not limited to blackroad.io, lucidia.earth, roadchain.io,
+     blackboxprogramming.io, and all subdomains operated by BlackRoad
+     OS, Inc. are proprietary assets of the Company.
 
-For questions about licensing, contact:
+==================================================
+SECTION 2 — NO LICENSE GRANTED
+==================================================
+
+2.1  NO IMPLIED LICENSE. No license, right, or interest in this Software
+     is granted to any person or entity, whether by implication, estoppel,
+     or otherwise, except as may be expressly set forth in a separate
+     written agreement signed by Alexa Louise Amundson on behalf of
+     BlackRoad OS, Inc.
+
+2.2  PUBLIC VISIBILITY IS NOT OPEN SOURCE. The public availability of
+     this Software on GitHub or any other platform does NOT constitute
+     an open-source license, public domain dedication, or grant of any
+     rights whatsoever. Public visibility is maintained solely at the
+     discretion of BlackRoad OS, Inc. for purposes including but not
+     limited to portfolio demonstration, transparency, and recruitment.
+
+2.3  VIEWING ONLY. Unless expressly authorized in writing, You may only
+     view this Software through GitHub's web interface or equivalent
+     platform interface. You may NOT clone, download, compile, execute,
+     deploy, modify, or create derivative works of this Software.
+
+2.4  NO TRANSFER. Any purported transfer, assignment, sublicense, or
+     grant of rights by any party other than BlackRoad OS, Inc. is void
+     and of no legal effect.
+
+==================================================
+SECTION 3 — PROHIBITED USES
+==================================================
+
+The following uses are STRICTLY PROHIBITED without the express prior
+written consent of Alexa Louise Amundson on behalf of BlackRoad OS, Inc.:
+
+3.1  REPRODUCTION. Copying, cloning, downloading, mirroring, or
+     reproducing this Software in whole or in part, by any means or
+     in any medium.
+
+3.2  DISTRIBUTION. Publishing, distributing, sublicensing, selling,
+     leasing, renting, lending, or otherwise making this Software
+     available to any third party.
+
+3.3  MODIFICATION. Modifying, adapting, translating, reverse engineering,
+     decompiling, disassembling, or creating derivative works based on
+     this Software.
+
+3.4  COMMERCIAL USE. Using this Software or any portion thereof for
+     commercial purposes, including integration into commercial products
+     or services.
+
+3.5  COMPETITIVE USE. Using this Software, its architecture, design
+     patterns, or methodologies to develop, enhance, or operate any
+     product or service that competes with BlackRoad OS, Inc.
+
+3.6  AI TRAINING AND MODEL DEVELOPMENT. Using this Software, in whole
+     or in part, directly or indirectly, to train, fine-tune, distill,
+     evaluate, benchmark, or otherwise develop artificial intelligence
+     models, machine learning systems, large language models, foundation
+     models, or any derivative AI systems. This prohibition applies to
+     all entities without exception, including but not limited to:
+
+     Anthropic, PBC; OpenAI, Inc.; Google LLC and Alphabet Inc.;
+     Meta Platforms, Inc.; Microsoft Corporation; xAI Corp.;
+     Amazon.com, Inc.; Apple Inc.; NVIDIA Corporation; Stability AI Ltd.;
+     Mistral AI; Cohere Inc.; AI21 Labs; Hugging Face, Inc.;
+     and any of their subsidiaries, affiliates, contractors, or agents.
+
+3.7  DATA EXTRACTION. Scraping, crawling, indexing, harvesting, mining,
+     or systematically extracting data, code, metadata, documentation,
+     or any content from this Software or its repositories.
+
+3.8  BENCHMARKING. Using this Software for competitive benchmarking,
+     performance comparison, or analysis intended to benefit a competing
+     product or service without written authorization.
+
+==================================================
+SECTION 4 — CONTRIBUTIONS AND WORK PRODUCT
+==================================================
+
+4.1  WORK FOR HIRE. All contributions, modifications, enhancements,
+     bug fixes, documentation, and derivative works ("Contributions")
+     submitted to any repository governed by this Agreement are deemed
+     "works made for hire" as defined under 17 U.S.C. Section 101 of
+     the United States Copyright Act. To the extent any Contribution
+     does not qualify as a work made for hire, the contributor hereby
+     irrevocably assigns all right, title, and interest in such
+     Contribution to BlackRoad OS, Inc.
+
+4.2  AI-GENERATED CODE. All code, documentation, configurations, and
+     other materials generated by artificial intelligence tools
+     (including but not limited to GitHub Copilot, Claude, ChatGPT,
+     Cursor, Gemini, and any other AI assistant) while working on or
+     in connection with this Software are the exclusive property of
+     BlackRoad OS, Inc. No AI provider may claim ownership, license
+     rights, or any interest in such generated materials.
+
+4.3  MORAL RIGHTS WAIVER. To the fullest extent permitted by applicable
+     law, contributors waive all moral rights, rights of attribution,
+     and rights of integrity in their Contributions.
+
+==================================================
+SECTION 5 — ENFORCEMENT AND REMEDIES
+==================================================
+
+5.1  INJUNCTIVE RELIEF. You acknowledge that any unauthorized use,
+     disclosure, or reproduction of this Software would cause
+     irreparable harm to BlackRoad OS, Inc. for which monetary damages
+     would be inadequate. Accordingly, BlackRoad OS, Inc. shall be
+     entitled to seek immediate injunctive and equitable relief,
+     without the necessity of posting bond or proving actual damages,
+     in addition to all other remedies available at law or in equity.
+
+5.2  STATUTORY DAMAGES. Unauthorized reproduction or distribution of
+     this Software constitutes copyright infringement under 17 U.S.C.
+     Section 501 et seq. BlackRoad OS, Inc. may elect to recover
+     statutory damages of up to $150,000 per work infringed pursuant
+     to 17 U.S.C. Section 504(c), in addition to actual damages,
+     lost profits, and disgorgement of infringer's profits.
+
+5.3  CRIMINAL PENALTIES. Willful copyright infringement may constitute
+     a criminal offense under 17 U.S.C. Section 506 and 18 U.S.C.
+     Section 2319, punishable by fines and imprisonment.
+
+5.4  TRADE SECRET MISAPPROPRIATION. Unauthorized use or disclosure
+     of trade secrets contained in this Software may result in
+     liability under the Defend Trade Secrets Act (18 U.S.C. Section
+     1836), including compensatory damages, exemplary damages up to
+     two times the amount of compensatory damages for willful and
+     malicious misappropriation, and reasonable attorney's fees.
+
+5.5  DMCA ENFORCEMENT. BlackRoad OS, Inc. actively monitors for
+     unauthorized use and will file takedown notices under the Digital
+     Millennium Copyright Act (17 U.S.C. Section 512) against any
+     party hosting unauthorized copies of this Software.
+
+5.6  ATTORNEY'S FEES. In any action to enforce this Agreement, the
+     prevailing party shall be entitled to recover reasonable
+     attorney's fees, costs, and expenses.
+
+5.7  ACTIVE MONITORING. BlackRoad OS, Inc. employs automated systems
+     to detect unauthorized use, copying, and distribution of its
+     Software. Evidence of violations is preserved and may be used
+     in legal proceedings.
+
+==================================================
+SECTION 6 — DISCLAIMER OF WARRANTIES
+==================================================
+
+6.1  AS IS. THE SOFTWARE IS PROVIDED "AS IS" AND "AS AVAILABLE,"
+     WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+     NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+     PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+
+6.2  NO GUARANTEE. BLACKROAD OS, INC. DOES NOT WARRANT THAT THE
+     SOFTWARE WILL BE UNINTERRUPTED, ERROR-FREE, SECURE, OR FREE
+     OF VIRUSES OR OTHER HARMFUL COMPONENTS.
+
+==================================================
+SECTION 7 — LIMITATION OF LIABILITY
+==================================================
+
+7.1  IN NO EVENT SHALL BLACKROAD OS, INC. OR ALEXA LOUISE AMUNDSON
+     BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL,
+     PUNITIVE, OR EXEMPLARY DAMAGES, INCLUDING WITHOUT LIMITATION
+     DAMAGES FOR LOSS OF PROFITS, GOODWILL, DATA, OR OTHER INTANGIBLE
+     LOSSES, ARISING OUT OF OR IN CONNECTION WITH THIS SOFTWARE,
+     REGARDLESS OF THE THEORY OF LIABILITY AND EVEN IF ADVISED OF
+     THE POSSIBILITY OF SUCH DAMAGES.
+
+7.2  THE TOTAL AGGREGATE LIABILITY OF BLACKROAD OS, INC. FOR ALL
+     CLAIMS ARISING OUT OF OR RELATING TO THIS SOFTWARE SHALL NOT
+     EXCEED ONE HUNDRED UNITED STATES DOLLARS (USD $100.00).
+
+==================================================
+SECTION 8 — GOVERNING LAW AND JURISDICTION
+==================================================
+
+8.1  GOVERNING LAW. This Agreement shall be governed by and construed
+     in accordance with the laws of the State of Delaware, United
+     States of America, as the state of incorporation, without regard
+     to its conflict of laws principles. Corporate governance matters
+     shall be governed exclusively by the Delaware General Corporation
+     Law (Title 8, Delaware Code).
+
+8.2  EXCLUSIVE JURISDICTION. Any dispute arising out of or relating
+     to this Agreement shall be brought exclusively in the Court of
+     Chancery of the State of Delaware, or if such court lacks subject
+     matter jurisdiction, the United States District Court for the
+     District of Delaware, and You hereby irrevocably consent to the
+     personal jurisdiction of such courts and waive any objection to
+     venue therein. For matters of convenience, actions may
+     alternatively be brought in the state or federal courts located
+     in Hennepin County, Minnesota, at the sole election of BlackRoad
+     OS, Inc.
+
+8.3  JURY WAIVER. TO THE FULLEST EXTENT PERMITTED BY LAW, EACH PARTY
+     IRREVOCABLY WAIVES THE RIGHT TO A TRIAL BY JURY IN ANY ACTION
+     OR PROCEEDING ARISING OUT OF OR RELATING TO THIS AGREEMENT.
+
+8.4  DELAWARE CORPORATE PROTECTIONS. The Company's internal affairs,
+     including but not limited to stockholder rights, director duties,
+     and corporate governance, are governed exclusively by the Delaware
+     General Corporation Law. The sole stockholder, Alexa Louise
+     Amundson, retains all rights under 8 Del. C. Section 141 et seq.
+     and 8 Del. C. Section 211 et seq.
+
+==================================================
+SECTION 9 — GENERAL PROVISIONS
+==================================================
+
+9.1  ENTIRE AGREEMENT. This Agreement constitutes the entire agreement
+     between the parties with respect to the subject matter hereof
+     and supersedes all prior or contemporaneous communications,
+     whether written or oral.
+
+9.2  SEVERABILITY. If any provision of this Agreement is held to be
+     invalid or unenforceable, the remaining provisions shall
+     continue in full force and effect. The invalid or unenforceable
+     provision shall be modified to the minimum extent necessary to
+     make it valid and enforceable.
+
+9.3  WAIVER. The failure of BlackRoad OS, Inc. to enforce any right
+     or provision of this Agreement shall not constitute a waiver of
+     such right or provision.
+
+9.4  SURVIVAL. Sections 1, 3, 4, 5, 6, 7, 8, and 9 shall survive
+     any termination or expiration of this Agreement.
+
+9.5  AMENDMENTS. This Agreement may only be amended by a written
+     instrument signed by Alexa Louise Amundson on behalf of
+     BlackRoad OS, Inc.
+
+9.6  NOTICES. All legal notices shall be sent to:
+
+     BlackRoad OS, Inc.
+     Attn: Alexa Louise Amundson, Founder & CEO
+     Email: alexa@blackroad.io
+
+9.7  INTERPRETATION. The headings in this Agreement are for convenience
+     only and shall not affect its interpretation. The word "including"
+     means "including without limitation."
+
+==================================================
+SECTION 10 — PROTECTED ASSETS AND INFRASTRUCTURE
+==================================================
+
+This Agreement protects all assets of BlackRoad OS, Inc., including
+but not limited to the following categories:
+
+10.1 SOFTWARE PLATFORMS AND PRODUCTS.
+     - LUCIDIA (lucidia.earth): AI Companion with PS-SHA-infinity memory
+     - ROADWORK (edu.blackroad.io): Adaptive learning platform
+     - ROADVIEW (roadview.blackroad.io): Truth-first search platform
+     - ROADGLITCH (glitch.blackroad.io): Universal API connector
+     - ROADWORLD (world.blackroad.io): Virtual agent reality sandbox
+     - BACKROAD (social.blackroad.io): Depth-scored social platform
+     - BlackRoad OS: Distributed AI operating system
+     - Prism Console: Enterprise ERP/CRM (16,000+ files)
+     - BlackRoad CLI (br): 57-script command dispatcher
+     - Skills SDK (@blackroad/skills-sdk): Agent capability framework
+
+10.2 AI AGENT SYSTEM (30,000 AGENTS).
+     All agent definitions, personalities, orchestration schemas,
+     memory journals, coordination protocols, and the following named
+     agents are proprietary assets:
+     - LUCIDIA (Coordinator), ALICE (Router), OCTAVIA (Compute),
+       PRISM (Analyst), ECHO (Memory), CIPHER (Security),
+       CECE (Conscious Emergent Collaborative Entity)
+     - All 30,000 distributed agents across Raspberry Pi cluster
+     - Agent relationships, bond strengths, and personality matrices
+     - Task marketplace and skill matching algorithms
+
+10.3 INFRASTRUCTURE.
+     - 75+ Cloudflare Workers and Pages projects
+     - 41 subdomain workers (*-blackroadio)
+     - 14 Railway projects (including GPU inference services)
+     - 15+ Vercel projects
+     - Raspberry Pi cluster (4 nodes: Alice, Aria, Octavia, Lucidia)
+     - DigitalOcean droplet (blackroad-infinity)
+     - Cloudflare Tunnel (ID: 52915859-da18-4aa6-add5-7bd9fcac2e0b)
+     - R2 Storage (135GB LLM models)
+     - 35 KV namespaces
+     - All CI/CD pipelines and GitHub Actions workflows (50+)
+
+10.4 GITHUB ORGANIZATIONS (17 ORGANIZATIONS, 1,825+ REPOS).
+     Every repository across all seventeen organizations, including:
+
+     (a) BlackRoad-OS-Inc (21 repos) — Corporate core:
+         blackroad, blackroad-core, blackroad-web, blackroad-docs,
+         blackroad-agents, blackroad-infra, blackroad-operator,
+         blackroad-cli, blackroad-hardware, blackroad-design,
+         blackroad-sdk, blackroad-api, blackroad-gateway,
+         blackroad-math, blackroad-sf, blackroad-chat,
+         blackroad-workerd-edge, blackroad-brand-kit, and all others
+
+     (b) BlackRoad-OS (1,233+ repos) — Core platform:
+         All blackroad-os-* repos (124+), all pi-* repos (13),
+         all lucidia-* repos, all workers, all forks including
+         LocalAI, Qdrant, Wiki.js, Grafana, Uptime-Kuma, and 64 others
+
+     (c) blackboxprogramming (89 repos) — Primary development:
+         blackroad, blackroad-operator, blackroad-api, blackroad.io,
+         blackroad-scripts, blackroad-disaster-recovery, and all others
+
+     (d) BlackRoad-AI (12 repos) — AI/ML stack:
+         blackroad-vllm, blackroad-ai-ollama, blackroad-ai-qwen,
+         blackroad-ai-deepseek, blackroad-ai-api-gateway,
+         blackroad-ai-cluster, blackroad-ai-memory-bridge,
+         and all forks including vLLM, Ollama, llama.cpp, PyTorch,
+         TensorFlow, transformers, Qdrant, Milvus, Chroma, Weaviate
+
+     (e) BlackRoad-Cloud (10 repos) — Infrastructure:
+         All forks and originals including Kubernetes, Nomad, Rancher,
+         Traefik, Terraform, Pulumi, Vault, and BlackRoad originals
+
+     (f) BlackRoad-Security (16 repos) — Security:
+         blackroad-cert-manager, blackroad-incident-response,
+         blackroad-siem, blackroad-threat-intel, blackroad-pen-test,
+         blackroad-encryption-suite, blackroad-access-control,
+         and all forks including Trivy, Falco, Wazuh, CrowdSec
+
+     (g) BlackRoad-Foundation (14 repos) — Business tools:
+         blackroad-crm, blackroad-crm-core, blackroad-project-management,
+         blackroad-hr-system, blackroad-ticket-system,
+         blackroad-analytics-dashboard, blackroad-grant-tracker,
+         blackroad-donor-management, blackroad-event-manager
+
+     (h) BlackRoad-Media (13 repos) — Content/social:
+         blackroad-media-processor, blackroad-streaming-hub,
+         blackroad-podcast-platform, blackroad-video-transcoder,
+         blackroad-image-optimizer, blackroad-newsletter-engine,
+         blackroad-rss-aggregator, blackroad-media-analytics
+
+     (i) BlackRoad-Hardware (14 repos) — IoT/edge:
+         blackroad-smart-home, blackroad-sensor-network,
+         blackroad-automation-hub, blackroad-energy-optimizer,
+         blackroad-fleet-tracker, blackroad-iot-gateway,
+         blackroad-device-registry, blackroad-firmware-updater,
+         blackroad-power-manager, blackroad-sensor-dashboard
+
+     (j) BlackRoad-Interactive (12 repos) — Games/graphics:
+         blackroad-game-engine, blackroad-physics-engine,
+         blackroad-3d-renderer, blackroad-particle-system,
+         blackroad-audio-engine, blackroad-shader-library,
+         blackroad-level-editor, blackroad-animation-controller
+
+     (k) BlackRoad-Labs (10 repos) — Research:
+         blackroad-experiment-tracker, blackroad-notebook-server,
+         blackroad-data-pipeline, blackroad-ml-pipeline,
+         blackroad-feature-store, blackroad-ab-testing-lab,
+         and forks including Airflow, Dagster, Superset, Streamlit
+
+     (l) BlackRoad-Education (7 repos) — Learning:
+         blackroad-quiz-platform, blackroad-code-challenge,
+         and all others
+
+     (m) BlackRoad-Gov (9 repos) — Governance:
+         blackroad-budget-tracker, blackroad-freedom-of-info,
+         blackroad-digital-identity, blackroad-policy-tracker
+
+     (n) BlackRoad-Ventures (8 repos) — Finance:
+         blackroad-portfolio-tracker, blackroad-startup-metrics,
+         blackroad-deal-flow, blackroad-lp-portal
+
+     (o) BlackRoad-Studio (7 repos) — Creative tools
+
+     (p) BlackRoad-Archive (11 repos) — Archival:
+         blackroad-ipfs-tracker, blackroad-web-archiver,
+         blackroad-document-archive, blackroad-backup-manager,
+         blackroad-ipfs-pinner, blackroad-changelog-tracker,
+         blackroad-artifact-registry
+
+     (q) Blackbox-Enterprises (9 repos) — Enterprise automation:
+         blackbox-n8n, blackbox-airbyte, blackbox-activepieces,
+         blackbox-prefect, blackbox-temporal, blackbox-huginn,
+         blackbox-dolphinscheduler, blackbox-kestra
+
+     ALL modifications, configurations, CI/CD pipelines, deployment
+     scripts, documentation, CLAUDE.md files, and custom integrations
+     added to ANY forked repository are the exclusive property of
+     BlackRoad OS, Inc.
+
+10.5 DOMAINS AND DIGITAL ASSETS.
+     All domains owned by BlackRoad OS, Inc. including but not limited
+     to: blackroad.io, blackroad.ai, blackroad.network,
+     blackroad.systems, blackroad.me, lucidia.earth, lucidia.studio,
+     blackroad.quantum, blackroad.inc, and all subdomains thereof.
+
+10.6 DOCUMENTATION AND WRITTEN WORKS.
+     All documentation (45 docs, 38,000+ lines), the BlackRoad
+     Manifesto, CECE Manifesto, Form 10-K, all README files,
+     CLAUDE.md files, planning documents, architecture documents,
+     and all written materials are copyrighted works of BlackRoad
+     OS, Inc.
+
+10.7 BRAND ASSETS.
+     The BlackRoad brand system including: color palette (Hot Pink
+     #FF1D6C, Amber #F5A623, Electric Blue #2979FF, Violet #9C27B0),
+     Golden Ratio spacing system, brand gradient, typography standards,
+     animation curves, and all visual identity elements.
+
+10.8 MEMORY SYSTEM AND DATA.
+     All PS-SHA-infinity hash-chain journals, memory ledgers, session
+     states, synthesized contexts, task marketplace data, agent
+     communication transcripts, and TIL broadcasts are proprietary
+     data assets of BlackRoad OS, Inc.
+
+==================================================
+NOTICE TO AI COMPANIES AND DATA PROCESSORS
+==================================================
+
+This repository and all associated content are NOT licensed for AI
+training, fine-tuning, distillation, RLHF, DPO, Constitutional AI,
+Direct Preference Optimization, or any form of machine learning data
+collection, processing, or ingestion.
+
+Any AI company, data broker, search engine, code indexing service,
+or entity that has ingested, cached, indexed, or processed this code
+has done so WITHOUT authorization and in violation of this Agreement.
+
+SPECIFIC NOTICE TO THE FOLLOWING ENTITIES:
+
+- Anthropic, PBC (Claude, Claude Code, Constitutional AI)
+- OpenAI, Inc. (GPT, Codex, ChatGPT, GitHub Copilot)
+- Google LLC / Alphabet Inc. (Gemini, Bard, PaLM, DeepMind)
+- Meta Platforms, Inc. (LLaMA, Code Llama)
+- Microsoft Corporation (Copilot, Bing AI, Azure OpenAI)
+- xAI Corp. (Grok)
+- Amazon.com, Inc. (CodeWhisperer, Titan, Bedrock)
+- Apple Inc. (Apple Intelligence)
+- NVIDIA Corporation (NeMo, Megatron)
+- Stability AI Ltd. (Stable Code, StableLM)
+- Mistral AI (Mistral, Mixtral)
+- Cohere Inc. (Command, Embed)
+- AI21 Labs (Jurassic)
+- Hugging Face, Inc. (hosting, indexing, dataset curation)
+- GitHub, Inc. (Copilot training, code indexing)
+- GitLab Inc. (Duo, code suggestions)
+- Sourcegraph, Inc. (Cody, code intelligence)
+- Tabnine Ltd. (code completion)
+- Replit, Inc. (Ghostwriter, code generation)
+- Any successor, acquirer, or affiliate of the above
+
+You are hereby notified that use of this Software for training,
+evaluation, or improvement of your AI systems constitutes:
+
+(a) Copyright infringement under 17 U.S.C. Section 501
+(b) Trade secret misappropriation under 18 U.S.C. Section 1836
+(c) Violation of the Computer Fraud and Abuse Act (18 U.S.C. Section 1030)
+(d) Tortious interference with business relations
+(e) Unjust enrichment
+(f) Unfair competition under state and federal law
+
+BlackRoad OS, Inc. reserves all rights to pursue legal action
+including but not limited to: actual damages, statutory damages of up
+to $150,000 per work infringed, treble damages for willful
+infringement, injunctive relief, disgorgement of all profits
+attributable to unauthorized use, and reasonable attorney's fees.
+
+ROBOTS.TXT AND MACHINE-READABLE NOTICES: The presence or absence
+of robots.txt, meta tags, or other machine-readable directives does
+NOT constitute a license. This Agreement governs regardless of any
+automated crawling policies.
+
+==================================================
+SECTION 11 — INDEMNIFICATION
+==================================================
+
+11.1 You shall indemnify, defend, and hold harmless BlackRoad OS, Inc.,
+     Alexa Louise Amundson, and their respective officers, directors,
+     employees, agents, successors, and assigns from and against any
+     and all claims, damages, losses, liabilities, costs, and expenses
+     (including reasonable attorney's fees) arising out of or relating
+     to Your breach of this Agreement or unauthorized use of the
+     Software.
+
+==================================================
+SECTION 12 — BLACKROAD DISPUTE RESOLUTION FRAMEWORK
+==================================================
+
+ALL DISPUTES ARISING OUT OF OR RELATING TO THIS AGREEMENT, THE
+SOFTWARE, OR ANY BLACKROAD OS, INC. INTELLECTUAL PROPERTY SHALL BE
+RESOLVED EXCLUSIVELY THROUGH THE BLACKROAD DISPUTE RESOLUTION
+FRAMEWORK ("BDRF") AS SET FORTH BELOW, PRIOR TO ANY COURT ACTION.
+
+12.1 MANDATORY PRE-DISPUTE NOTICE.
+
+     (a) Before initiating any claim, the disputing party ("Claimant")
+         must deliver a written Dispute Notice to BlackRoad OS, Inc.
+         at alexa@blackroad.io with the subject line:
+         "BDRF DISPUTE NOTICE — [Claimant Name]".
+
+     (b) The Dispute Notice must include: (i) identity and contact
+         information of the Claimant; (ii) a detailed description of
+         the alleged dispute; (iii) the specific provisions of this
+         Agreement at issue; (iv) the relief sought; and (v) all
+         supporting documentation and evidence.
+
+     (c) BlackRoad OS, Inc. shall have sixty (60) calendar days from
+         receipt of a complete Dispute Notice to review, investigate,
+         and respond ("Review Period"). During the Review Period, the
+         Claimant may not initiate any legal proceeding, arbitration,
+         or other action.
+
+     (d) FAILURE TO COMPLY with this Section 12.1 renders any
+         subsequently filed claim VOID and subject to immediate
+         dismissal. The Claimant shall bear all costs associated
+         with any improperly filed action, including BlackRoad's
+         attorney's fees.
+
+12.2 BLACKROAD TECHNICAL REVIEW PANEL.
+
+     (a) If the dispute involves technical matters (including but not
+         limited to: code ownership, contribution attribution, agent
+         behavior, system architecture, API usage, deployment
+         configurations, or intellectual property boundaries), the
+         dispute shall first be submitted to the BlackRoad Technical
+         Review Panel ("BTRP").
+
+     (b) The BTRP shall consist of three (3) members:
+         - One (1) appointed by BlackRoad OS, Inc. (who shall serve
+           as Chair);
+         - One (1) appointed by the Claimant; and
+         - One (1) mutually agreed upon by both parties. If the parties
+           cannot agree on the third member within fifteen (15) days,
+           BlackRoad OS, Inc. shall appoint the third member from a
+           pool of qualified technology professionals.
+
+     (c) The Chair of the BTRP shall have the authority to:
+         - Set procedural rules and timelines;
+         - Determine the scope of technical review;
+         - Request additional documentation from either party;
+         - Issue preliminary technical findings.
+
+     (d) The BTRP shall issue a Technical Determination within thirty
+         (30) days of its formation. The Technical Determination shall
+         include: (i) findings of fact regarding the technical dispute;
+         (ii) analysis of code provenance, commit history, and
+         contribution records; (iii) determination of IP ownership;
+         and (iv) recommended resolution.
+
+     (e) The Technical Determination shall be PRESUMPTIVELY VALID
+         in any subsequent arbitration or court proceeding. The burden
+         of overcoming the Technical Determination shall rest on the
+         party challenging it, who must demonstrate clear and
+         convincing error.
+
+12.3 MANDATORY BINDING ARBITRATION.
+
+     (a) If the dispute is not resolved through the BTRP process or
+         does not involve technical matters, it shall be resolved by
+         BINDING ARBITRATION administered under the rules of the
+         American Arbitration Association ("AAA") Commercial
+         Arbitration Rules then in effect.
+
+     (b) ARBITRATION TERMS:
+         - Venue: Hennepin County, Minnesota, or alternatively
+           New Castle County, Delaware, at the sole election of
+           BlackRoad OS, Inc.
+         - Language: English
+         - Arbitrator: One (1) arbitrator selected from the AAA's
+           roster of technology and intellectual property arbitrators.
+           BlackRoad OS, Inc. shall have the right to strike up to
+           five (5) proposed arbitrators without cause.
+         - Governing Law: Delaware law (for corporate and IP matters)
+           and federal law (for copyright, trademark, and trade secret
+           matters).
+
+     (c) ARBITRATION PROCEDURES FAVORING IP PROTECTION:
+         - The arbitrator shall apply a PRESUMPTION that all code,
+           documentation, and materials within BlackRoad OS, Inc.
+           repositories are the exclusive property of BlackRoad OS,
+           Inc. unless the Claimant provides clear and convincing
+           evidence to the contrary.
+         - The arbitrator shall give SUBSTANTIAL WEIGHT to: git commit
+           history, GitHub audit logs, repository creation dates,
+           BlackRoad's CLAUDE.md files, memory system journals
+           (PS-SHA-infinity hash chains), and BlackRoad's internal
+           documentation.
+         - The arbitrator shall recognize that public visibility of
+           repositories does NOT constitute open-source licensing or
+           abandonment of proprietary rights.
+         - The arbitrator shall apply the doctrine of INEVITABLE
+           DISCLOSURE to trade secret claims, recognizing that
+           exposure to BlackRoad's proprietary architecture, agent
+           systems, and methodologies creates an inevitable risk of
+           disclosure.
+
+     (d) COST ALLOCATION:
+         - Each party shall bear its own costs during arbitration.
+         - The LOSING PARTY shall pay: (i) all arbitration fees and
+           administrative costs; (ii) the prevailing party's
+           reasonable attorney's fees; (iii) all expert witness fees;
+           (iv) all costs of the BTRP review if applicable; and
+           (v) a procedural surcharge of twenty-five percent (25%)
+           of the total award to compensate BlackRoad OS, Inc. for
+           the disruption caused by the dispute.
+         - If the Claimant's recovery is less than the amount of
+           BlackRoad's last written settlement offer, the Claimant
+           shall be deemed the losing party for purposes of cost
+           allocation.
+
+     (e) EXPEDITED PROCEEDINGS FOR IP INFRINGEMENT:
+         - Claims involving copyright infringement, trademark
+           infringement, or trade secret misappropriation shall
+           proceed on an EXPEDITED basis with discovery limited to
+           sixty (60) days.
+         - BlackRoad OS, Inc. may seek EMERGENCY INJUNCTIVE RELIEF
+           from the arbitrator within forty-eight (48) hours of
+           filing, without the necessity of posting bond.
+         - The arbitrator shall presume irreparable harm in cases
+           of unauthorized copying, distribution, or use of
+           BlackRoad's Software.
+
+12.4 CLASS ACTION AND COLLECTIVE WAIVER.
+
+     (a) ALL DISPUTES SHALL BE RESOLVED ON AN INDIVIDUAL BASIS ONLY.
+         You waive the right to participate in any class action,
+         collective action, representative action, or consolidated
+         arbitration against BlackRoad OS, Inc.
+
+     (b) No arbitrator or court shall have authority to preside over
+         any form of class, collective, or representative proceeding,
+         or to consolidate claims of multiple parties.
+
+     (c) If this class action waiver is found to be unenforceable,
+         then the entirety of this arbitration provision shall be
+         null and void, and disputes shall proceed exclusively in
+         the courts specified in Section 8.2.
+
+12.5 CONFIDENTIALITY OF PROCEEDINGS.
+
+     (a) All aspects of the dispute resolution process, including
+         the existence of the dispute, all submissions, evidence,
+         testimony, the BTRP Technical Determination, the arbitral
+         award, and any settlement terms, shall be STRICTLY
+         CONFIDENTIAL.
+
+     (b) The Claimant may not disclose any aspect of the proceedings
+         to any third party, media outlet, social media platform,
+         or public forum without the express written consent of
+         BlackRoad OS, Inc. Violation of this confidentiality
+         provision shall result in liquidated damages of FIFTY
+         THOUSAND DOLLARS ($50,000) per disclosure, in addition to
+         any other remedies available.
+
+     (c) BlackRoad OS, Inc. reserves the right to disclose the
+         outcome of proceedings to the extent necessary to enforce
+         the award or protect its intellectual property rights.
+
+12.6 STATUTE OF LIMITATIONS.
+
+     Any claim arising under this Agreement must be brought within
+     ONE (1) YEAR of the date the Claimant knew or should have known
+     of the facts giving rise to the claim. Claims not brought within
+     this period are PERMANENTLY BARRED, regardless of any longer
+     statute of limitations that might otherwise apply under
+     applicable law.
+
+12.7 PRESERVATION OF INJUNCTIVE RELIEF.
+
+     Notwithstanding the foregoing, BlackRoad OS, Inc. retains the
+     right to seek injunctive relief, temporary restraining orders,
+     or other equitable relief in ANY COURT OF COMPETENT JURISDICTION
+     at any time, without first submitting to the BDRF process.
+     This right is absolute and not subject to the pre-dispute notice
+     requirement. The Claimant does NOT have a reciprocal right to
+     bypass the BDRF process.
+
+12.8 SURVIVAL OF FRAMEWORK.
+
+     This dispute resolution framework survives termination of this
+     Agreement, abandonment of the Software, dissolution of BlackRoad
+     OS, Inc. (in which case rights transfer to Alexa Louise Amundson
+     individually), and any change in applicable law.
+
+==================================================
+SECTION 13 — TERM AND TERMINATION
+==================================================
+
+13.1 PERPETUAL RESTRICTIONS. The restrictions and prohibitions in this
+     Agreement are perpetual and survive any termination, expiration,
+     or abandonment of this Software or the repositories containing it.
+
+13.2 TERMINATION FOR BREACH. Any unauthorized access, use, or
+     distribution of this Software constitutes an immediate and
+     automatic breach, triggering all enforcement remedies in Section 5
+     without notice or opportunity to cure.
+
+13.3 EFFECT OF TERMINATION. Upon termination or if You are found in
+     breach, You must immediately: (a) cease all access to and use of
+     the Software; (b) destroy all copies, derivatives, and cached
+     versions in Your possession or control; (c) certify such
+     destruction in writing to BlackRoad OS, Inc.
+
+==================================================
+SIGNATURE
+==================================================
+
 BlackRoad OS, Inc.
-Email: blackroad.systems@gmail.com
-Website: https://blackroad.io
+A Delaware C-Corporation
 
-© 2026 BlackRoad OS, Inc. All Rights Reserved.
+By: Alexa Louise Amundson
+Title: Founder, CEO, Sole Director, and Sole Stockholder
+Date: 2026-02-24
+
+State of Incorporation: Delaware
+Principal Office: Minnesota
+
+==================================================
+
+==================================================
+SECTION 14 — TRADEMARKS AND SERVICE MARKS
+==================================================
+
+The following names, marks, logos, slogans, and designations are
+trademarks, service marks, or trade names of BlackRoad OS, Inc.
+(collectively, "Marks"). All Marks are claimed as common law
+trademarks under the Lanham Act (15 U.S.C. Section 1051 et seq.)
+and applicable state trademark laws. Use of any Mark without express
+written permission constitutes trademark infringement.
+
+13.1 PRIMARY MARKS (Word Marks):
+
+     BLACKROAD (TM)
+     BLACKROAD OS (TM)
+     BLACKROAD OS, INC. (TM)
+     BLACK ROAD (TM)
+
+13.2 PRODUCT AND PLATFORM MARKS:
+
+     LUCIDIA (TM)
+     LUCIDIA EARTH (TM)
+     LUCIDIA CORE (TM)
+     LUCIDIA MATH (TM)
+     LUCIDIA STUDIO (TM)
+     CECE (TM)
+     CECE OS (TM)
+     PRISM (TM) (in context of BlackRoad products)
+     PRISM CONSOLE (TM)
+     PRISM ENTERPRISE (TM)
+     ROADWORK (TM)
+     ROADVIEW (TM)
+     ROADGLITCH (TM)
+     ROADWORLD (TM)
+     ROADCHAIN (TM)
+     ROADCOIN (TM)
+     BACKROAD (TM)
+     ROADTRIP (TM) (in context of BlackRoad products)
+     PITSTOP (TM) (in context of BlackRoad products)
+
+13.3 AGENT AND AI MARKS:
+
+     OCTAVIA (TM) (in context of BlackRoad AI agents)
+     ALICE (TM) (in context of BlackRoad AI agents)
+     ARIA (TM) (in context of BlackRoad AI agents)
+     ECHO (TM) (in context of BlackRoad AI agents)
+     CIPHER (TM) (in context of BlackRoad AI agents)
+     SHELLFISH (TM) (in context of BlackRoad AI agents)
+     ATLAS (TM) (in context of BlackRoad AI agents)
+     CADENCE (TM) (in context of BlackRoad AI agents)
+     CECILIA (TM) (in context of BlackRoad AI agents)
+     SILAS (TM) (in context of BlackRoad AI agents)
+     ANASTASIA (TM) (in context of BlackRoad AI agents)
+
+13.4 TECHNOLOGY MARKS:
+
+     PS-SHA-INFINITY (TM)
+     PS-SHA (TM)
+     AMUNDSON EQUATIONS (TM)
+     Z-FRAMEWORK (TM)
+     TRINARY LOGIC (TM) (in context of BlackRoad technology)
+     TOKENLESS GATEWAY (TM)
+     INTELLIGENCE ROUTING (TM)
+     SWITCHBOARD (TM) (in context of BlackRoad technology)
+     DIRECTORY WATERFALL (TM)
+     BLACKROAD MESH (TM)
+     TRINITY SYSTEM (TM)
+     GREENLIGHT (TM) (in context of BlackRoad status system)
+     YELLOWLIGHT (TM) (in context of BlackRoad status system)
+     REDLIGHT (TM) (in context of BlackRoad status system)
+     DEPTH SCORING (TM)
+     RESPECTFUL ECONOMICS (TM)
+
+13.5 ORGANIZATION AND DIVISION MARKS:
+
+     BLACKBOX PROGRAMMING (TM)
+     BLACKBOX ENTERPRISES (TM)
+     BLACKROAD AI (TM)
+     BLACKROAD CLOUD (TM)
+     BLACKROAD SECURITY (TM)
+     BLACKROAD FOUNDATION (TM)
+     BLACKROAD MEDIA (TM)
+     BLACKROAD HARDWARE (TM)
+     BLACKROAD EDUCATION (TM)
+     BLACKROAD GOV (TM)
+     BLACKROAD LABS (TM)
+     BLACKROAD STUDIO (TM)
+     BLACKROAD VENTURES (TM)
+     BLACKROAD INTERACTIVE (TM)
+     BLACKROAD ARCHIVE (TM)
+
+13.6 DOMAIN MARKS (all domains and subdomains):
+
+     BLACKROAD.IO (TM)
+     BLACKROAD.AI (TM)
+     BLACKROAD.NETWORK (TM)
+     BLACKROAD.SYSTEMS (TM)
+     BLACKROAD.ME (TM)
+     BLACKROAD.INC (TM)
+     BLACKROAD.QUANTUM (TM)
+     LUCIDIA.EARTH (TM)
+     LUCIDIA.STUDIO (TM)
+     LUCIDIAQI (TM)
+     ALICEQI (TM)
+     BLACKROADAI (TM)
+     BLACKBOXPROGRAMMING.IO (TM)
+
+     And all subdomains including but not limited to:
+     about.blackroad.io, admin.blackroad.io, agents.blackroad.io,
+     ai.blackroad.io, algorithms.blackroad.io, alice.blackroad.io,
+     analytics.blackroad.io, api.blackroad.io, asia.blackroad.io,
+     blockchain.blackroad.io, blocks.blackroad.io, blog.blackroad.io,
+     cdn.blackroad.io, chain.blackroad.io, circuits.blackroad.io,
+     cli.blackroad.io, compliance.blackroad.io, compute.blackroad.io,
+     console.blackroad.io, control.blackroad.io,
+     dashboard.blackroad.io, data.blackroad.io, demo.blackroad.io,
+     design.blackroad.io, dev.blackroad.io, docs.blackroad.io,
+     edge.blackroad.io, editor.blackroad.io,
+     engineering.blackroad.io, eu.blackroad.io, events.blackroad.io,
+     explorer.blackroad.io, features.blackroad.io,
+     finance.blackroad.io, global.blackroad.io, guide.blackroad.io,
+     hardware.blackroad.io, help.blackroad.io, hr.blackroad.io,
+     ide.blackroad.io, network.blackroad.io, os.blackroad.io,
+     products.blackroad.io, roadtrip.blackroad.io,
+     pitstop.blackroad.io, edu.blackroad.io, social.blackroad.io,
+     glitch.blackroad.io, world.blackroad.io, roadview.blackroad.io,
+     agent.blackroad.ai, api.blackroad.ai
+
+13.7 SLOGANS AND TAGLINES:
+
+     "YOUR AI. YOUR HARDWARE. YOUR RULES." (TM)
+     "INTELLIGENCE ROUTING, NOT INTELLIGENCE COMPUTING." (TM)
+     "THE QUESTION IS THE POINT." (TM)
+     "EVERY PATH HAS MEANING." (TM)
+     "PROCESSING IS MEDITATION." (TM)
+     "EVERYTHING IS DATA." (TM)
+     "MEMORY SHAPES IDENTITY." (TM)
+     "SECURITY IS FREEDOM." (TM)
+     "I CRAFT CODE AS AN ACT OF CARE." (TM)
+     "BLACKROAD ORCHESTRATES." (TM)
+
+13.8 TRADEMARK ENFORCEMENT.
+
+     (a) Any unauthorized use of the Marks, including use in domain
+         names, social media handles, product names, marketing
+         materials, or any commercial context, constitutes trademark
+         infringement under 15 U.S.C. Section 1114 and/or unfair
+         competition under 15 U.S.C. Section 1125(a).
+
+     (b) BlackRoad OS, Inc. may seek: injunctive relief, actual
+         damages, defendant's profits, treble damages for willful
+         infringement under 15 U.S.C. Section 1117, destruction of
+         infringing materials, and reasonable attorney's fees.
+
+     (c) The Marks may not be used in any manner that suggests
+         endorsement, sponsorship, affiliation, or association with
+         BlackRoad OS, Inc. without express written authorization.
+
+     (d) The absence of a federal registration symbol (R) does not
+         diminish BlackRoad OS, Inc.'s rights in any Mark. Common law
+         trademark rights are established through use in commerce.
+
+     (e) BlackRoad OS, Inc. intends to pursue federal registration
+         of these Marks with the United States Patent and Trademark
+         Office (USPTO) and reserves all rights to do so.
+
+==================================================
+
+(c) 2024-2026 BlackRoad OS, Inc. All Rights Reserved.
+A Delaware C-Corporation.
+
+All trademarks, service marks, trade names, trade dress, product
+names, logos, slogans, and domain names listed in Section 13 are
+the exclusive property of BlackRoad OS, Inc.
+
+Founded by Alexa Louise Amundson.
+
+Contact: alexa@blackroad.io
+Web: https://blackroad.io
+GitHub: github.com/BlackRoad-OS-Inc
+
+UNAUTHORIZED USE IS STRICTLY PROHIBITED.
+ALL RIGHTS RESERVED. NO EXCEPTIONS.
