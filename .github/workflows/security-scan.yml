@@ -25,7 +25,7 @@ jobs:
     
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
@@ -44,7 +44,7 @@ jobs:
     
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       
       - name: Run npm audit
         if: hashFiles('package.json') != ''
