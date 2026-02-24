@@ -15,7 +15,7 @@ jobs:
       issues: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -57,7 +57,7 @@ jobs:
 
       - name: Apply labels
         if: steps.classify.outputs.confidence > 0.6
-        uses: actions/github-script@v7
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
         with:
           script: |
             const org = '${{ steps.classify.outputs.org }}';
@@ -91,7 +91,7 @@ jobs:
 
       - name: Add triage comment
         if: steps.classify.outputs.confidence > 0.6
-        uses: actions/github-script@v7
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
         with:
           script: |
             const org = '${{ steps.classify.outputs.org }}';
