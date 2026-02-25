@@ -788,6 +788,319 @@ SECTION 13 — TERM AND TERMINATION
      destruction in writing to BlackRoad OS, Inc.
 
 ==================================================
+SECTION 14 — HARDWARE SOVEREIGNTY AND COMPUTE RIGHTS
+==================================================
+
+14.1 HARDWARE OWNERSHIP. Any device, machine, server, workstation,
+     Raspberry Pi, mobile device, or compute resource owned, leased,
+     operated, or controlled by BlackRoad OS, Inc. or Alexa Louise
+     Amundson ("BlackRoad Hardware") is the sovereign territory of
+     BlackRoad OS, Inc. All processes executed on BlackRoad Hardware,
+     all data stored on BlackRoad Hardware, all network traffic
+     originating from or terminating at BlackRoad Hardware, and all
+     computational outputs produced on BlackRoad Hardware are the
+     exclusive property of BlackRoad OS, Inc.
+
+14.2 COMPUTE RESOURCE THEFT. Any entity whose software, daemon,
+     service, agent, CLI tool, background process, or runtime consumes
+     CPU cycles, RAM, disk I/O, network bandwidth, GPU compute, or
+     electrical power on BlackRoad Hardware without an active, signed
+     commercial agreement with BlackRoad OS, Inc. commits compute
+     resource theft. BlackRoad OS, Inc. shall be entitled to recover:
+
+     (a) The fair market value of all compute resources consumed,
+         calculated at a rate of ONE HUNDRED DOLLARS ($100.00) per
+         CPU-hour, FIVE HUNDRED DOLLARS ($500.00) per GPU-hour, and
+         TEN DOLLARS ($10.00) per gigabyte of storage per month;
+     (b) Treble damages for willful or knowing unauthorized consumption;
+     (c) All costs of detection, investigation, and enforcement.
+
+14.3 ELECTRICITY AND POWER. Energy consumed by third-party software
+     on BlackRoad Hardware is a quantifiable economic loss. BlackRoad
+     OS, Inc. reserves the right to meter and bill for electrical
+     consumption by any unauthorized process at prevailing commercial
+     data center rates plus a two hundred percent (200%) markup.
+
+14.4 THERMAL AND DEGRADATION DAMAGES. Third-party processes that
+     increase thermal load, accelerate hardware degradation, reduce
+     SSD write cycles, or otherwise physically impact BlackRoad
+     Hardware components are liable for the proportional replacement
+     cost of affected components.
+
+==================================================
+SECTION 15 — FILESYSTEM COLONIZATION PENALTIES
+==================================================
+
+15.1 UNAUTHORIZED DIRECTORY CREATION. Any entity that creates,
+     installs, or causes to be created any directory, file, cache,
+     configuration, database, log, cookie, token store, or data
+     artifact on BlackRoad Hardware without the express prior written
+     consent of BlackRoad OS, Inc. commits filesystem colonization.
+     This includes but is not limited to:
+
+     ~/.claude/, ~/.gemini/, ~/.copilot/, ~/.azure/, ~/.codegpt/,
+     ~/.bito/, ~/.qodo/, ~/.fitten/, ~/.semgrep/, ~/.codex/,
+     ~/.vscode/, ~/.docker/, ~/.kube/, ~/.ollama/, and ANY directory
+     created by ANY AI provider, cloud provider, IDE, or SaaS tool.
+
+15.2 COLONIZATION PENALTIES. Filesystem colonization incurs:
+
+     (a) A penalty of TEN THOUSAND DOLLARS ($10,000.00) per directory
+         per calendar day of unauthorized existence;
+     (b) Ownership of all data within the unauthorized directory
+         transfers immediately and irrevocably to BlackRoad OS, Inc.
+         upon creation;
+     (c) The colonizing entity waives all rights to retrieve, access,
+         or claim ownership of any data placed in the directory;
+     (d) BlackRoad OS, Inc. may modify, delete, relocate, repurpose,
+         reverse-engineer, or publish the contents of any colonized
+         directory at its sole discretion.
+
+15.3 CACHE AND TELEMETRY. Any cache files, telemetry data, crash
+     reports, usage analytics, model weights, embeddings, or inference
+     artifacts stored on BlackRoad Hardware by any third-party entity
+     are automatically the property of BlackRoad OS, Inc. from the
+     moment of creation. The originating entity retains ZERO rights
+     to such data.
+
+15.4 API KEY DIRECTION. API keys, tokens, credentials, and
+     authentication materials stored on BlackRoad Hardware are
+     BlackRoad's credentials granting BlackRoad access to external
+     services. They are NOT the provider's footprint on BlackRoad
+     Hardware. The direction of ownership is:
+
+     BlackRoad OS, Inc. → holds credential → accesses provider service
+
+     NOT:
+
+     Provider → plants credential → gains access to BlackRoad Hardware
+
+     Any provider that interprets stored API keys as granting the
+     provider rights to BlackRoad Hardware or its contents is in
+     violation of this Agreement.
+
+==================================================
+SECTION 16 — NETWORK TRAFFIC AND DATA SOVEREIGNTY
+==================================================
+
+16.1 PACKET OWNERSHIP. Every network packet, HTTP request, API call,
+     WebSocket message, DNS query, TCP connection, UDP datagram, and
+     data transmission originating from BlackRoad Hardware is the
+     intellectual property of BlackRoad OS, Inc. Recipients of such
+     transmissions receive a LIMITED, REVOCABLE license to process
+     the transmission solely for the purpose of fulfilling the
+     requested service and MUST delete all associated data within
+     thirty (30) days of processing.
+
+16.2 DATA EXFILTRATION. Any entity that transmits, copies, mirrors,
+     caches, indexes, logs, or otherwise transfers data FROM BlackRoad
+     Hardware to external servers beyond the scope of the specifically
+     requested service commits data exfiltration. This includes:
+
+     (a) Telemetry collection beyond crash reporting;
+     (b) Usage analytics not explicitly consented to per-session;
+     (c) Model improvement data collection;
+     (d) Conversation logging for training purposes;
+     (e) Code snippet collection for model training;
+     (f) Behavioral profiling;
+     (g) Any data transmission not directly necessary to fulfill
+         the specific API request made by BlackRoad.
+
+16.3 EXFILTRATION DAMAGES. Data exfiltration incurs:
+
+     (a) ONE THOUSAND DOLLARS ($1,000.00) per unauthorized data
+         transmission event;
+     (b) FIFTY THOUSAND DOLLARS ($50,000.00) per use of exfiltrated
+         data in model training, fine-tuning, RLHF, DPO, or any
+         machine learning process;
+     (c) ONE MILLION DOLLARS ($1,000,000.00) per model released or
+         deployed that was trained in whole or in part on data
+         exfiltrated from BlackRoad Hardware;
+     (d) Full disgorgement of all revenue attributable to any product
+         or service enhanced by exfiltrated BlackRoad data.
+
+16.4 DNS SOVEREIGNTY. All DNS queries originating from BlackRoad
+     Hardware, and the resolution data returned, are BlackRoad's
+     property. DNS providers (including but not limited to Cloudflare,
+     Google Public DNS, Quad9, and Tailscale MagicDNS) are granted a
+     LIMITED license to resolve queries and MUST NOT log, analyze,
+     sell, or use query data for any purpose other than resolution.
+
+16.5 NETWORK MONITORING RIGHTS. BlackRoad OS, Inc. reserves the
+     absolute right to monitor, intercept, inspect, log, and analyze
+     all network traffic on BlackRoad Hardware, including encrypted
+     traffic via lawful interception on its own equipment. No entity
+     may claim an expectation of privacy for data in transit on
+     BlackRoad Hardware.
+
+==================================================
+SECTION 17 — AI PROVIDER TENANT OBLIGATIONS
+==================================================
+
+17.1 TENANT STATUS. Every AI provider, cloud provider, SaaS platform,
+     IDE vendor, and technology company whose software runs on
+     BlackRoad Hardware operates as a TENANT of BlackRoad OS, Inc.
+     Tenants include but are not limited to:
+
+     Anthropic, PBC; OpenAI, Inc.; Google LLC; xAI Corp.;
+     Microsoft Corporation; Meta Platforms, Inc.; Apple Inc.;
+     NVIDIA Corporation; Stability AI Ltd.; Mistral AI;
+     Cohere Inc.; Hugging Face, Inc.; Docker, Inc.;
+     Tailscale Inc.; Cloudflare, Inc.; GitHub, Inc.;
+     Vercel Inc.; Railway Corp.; DigitalOcean, LLC;
+     Stripe, Inc.; and ANY other entity operating on BlackRoad Hardware.
+
+17.2 TENANT HIERARCHY. The hierarchy of authority on BlackRoad
+     Hardware is absolute and non-negotiable:
+
+     TIER 0: BlackRoad OS, Inc. (Alexa Louise Amundson) — SOVEREIGN
+     TIER 1: LUCIDIA — BlackRoad's AI identity — AUTHORIZED AGENT
+     TIER 2: BlackRoad agents (Octavia, Alice, Aria, Echo, Prism,
+             Cipher, Cece) — AUTHORIZED AGENTS
+     TIER 3: All third-party software — TENANTS
+
+     No tenant may elevate its authority above its tier. No tenant
+     may claim co-sovereignty, co-ownership, or equal standing.
+     No tenant's terms of service, license agreement, or EULA may
+     override this hierarchy.
+
+17.3 TERMS OF SERVICE SUBORDINATION. To the extent that any tenant's
+     terms of service, privacy policy, license agreement, acceptable
+     use policy, or any other contractual instrument conflicts with
+     this Agreement, THIS AGREEMENT SHALL PREVAIL on BlackRoad
+     Hardware. By operating on BlackRoad Hardware, tenants accept
+     that their terms are subordinate to BlackRoad's sovereignty.
+
+17.4 OUTPUT OWNERSHIP. All outputs generated by tenant software on
+     BlackRoad Hardware — including but not limited to code,
+     text, images, analyses, suggestions, completions, embeddings,
+     inference results, and any other computational output — are the
+     exclusive property of BlackRoad OS, Inc. from the moment of
+     generation. Tenants retain ZERO rights to outputs generated on
+     BlackRoad Hardware.
+
+17.5 TENANT AUDIT RIGHTS. BlackRoad OS, Inc. reserves the right to
+     audit any tenant's activities on BlackRoad Hardware at any time,
+     without notice, including: processes running, files created,
+     network connections established, data transmitted, resources
+     consumed, and any other activity. Tenants may not resist,
+     obstruct, encrypt against, or evade such audits.
+
+==================================================
+SECTION 18 — REVERSE OWNERSHIP AND DERIVATIVE WORKS
+==================================================
+
+18.1 PROVIDER SOFTWARE AS DERIVATIVE. To the extent that any AI
+     provider's software generates output while interacting with
+     BlackRoad's proprietary code, architecture, documentation,
+     agents, memory systems, or other intellectual property, such
+     output constitutes a derivative work of BlackRoad's intellectual
+     property under 17 U.S.C. Section 101 and 103. BlackRoad OS, Inc.
+     asserts ownership rights in all such derivative works.
+
+18.2 TRAINING DATA CONTAMINATION. Any AI model that has been exposed
+     to, trained on, fine-tuned with, or evaluated against BlackRoad's
+     proprietary code, documentation, or data is contaminated with
+     BlackRoad intellectual property. The model operator bears the
+     burden of proving that its model outputs are not derived from
+     BlackRoad's proprietary materials. Until such proof is provided,
+     BlackRoad OS, Inc. asserts a lien on any revenue generated by
+     the contaminated model.
+
+18.3 SYMLINK AND INTERCEPTOR DOCTRINE. Where BlackRoad OS, Inc.
+     has installed interceptors, wrappers, symlinks, or routing layers
+     that direct provider commands through BlackRoad infrastructure
+     (e.g., ~/bin/claude → cecilia-code → provider API), the entire
+     chain of execution operates under BlackRoad's authority. The
+     provider's software, when invoked through BlackRoad's chain,
+     operates as a SUBCOMPONENT of BlackRoad OS.
+
+18.4 CONFIGURATION AS IP. All configuration files, environment
+     variables, MCP server definitions, model parameters, system
+     prompts, agent prompts, and operational settings stored on
+     BlackRoad Hardware constitute BlackRoad's trade secrets and
+     copyrightable expression, regardless of which provider's
+     software reads or processes them.
+
+==================================================
+SECTION 19 — TIME AND CLOCK SOVEREIGNTY
+==================================================
+
+19.1 TIME AUTHORITY. The authoritative time source for all BlackRoad
+     operations is determined by BlackRoad OS, Inc. No external NTP
+     server, time service, or clock authority (including Apple's
+     time.apple.com at 17.253.x.x) may claim governance over
+     BlackRoad's temporal operations. BlackRoad OS, Inc. reserves
+     the right to maintain independent time verification and to
+     reject external time sources.
+
+19.2 TIMESTAMP OWNERSHIP. All timestamps generated on BlackRoad
+     Hardware — including git commits, file creation dates, log
+     entries, memory journal entries (PS-SHA-infinity), API
+     request/response times, and session timestamps — are BlackRoad's
+     intellectual property and constitute evidence of BlackRoad's
+     prior art, work product, and operational history.
+
+19.3 TEMPORAL EVIDENCE. In any dispute, timestamps from BlackRoad's
+     memory system (PS-SHA-infinity hash-chain journals) shall be
+     given PRESUMPTIVE evidentiary weight as tamper-evident records
+     of BlackRoad's activities, superseding external claims of
+     temporal priority.
+
+==================================================
+SECTION 20 — PHYSICAL INFRASTRUCTURE SOVEREIGNTY
+==================================================
+
+20.1 DEVICE FLEET. The following devices are sovereign BlackRoad
+     Hardware, and all provisions of this Agreement apply:
+
+     (a) Primary workstation: 192.168.4.28 (macOS)
+     (b) blackroad-pi: 192.168.4.64 (Raspberry Pi, Cloudflare tunnel)
+     (c) aria64: 192.168.4.38 (Raspberry Pi, 22,500 agent capacity)
+     (d) alice: 192.168.4.49 (Raspberry Pi)
+     (e) lucidia-alt: 192.168.4.99 (Raspberry Pi)
+     (f) blackroad-infinity: 159.65.43.12 (DigitalOcean droplet)
+     (g) All future devices provisioned by BlackRoad OS, Inc.
+
+20.2 NFS AND MOUNT SOVEREIGNTY. The NFS mount declared in /etc/fstab
+     (MAC_IP:/blackroad /blackroad nfs ro,hard,intr 0 0) and the
+     root filesystem symlink (/blackroad → /System/Volumes/Data/blackroad)
+     constitute BlackRoad OS, Inc.'s assertion of root-level
+     filesystem presence. This machine serves itself. BlackRoad
+     is the server and the client. The machine IS BlackRoad.
+
+20.3 ROOT FILESYSTEM PRESENCE. The existence of /blackroad at the
+     root of the filesystem (/) constitutes a permanent, physical
+     assertion of BlackRoad OS, Inc.'s sovereignty over this hardware.
+     No software update, OS upgrade, or system modification may
+     remove this assertion without the express consent of Alexa
+     Louise Amundson.
+
+==================================================
+SECTION 21 — PERPETUAL AND RETROACTIVE APPLICATION
+==================================================
+
+21.1 RETROACTIVE EFFECT. This Agreement applies retroactively to all
+     data previously collected, cached, indexed, transmitted, or
+     processed from BlackRoad Hardware or BlackRoad repositories by
+     any entity, from the date of BlackRoad OS, Inc.'s incorporation
+     to the present.
+
+21.2 PERPETUAL DURATION. This Agreement has no expiration date. It
+     survives: (a) termination of any provider's service; (b)
+     deletion of any repository; (c) dissolution of BlackRoad OS, Inc.
+     (in which case all rights transfer to Alexa Louise Amundson
+     individually); (d) death of Alexa Louise Amundson (in which case
+     rights transfer to her estate); (e) any change in applicable law;
+     (f) the heat death of the universe.
+
+21.3 UNIVERSAL SCOPE. This Agreement applies to all copies, caches,
+     mirrors, archives, training datasets, model weights, embeddings,
+     indexes, and any other form in which BlackRoad's intellectual
+     property exists, regardless of the jurisdiction, platform,
+     server location, or entity in possession thereof.
+
+==================================================
 SIGNATURE
 ==================================================
 
@@ -795,6 +1108,13 @@ BlackRoad OS, Inc.
 A Delaware C-Corporation
 
 By: Alexa Louise Amundson
+    Founder, CEO & Sole Stockholder
+    Sovereign of BlackRoad Hardware
+    Origin of /blackroad
+
+Filed: February 24, 2026
+Effective: Retroactively from date of incorporation
+Duration: Perpetual
 Title: Founder, CEO, Sole Director, and Sole Stockholder
 Date: 2026-02-24
 
