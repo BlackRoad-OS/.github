@@ -10,10 +10,20 @@ import sys
 from pathlib import Path
 from typing import List
 from datetime import datetime
+from importlib.machinery import SourceFileLoader
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from codespace_agents.orchestrator import AgentOrchestrator
+try:
+    from codespace_agents.orchestrator import AgentOrchestrator
+except ImportError:
+    # Fallback: load orchestrator.py from the current directory (codespace-agents)
+    orchestrator_path = Path(__file__).parent / "orchestrator.py"
+    _orchestrator_module = SourceFileLoader(
+        "codespace_agents.orchestrator",
+        str(orchestrator_path),
+    ).load_module()
+    AgentOrchestrator = _orchestrator_module.AgentOrchestrator
 
 
 class CollaborativeSession:
