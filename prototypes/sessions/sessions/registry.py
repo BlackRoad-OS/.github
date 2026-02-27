@@ -6,7 +6,6 @@ status, and capabilities. Enables session discovery and coordination.
 """
 
 import json
-import time
 from pathlib import Path
 from dataclasses import dataclass, field, asdict
 from datetime import datetime, timedelta
