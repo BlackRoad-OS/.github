@@ -165,9 +165,15 @@ class SessionRegistry:
             if session.is_stale(timeout_seconds)
         ]
         
+        if not stale:
+            return
+        
         for sid in stale:
             self._sessions[sid].status = SessionStatus.OFFLINE
             # Don't delete, just mark offline for historical tracking
+        
+        # Persist updated statuses so offline state is available across processes
+        self._save()
     
     def register(
         self,
