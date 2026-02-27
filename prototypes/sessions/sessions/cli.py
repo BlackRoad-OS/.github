@@ -149,7 +149,7 @@ def cmd_memory_set(args):
     # Parse value as JSON if possible
     try:
         value = json.loads(args.value)
-    except:
+    except json.JSONDecodeError:
         value = args.value
     
     entry = memory.set(
