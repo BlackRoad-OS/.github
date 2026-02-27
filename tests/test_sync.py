@@ -4,7 +4,6 @@ Test suite for sync functionality
 Tests that updates are properly dispatched to target orgs
 """
 
-import os
 import sys
 import yaml
 from pathlib import Path
