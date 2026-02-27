@@ -48,12 +48,23 @@ pip install \
     langchain-openai \
     tiktoken \
     transformers \
-    torch \
     numpy \
     fastapi \
     uvicorn \
     websockets
 
+# Install PyTorch (CUDA-enabled if GPU is available, otherwise CPU-only)
+echo "🧠 Installing PyTorch..."
+if command -v nvidia-smi >/dev/null 2>&1; then
+    echo "Detected NVIDIA GPU. Attempting to install CUDA-enabled PyTorch..."
+    if ! pip install --index-url https://download.pytorch.org/whl/cu121 torch; then
+        echo "CUDA-enabled PyTorch installation failed; falling back to CPU-only build."
+        pip install torch
+    fi
+else
+    echo "No NVIDIA GPU detected. Installing CPU-only PyTorch..."
+    pip install torch
+fi
 # Install Cloudflare Workers CLI (Wrangler)
 echo "☁️ Installing Cloudflare Wrangler..."
 npm install -g wrangler
