@@ -104,8 +104,11 @@ jobs:
           
           echo "🚀 Auto-merging PR #$PR_NUMBER to main..."
           
-          # Enable auto-merge with squash
-          gh pr merge $PR_NUMBER --auto --squash --delete-branch
+          # Enable auto-merge with squash, with explicit error handling
+          if ! gh pr merge "$PR_NUMBER" --auto --squash --delete-branch; then
+            echo "❌ Failed to enable auto-merge for PR #$PR_NUMBER. Please check the PR status, required approvals, branch protection rules, and GitHub API availability."
+            exit 1
+          fi
           
           echo "✓ Auto-merge enabled"
 
