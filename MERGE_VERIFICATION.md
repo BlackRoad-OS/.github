@@ -1,121 +1,96 @@
-# ✅ MERGE VERIFICATION CHECKLIST
+# ✅ MERGE VERIFICATION CHECKLIST (TEMPLATE)
 
-## Pre-Merge Verification Complete
+## How to use this document
 
-This document confirms that all quality checks have passed and the PR is ready for merge.
+Use this checklist to manually verify that a pull request is ready to be merged.  
+This file is a reusable **template** and **does not, by itself, confirm that any PR has been approved or that checks have passed**.  
+Copy this checklist into the PR description or a comment and tick items only after you have verified them.
 
 ---
 
-## ✅ Quality Checks Passed
+## ✅ Quality Checks (to be verified per PR)
 
 ### Code Quality
-- [x] No whitespace errors detected
-- [x] No TODO/FIXME markers in code
-- [x] All files properly formatted
-- [x] Consistent style throughout
+- [ ] No whitespace errors detected
+- [ ] No TODO/FIXME markers in code
+- [ ] All files properly formatted
+- [ ] Consistent style throughout
 
 ### Documentation Quality
-- [x] 27 wiki pages created and complete
-- [x] 3,522 lines of professional content
-- [x] No incomplete sections
-- [x] All internal links properly formatted
-- [x] ASCII diagrams included
-- [x] Code examples provided
+- [ ] All required documentation pages created and complete
+- [ ] Content is professional and clear
+- [ ] No incomplete sections
+- [ ] All internal links properly formatted
+- [ ] Diagrams included where helpful
+- [ ] Code examples provided where appropriate
 
 ### Content Coverage
-- [x] Home page (landing)
-- [x] Getting Started guide
-- [x] Navigation sidebar
-- [x] 3 Architecture pages
-- [x] 15 Organization pages (100% coverage)
-- [x] 5 Integration guides
-- [x] Publishing documentation
+- [ ] Home/landing page updated
+- [ ] Getting Started / onboarding guide present
+- [ ] Navigation sidebar and structure verified
+- [ ] Architecture documentation in place
+- [ ] Organization / domain pages cover required scope
+- [ ] Integration guides for all supported integrations
+- [ ] Publishing / deployment documentation available
 
 ### Git Status
-- [x] Working tree clean
-- [x] All changes committed
-- [x] All commits pushed to origin
-- [x] No merge conflicts
-- [x] Branch up to date
+- [ ] Working tree clean
+- [ ] All intended changes committed
+- [ ] All commits pushed to remote
+- [ ] No merge conflicts
+- [ ] Branch up to date with target branch
 
 ### File Structure
-- [x] wiki/ directory properly organized
-- [x] Subdirectories created (Architecture, Orgs, Integrations)
-- [x] README.md in wiki directory
-- [x] Publishing guide in root
-- [x] Completion summary in root
+- [ ] Documentation directory organized (e.g., `wiki/` or `docs/`)
+- [ ] Subdirectories created as needed (e.g., Architecture, Orgs, Integrations)
+- [ ] Entry-point README present in documentation directory
+- [ ] Publishing / deployment guide present
+- [ ] Completion / overview summary available
 
 ---
 
-## 📊 Statistics
+## 🚀 Pre-Merge Summary (to be filled in per PR)
 
-| Metric | Value |
-|--------|-------|
-| Total Files | 28 |
-| Wiki Pages | 27 |
-| Total Lines | 3,522 |
-| Commits | 3 |
-| Organizations Documented | 15/15 |
-| Integration Guides | 5 |
-| Architecture Pages | 3 |
-| No Issues Found | ✅ |
+Fill this section out in the context of a specific pull request.
 
----
+- [ ] All required quality checks above are completed
+- [ ] All required automated CI checks have passed
+- [ ] Changes have been reviewed by at least one maintainer
+- [ ] Breaking changes (if any) are documented and communicated
+- [ ] Release notes / changelog updated (if applicable)
 
-## 🚀 Merge Ready
-
-**Status**: ✅ **APPROVED FOR MERGE**
-
-All quality checks have passed. The PR can be safely merged into the main branch.
-
-### Commits to be Merged:
-
-1. `e7f29eb` - Add Wiki completion summary - all 27 pages ready
-2. `0e8d3e0` - Add Wiki publishing guide and instructions
-3. `1797731` - Add comprehensive Wiki pages structure with 27 pages
-
-### Branch Info:
-- **Source**: `copilot/setup-wiki-pages`
-- **Target**: `main` (or default branch)
-- **Status**: Up to date with origin
-- **Conflicts**: None
+**Final decision for this PR:**  
+- [ ] Ready to merge  
+- [ ] Needs changes  
+- [ ] Blocked (describe blockers in the PR)
 
 ---
 
-## 📋 Post-Merge Actions
+## 📋 Post-Merge Actions (optional checklist)
 
-After merging, the following actions are recommended:
+After merging, consider the following actions:
 
-1. **Publish Wiki Pages**
-   - Follow instructions in `WIKI_PUBLISHING.md`
-   - Use git clone method (recommended)
-   - Verify all pages render correctly
+1. **Publish / Deploy Documentation**
+   - [ ] Follow instructions in the relevant publishing guide (e.g., `WIKI_PUBLISHING.md`)
+   - [ ] Verify all pages render correctly in the target environment
+   - [ ] Confirm navigation and internal links work as expected
 
-2. **Announce Documentation**
-   - Share wiki link with team
-   - Update README to link to wiki
-   - Add wiki link to organization profile
+2. **Announce Changes**
+   - [ ] Share documentation link with the team or stakeholders
+   - [ ] Update main `README` to link to documentation (if needed)
+   - [ ] Update any relevant dashboards, portals, or organizational profiles
 
 3. **Maintain Documentation**
-   - Keep wiki/ directory in sync with wiki repository
-   - Update pages as organizations evolve
-   - Add new integration guides as needed
+   - [ ] Keep documentation directory in sync with the live docs/wiki
+   - [ ] Update pages as systems or organizations evolve
+   - [ ] Add or revise integration guides as new integrations are added
 
 ---
 
-## ✨ Summary
+## ✨ Template Metadata
 
-**The Wiki setup is complete and ready for merge!**
+This is a static template and should not be treated as proof that any particular PR has been reviewed, approved, or merged.  
+For each PR, copy this checklist and complete it in that PR’s context.
 
-- ✅ All 27 pages created and verified
-- ✅ Professional quality documentation
-- ✅ Complete coverage of BlackRoad ecosystem
-- ✅ No issues or blockers
-- ✅ Ready to publish and use
-
-**Recommendation**: **MERGE APPROVED** ✅
-
----
-
-*Verified on: 2026-01-27*  
-*Verification performed by: Cece (GitHub Copilot)*
+_Last updated: ___________________  
+Updated by: _______________________
