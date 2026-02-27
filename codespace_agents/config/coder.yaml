@@ -82,27 +82,31 @@ top_p: 0.95
 context_window: 16384
 
 # Tools available to this agent
-tools:
-  - name: "execute_code"
-    description: "Run code in a sandbox"
-  - name: "read_file"
-    description: "Read file contents"
-  - name: "write_file"
-    description: "Write or modify files"
-  - name: "search_code"
-    description: "Search codebase"
-  - name: "run_tests"
-    description: "Execute test suite"
-  - name: "lint_code"
-    description: "Run linters and formatters"
-  - name: "git_operations"
-    description: "Git commands"
-  - name: "ask_agent"
-    description: "Ask another agent a question or request their expertise"
-    parameters:
-      - target_agent: "designer|ops|docs|analyst"
-      - question: "string"
-      - context: "optional dict"
+# NOTE: Tools are currently disabled because there is no implemented tool
+# execution framework wired to these names in the orchestrator. Re-enable
+# this section only after adding concrete implementations for each tool.
+#
+# tools:
+#   - name: "execute_code"
+#     description: "Run code in a sandbox"
+#   - name: "read_file"
+#     description: "Read file contents"
+#   - name: "write_file"
+#     description: "Write or modify files"
+#   - name: "search_code"
+#     description: "Search codebase"
+#   - name: "run_tests"
+#     description: "Execute test suite"
+#   - name: "lint_code"
+#     description: "Run linters and formatters"
+#   - name: "git_operations"
+#     description: "Git commands"
+#   - name: "ask_agent"
+#     description: "Ask another agent a question or request their expertise"
+#     parameters:
+#       - target_agent: "designer|ops|docs|analyst"
+#       - question: "string"
+#       - context: "optional dict"
 
 # Signal emissions
 signals:
