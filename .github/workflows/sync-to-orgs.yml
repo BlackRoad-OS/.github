@@ -9,6 +9,7 @@ on:
     paths:
       - 'templates/**'
       - '.github/workflows/**'
+      - '!.github/workflows/sync-to-orgs.yml'
       - 'routes/registry.yaml'
   workflow_dispatch:
     inputs:
