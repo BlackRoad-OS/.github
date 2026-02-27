@@ -45,7 +45,7 @@ jobs:
           fi
           
           if [ -z "$PR_NUMBER" ]; then
-            echo "No PR number found for branch ${{ github.event.workflow_run.head_branch }}"
+            echo "No PR number found for event ${{ github.event_name }}"
             exit 1
           fi
           
