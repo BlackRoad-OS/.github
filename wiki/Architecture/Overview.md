@@ -364,7 +364,7 @@ See [Integrations](../Integrations/Salesforce) for guides.
 - **[The Bridge](Bridge)** - Central coordination details
 - **[The Operator](Operator)** - Routing engine deep dive
 - **[Organizations](../Orgs/BlackRoad-OS)** - Explore the 15 orgs
-- **[Signals](../SIGNALS.md)** - Coordination protocol
+- **[Signals](../Signals)** - Coordination protocol
 
 ---
 
