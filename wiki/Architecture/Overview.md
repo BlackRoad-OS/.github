@@ -139,7 +139,7 @@ Data flows through three stages:
    - External service calls
    - User outputs
 
-See [Streams](../STREAMS.md) for details.
+See the STREAMS.md document in the main repository for details.
 
 ### Pattern 4: Memory
 
