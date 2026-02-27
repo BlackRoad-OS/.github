@@ -5,7 +5,6 @@ Maintains a registry of all active AI/agent sessions with their metadata,
 status, and capabilities. Enables session discovery and coordination.
 """
 
-import os
 import json
 import time
 from pathlib import Path
