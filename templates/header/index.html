@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BlackRoad Header</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #f5f5f0;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ── Header ── */
+    .br-header {
+      display: flex;
+      align-items: center;
+      gap: 34px;                  /* --space-lg */
+      background-color: #000000;
+      padding: 21px 34px;         /* --space-md --space-lg */
+      width: 100%;
+    }
+
+    .br-header__wordmark {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .br-header__nav {
+      display: flex;
+      align-items: center;
+      gap: 34px;                  /* --space-lg */
+      list-style: none;
+    }
+
+    .br-header__nav a {
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: #999999;
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .br-header__nav a:hover {
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="br-header">
+    <a class="br-header__wordmark" href="/">BlackRoad</a>
+    <nav>
+      <ul class="br-header__nav">
+        <li><a href="/">home</a></li>
+        <li><a href="/docs">docs</a></li>
+        <li><a href="/agents">agents</a></li>
+      </ul>
+    </nav>
+  </header>
+
+</body>
+</html>
