@@ -3,7 +3,6 @@ Test suite for BlackRoad Session Management.
 """
 
 import sys
-import os
 import json
 import tempfile
 import shutil
