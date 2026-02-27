@@ -80,7 +80,7 @@ BlackRoad Design (Team)
 
 ### Design Tokens
 
-```json
+```jsonc
 // tokens.json (exported from Figma -- BlackRoad brand)
 {
   "colors": {
