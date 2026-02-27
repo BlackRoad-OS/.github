@@ -49,6 +49,7 @@ def test_integration():
                 "client_payload": {
                     "source": "BlackRoad-OS/.github",
                     "ref": "main",
+                    # Fixed historical timestamp used only for deterministic test payload logging
                     "timestamp": "2026-01-27T20:00:00Z"
                 }
             }
