@@ -83,7 +83,24 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
-          git add -A
+          # Only stage files that are expected to be modified by this sync process
+          paths_to_add=()
+          
+          # Shared workflows
+          if [ -d ".github/workflows" ]; then
+            paths_to_add+=(".github/workflows")
+          fi
+          
+          # Example shared config files (uncomment or extend as needed)
+          if [ -f ".editorconfig" ]; then
+            paths_to_add+=(".editorconfig")
+          fi
+          
+          if [ ${#paths_to_add[@]} -eq 0 ]; then
+            echo "No known sync paths to add to commit"
+          else
+            git add "${paths_to_add[@]}"
+          fi
           
           if git diff --cached --quiet; then
             echo "No changes to commit"
