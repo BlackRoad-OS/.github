@@ -118,7 +118,7 @@ Agents communicate via signals:
 [ICON] [FROM] → [TO] : [ACTION], [metadata...]
 ```
 
-See [Signals](../SIGNALS.md) for full protocol.
+See the `SIGNALS.md` document in the main repository for the full protocol.
 
 ### Pattern 3: Streams
 
