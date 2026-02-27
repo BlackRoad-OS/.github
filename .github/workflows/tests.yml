@@ -100,14 +100,12 @@ jobs:
       
       - name: Check code formatting with Black
         run: |
-          black --check --diff prototypes/ tests/ || true
+          black --check --diff prototypes/ tests/
       
       - name: Lint with Ruff
         run: |
-          ruff check prototypes/ tests/ || true
-        continue-on-error: true
+          ruff check prototypes/ tests/
       
       - name: Type check with mypy
         run: |
-          mypy prototypes/ --ignore-missing-imports || true
-        continue-on-error: true
+          mypy prototypes/ --ignore-missing-imports
