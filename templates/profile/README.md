@@ -39,7 +39,7 @@
 
 <div align="center">
 
-**Part of [BlackRoad OS](https://blackroad.io)** — 30,000 AI Agents • 17 Organizations • 1,800+ Repos • $0 AI Cost
+**Part of [BlackRoad OS](https://blackroad.io)** — AI agents across organizations and open-source repos • $0 AI cost
 
 *© BlackRoad OS, Inc. All rights reserved.*
 
