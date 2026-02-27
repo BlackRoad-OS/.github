@@ -135,9 +135,9 @@ collaboration:
 
 # Note: Rate limiting and cost tracking are configured but not yet implemented.
 # These values are reserved for future functionality.
-rate_limits:
-  requests_per_minute: 60
-  tokens_per_hour: 1000000
+# Note: Rate limiting is not currently implemented for this agent.
+# The previous `rate_limits` configuration block was removed to avoid
+# implying that request or token limits are being enforced.
 
 cost_tracking:
   enabled: false  # Not yet implemented
