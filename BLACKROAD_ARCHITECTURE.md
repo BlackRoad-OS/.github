@@ -183,7 +183,7 @@ Every task entered into the BlackRoad system follows a ten-step scaffolding proc
 
 ## BlackRoad CLI v3 Layered Architecture
 
-The CLI loads eight distinct layers of functionality:
+The CLI loads six distinct layers of functionality (Layers 3–8):
 
 | Layer | Name | Description |
 |-------|------|-------------|
