@@ -13,7 +13,7 @@ from typing import Dict, List, Optional, Any, Callable
 from enum import Enum
 import uuid
 
-from .registry import SessionRegistry, Session
+from .registry import SessionRegistry
 
 
 class MessageType(Enum):
