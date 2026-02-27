@@ -108,17 +108,6 @@ context_window: 16384
 #       - question: "string"
 #       - context: "optional dict"
 
-# Signal emissions
-signals:
-  source: "AI"
-  target: "OS"
-  events:
-    - "code_generated"
-    - "code_reviewed"
-    - "tests_created"
-    - "bug_fixed"
-    - "refactoring_complete"
-
 # Collaboration settings
 collaboration:
   can_request_help_from:
