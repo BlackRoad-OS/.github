@@ -65,31 +65,47 @@ Design with purpose. Create with joy. Ship with pride.
 ## Design Tokens
 
 ```css
-/* Colors */
---color-primary: #0066FF;
+/* Colors -- BlackRoad Brand */
+--sunrise-orange:    #FF9D00;
+--warm-orange:       #FF6B00;
+--hot-pink:          #FF0066;  /* PRIMARY */
+--electric-magenta:  #FF006B;
+--deep-magenta:      #D600AA;
+--vivid-purple:      #7700FF;
+--cyber-blue:        #0066FF;
+
+/* Neutral */
 --color-background: #000000;
---color-surface: #1A1A1A;
---color-text: #FFFFFF;
+--color-surface:    #1A1A1A;
+--color-text:       #FFFFFF;
 --color-text-muted: #888888;
+
+/* Semantic */
 --color-success: #00CC66;
---color-warning: #FFAA00;
---color-error: #FF3366;
+--color-warning: #FF9D00;
+--color-error:   #FF0066;
+
+/* Gradients */
+--gradient-br:           linear-gradient(180deg, #FF9D00 0%, #FF0066 75%);
+--gradient-os:           linear-gradient(180deg, #FF006B 0%, #0066FF 100%);
+--gradient-full-spectrum: linear-gradient(180deg, #FF9D00 0%, #FF0066 28%, #7700FF 71%, #0066FF 100%);
 
 /* Typography */
---font-family: 'Inter', system-ui, sans-serif;
---font-mono: 'JetBrains Mono', monospace;
+--font-primary: 'JetBrains Mono', monospace;
+--font-mono:    'JetBrains Mono', monospace;
 
-/* Spacing */
---space-xs: 4px;
---space-sm: 8px;
---space-md: 16px;
---space-lg: 24px;
---space-xl: 32px;
+/* Spacing (Golden Ratio φ = 1.618) */
+--space-xs:  8px;
+--space-sm:  13px;
+--space-md:  21px;
+--space-lg:  34px;
+--space-xl:  55px;
+--space-2xl: 89px;
 
 /* Motion */
---duration-fast: 100ms;
+--duration-fast:   100ms;
 --duration-normal: 200ms;
---duration-slow: 300ms;
+--duration-slow:   300ms;
 --easing: cubic-bezier(0.4, 0, 0.2, 1);
 ```
 

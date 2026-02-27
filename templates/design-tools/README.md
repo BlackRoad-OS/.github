@@ -81,54 +81,62 @@ BlackRoad Design (Team)
 ### Design Tokens
 
 ```json
-// tokens.json (exported from Figma)
+// tokens.json (exported from Figma -- BlackRoad brand)
 {
   "colors": {
-    "primary": {
-      "50": "#f0f9ff",
-      "100": "#e0f2fe",
-      "500": "#0ea5e9",
-      "900": "#0c4a6e"
+    "brand": {
+      "sunrise-orange":    "#FF9D00",
+      "warm-orange":       "#FF6B00",
+      "hot-pink":          "#FF0066",
+      "electric-magenta":  "#FF006B",
+      "deep-magenta":      "#D600AA",
+      "vivid-purple":      "#7700FF",
+      "cyber-blue":        "#0066FF"
     },
     "neutral": {
-      "0": "#ffffff",
-      "50": "#f8fafc",
-      "900": "#0f172a",
+      "0":    "#ffffff",
+      "50":   "#f8fafc",
+      "900":  "#0f172a",
       "1000": "#000000"
     },
     "success": "#22c55e",
-    "warning": "#f59e0b",
-    "error": "#ef4444"
+    "warning": "#FF9D00",
+    "error":   "#FF0066"
+  },
+  "gradients": {
+    "br":           "linear-gradient(180deg, #FF9D00 0%, #FF0066 75%)",
+    "os":           "linear-gradient(180deg, #FF006B 0%, #0066FF 100%)",
+    "full-spectrum": "linear-gradient(180deg, #FF9D00 0%, #FF0066 28%, #7700FF 71%, #0066FF 100%)"
   },
   "typography": {
     "fontFamily": {
-      "sans": "Inter, system-ui, sans-serif",
-      "mono": "JetBrains Mono, monospace"
+      "primary": "JetBrains Mono, monospace",
+      "mono":    "JetBrains Mono, monospace"
     },
     "fontSize": {
-      "xs": "0.75rem",
-      "sm": "0.875rem",
+      "xs":  "0.75rem",
+      "sm":  "0.875rem",
       "base": "1rem",
-      "lg": "1.125rem",
-      "xl": "1.25rem",
+      "lg":  "1.125rem",
+      "xl":  "1.25rem",
       "2xl": "1.5rem",
       "3xl": "1.875rem",
       "4xl": "2.25rem"
     }
   },
   "spacing": {
-    "0": "0",
-    "1": "0.25rem",
-    "2": "0.5rem",
-    "4": "1rem",
-    "8": "2rem",
-    "16": "4rem"
+    "xs":  "8px",
+    "sm":  "13px",
+    "md":  "21px",
+    "lg":  "34px",
+    "xl":  "55px",
+    "2xl": "89px"
   },
   "borderRadius": {
     "none": "0",
-    "sm": "0.25rem",
-    "md": "0.5rem",
-    "lg": "1rem",
+    "sm":   "0.25rem",
+    "md":   "0.5rem",
+    "lg":   "1rem",
     "full": "9999px"
   }
 }
@@ -215,13 +223,14 @@ print("🎨 STU → OS : assets_exported, count=", len(icons))
 ```
 BlackRoad Brand Kit
 ├── 🎨 Brand Colors
-│   ├── Primary: #0ea5e9
-│   ├── Secondary: #6366f1
-│   └── Accent: #f59e0b
+│   ├── Primary:   #FF0066  (Hot Pink)
+│   ├── Secondary: #7700FF  (Vivid Purple)
+│   ├── Accent:    #FF9D00  (Sunrise Orange)
+│   └── Gradient:  #FF9D00 → #FF0066 → #7700FF → #0066FF
 │
 ├── 🔤 Brand Fonts
-│   ├── Heading: Inter Bold
-│   └── Body: Inter Regular
+│   ├── Primary: JetBrains Mono
+│   └── Mono:    JetBrains Mono
 │
 ├── 🖼️ Logos
 │   ├── Full Logo
@@ -340,13 +349,13 @@ jobs:
 import { cva, type VariantProps } from 'class-variance-authority';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center rounded-md font-medium transition-colors',
+  'inline-flex items-center justify-center rounded-md font-medium transition-colors font-mono',
   {
     variants: {
       variant: {
-        primary: 'bg-primary-500 text-white hover:bg-primary-600',
-        secondary: 'bg-neutral-100 text-neutral-900 hover:bg-neutral-200',
-        ghost: 'hover:bg-neutral-100',
+        primary: 'bg-[#FF0066] text-white hover:bg-[#D600AA]',
+        secondary: 'bg-[#7700FF] text-white hover:bg-[#0066FF]',
+        ghost: 'hover:bg-neutral-100 text-[#FF0066]',
       },
       size: {
         sm: 'h-8 px-3 text-sm',
@@ -379,36 +388,50 @@ export function Button({ variant, size, className, ...props }: ButtonProps) {
 
 ```css
 /* styles/tokens.css */
-/* Auto-generated from Figma tokens */
+/* Auto-generated from Figma tokens -- BlackRoad brand */
 
 :root {
-  /* Colors */
-  --color-primary-50: #f0f9ff;
-  --color-primary-500: #0ea5e9;
-  --color-primary-900: #0c4a6e;
+  /* Brand Colors */
+  --sunrise-orange:    #FF9D00;
+  --warm-orange:       #FF6B00;
+  --hot-pink:          #FF0066;  /* PRIMARY */
+  --electric-magenta:  #FF006B;
+  --deep-magenta:      #D600AA;
+  --vivid-purple:      #7700FF;
+  --cyber-blue:        #0066FF;
 
-  --color-neutral-0: #ffffff;
+  /* Neutral */
+  --color-neutral-0:   #ffffff;
   --color-neutral-900: #0f172a;
+  --color-black:       #000000;
+
+  /* Gradients */
+  --gradient-br:           linear-gradient(180deg, #FF9D00 0%, #FF0066 75%);
+  --gradient-os:           linear-gradient(180deg, #FF006B 0%, #0066FF 100%);
+  --gradient-full-spectrum: linear-gradient(180deg, #FF9D00 0%, #FF0066 28%, #7700FF 71%, #0066FF 100%);
 
   /* Typography */
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-primary: 'JetBrains Mono', monospace;
+  --font-mono:    'JetBrains Mono', monospace;
 
-  --text-xs: 0.75rem;
-  --text-sm: 0.875rem;
+  --text-xs:   0.75rem;
+  --text-sm:   0.875rem;
   --text-base: 1rem;
-  --text-lg: 1.125rem;
+  --text-lg:   1.125rem;
 
-  /* Spacing */
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-4: 1rem;
-  --space-8: 2rem;
+  /* Spacing (Golden Ratio φ = 1.618) */
+  --space-xs:  8px;
+  --space-sm:  13px;
+  --space-md:  21px;
+  --space-lg:  34px;
+  --space-xl:  55px;
+  --space-2xl: 89px;
 
   /* Radius */
-  --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 1rem;
+  --radius-sm:   0.25rem;
+  --radius-md:   0.5rem;
+  --radius-lg:   1rem;
+  --radius-full: 9999px;
 }
 ```
 
