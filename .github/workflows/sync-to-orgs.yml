@@ -140,12 +140,24 @@ jobs:
                       'Authorization': f'token {token}',
                       'Accept': 'application/vnd.github.v3+json'
                   }
+                  # Derive head commit timestamp from the GitHub event payload
+                  import json
+                  head_commit_timestamp = None
+                  event_path = os.environ.get('GITHUB_EVENT_PATH')
+                  if event_path:
+                      try:
+                          with open(event_path, 'r', encoding='utf-8') as f:
+                              event = json.load(f)
+                          head_commit = event.get('head_commit') or {}
+                          head_commit_timestamp = head_commit.get('timestamp')
+                      except Exception:
+                          head_commit_timestamp = None
                   payload = {
                       'event_type': 'sync_from_bridge',
                       'client_payload': {
                           'source': 'BlackRoad-OS/.github',
                           'ref': os.environ.get('GITHUB_SHA', 'main'),
-                          'timestamp': '${{ github.event.head_commit.timestamp }}'
+                          'timestamp': head_commit_timestamp
                       }
                   }
                   
