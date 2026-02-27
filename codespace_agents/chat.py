@@ -12,7 +12,7 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from codespace_agents.orchestrator import AgentOrchestrator
+from .orchestrator import AgentOrchestrator
 
 
 class AgentChat:
