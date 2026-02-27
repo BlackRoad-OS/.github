@@ -1,0 +1,77 @@
+# BlackRoad Domain Registry
+# Maps all managed domains to their associated organizations and use cases
+# All domains are orchestrated via Cloudflare
+
+domains:
+  - domain: blackboxprogramming.io
+    use_case: Developer Education and APIs
+    org: Blackbox-Enterprises
+    org_code: BBX
+
+  - domain: blackroad.io
+    use_case: Core Project Landing Page
+    org: BlackRoad-OS
+    org_code: OS
+
+  - domain: blackroad.company
+    use_case: Corporate and HR Operations
+    org: BlackRoad-Ventures
+    org_code: VEN
+
+  - domain: blackroad.me
+    use_case: Personal Agent Identity Nodes
+    org: BlackRoad-AI
+    org_code: AI
+
+  - domain: blackroad.network
+    use_case: Distributed Network Interface
+    org: BlackRoad-Cloud
+    org_code: CLD
+
+  - domain: blackroad.systems
+    use_case: Infrastructure and System Ops
+    org: BlackRoad-Cloud
+    org_code: CLD
+
+  - domain: blackroadai.com
+    use_case: AI Research and API Hosting
+    org: BlackRoad-AI
+    org_code: AI
+
+  - domain: blackroadinc.us
+    use_case: US-based Governance and Legal
+    org: BlackRoad-Gov
+    org_code: GOV
+
+  - domain: blackroadqi.com
+    use_case: Quantum Intelligence Research
+    org: BlackRoad-Labs
+    org_code: LAB
+
+  - domain: blackroadquantum.com
+    use_case: Primary Quantum Lab Interface
+    org: BlackRoad-Labs
+    org_code: LAB
+
+  - domain: lucidia.earth
+    use_case: Memory Layer and Personal AI
+    org: BlackRoad-AI
+    org_code: AI
+
+  - domain: lucidia.studio
+    use_case: Creative and Asset Management
+    org: BlackRoad-Studio
+    org_code: STU
+
+  - domain: roadchain.io
+    use_case: Blockchain and Witnessing Ledger
+    org: BlackRoad-Security
+    org_code: SEC
+
+  - domain: roadcoin.io
+    use_case: Tokenomics and Financial Interface
+    org: BlackRoad-Ventures
+    org_code: VEN
+
+dns_provider: cloudflare
+tunnel_provider: cloudflare

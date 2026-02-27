@@ -245,12 +245,49 @@ api:
 ```yaml
 service: Railway
 org: BlackRoad-Cloud (CLD)
-purpose: App deployment, databases
+purpose: App deployment, ephemeral test environments for feature branches
 
 api:
   type: GraphQL
   auth: API Token
   cli: railway
+  docs: https://docs.railway.app/reference/cli-api
+
+capabilities:
+  - Deploy ephemeral environments per feature branch
+  - Database provisioning (Postgres, Redis, MySQL)
+  - Automatic HTTPS and custom domains
+
+signals:
+  - "🚂 CLD → OS : railway_deployed"
+  - "🔄 CLD → OS : environment_created"
+```
+
+### DigitalOcean
+```yaml
+service: DigitalOcean
+org: BlackRoad-Cloud (CLD)
+node: shellfish
+purpose: Droplet management, infrastructure lifecycle
+
+api:
+  type: REST
+  auth: API Token
+  cli: doctl
+  docs: https://docs.digitalocean.com/reference/doctl/
+
+capabilities:
+  - Droplet lifecycle management (create, rebuild, scale)
+  - Managed Kubernetes clusters
+  - Spaces object storage (S3-compatible)
+
+actions:
+  - chrisjsimpson/droplet-rebuild-action (GitHub Action for droplet rebuilds)
+  - doctl compute droplet create/rebuild/delete
+
+signals:
+  - "🌊 CLD → OS : droplet_rebuilt"
+  - "📈 CLD → OS : droplet_scaled"
 ```
 
 ---
@@ -529,6 +566,56 @@ api:
     - claude-3-opus
     - claude-3-sonnet
     - claude-3-haiku
+```
+
+### Hugging Face
+```yaml
+service: Hugging Face
+org: BlackRoad-AI (AI)
+purpose: Model hosting, inference endpoints, specialized reasoning
+
+api:
+  type: REST
+  auth: HF_TOKEN (Bearer)
+  docs: https://huggingface.co/docs/huggingface_hub/guides/inference
+
+capabilities:
+  - Programmatic deployment of dedicated inference endpoints
+  - High-compute tasks exceeding local Pi cluster capacity
+  - GGUF model hosting via Ollama integration
+
+signals:
+  - "🤗 AI → OS : inference_complete"
+  - "⚠️ AI → OS : rate_limit_hit"
+```
+
+### Ollama
+```yaml
+service: Ollama
+org: BlackRoad-AI (AI)
+node: lucidia
+purpose: Local LLM inference via Cloudflare Tunnel
+
+api:
+  type: REST (OpenAI-compatible)
+  auth: None (tunnel-secured)
+  endpoint: http://lucidia:11434
+  tunnel: Cloudflare Tunnel → lucidia:11434
+  docs: https://github.com/ollama/ollama/blob/main/docs/api.md
+
+models:
+  - bartowski/Llama-3.2-3B-Instruct-GGUF
+  - gemma:2b
+  - tinyllama
+
+capabilities:
+  - Local private inference (no data leaves network)
+  - Copilot offloading via LiteLLM proxy
+  - Quantized GGUF model support
+
+signals:
+  - "🧠 AI → OS : local_inference_complete"
+  - "📊 AI → OS : model_loaded"
 ```
 
 ### Replicate
