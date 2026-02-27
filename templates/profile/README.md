@@ -7,8 +7,8 @@
 ### [ORG_TAGLINE]
 
 [![Platform](https://img.shields.io/badge/Platform-blackroad.io-FF0066?style=for-the-badge)](https://blackroad.io)
-[![Org](https://img.shields.io/badge/Org-[ORG_CODE]-7700FF?style=for-the-badge)](https://github.com/[ORG_SLUG])
-[![Status](https://img.shields.io/badge/Status-[STATUS]-FF9D00?style=for-the-badge)](https://status.blackroad.io)
+[![Org](https://img.shields.io/badge/Org-ORG_CODE-7700FF?style=for-the-badge)](https://github.com/ORG_SLUG)
+[![Status](https://img.shields.io/badge/Status-STATUS-FF9D00?style=for-the-badge)](https://status.blackroad.io)
 
 </div>
 
