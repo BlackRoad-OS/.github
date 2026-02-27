@@ -39,21 +39,28 @@ Salesforce is BlackRoad's CRM platform, managed by [BlackRoad-Foundation](../Org
 ## Authentication
 
 ```python
+import os
 import requests
 
-# OAuth 2.0
+# OAuth 2.0 - Authorization Code with refresh token
+# These values should be provided via a secure secrets store or environment variables
+SF_CLIENT_ID = os.environ["SF_CLIENT_ID"]
+SF_CLIENT_SECRET = os.environ["SF_CLIENT_SECRET"]
+SF_REFRESH_TOKEN = os.environ["SF_REFRESH_TOKEN"]
+
 def authenticate():
     response = requests.post(
-        'https://login.salesforce.com/services/oauth2/token',
+        "https://login.salesforce.com/services/oauth2/token",
         data={
-            'grant_type': 'password',
-            'client_id': SF_CLIENT_ID,
-            'client_secret': SF_CLIENT_SECRET,
-            'username': SF_USERNAME,
-            'password': SF_PASSWORD
-        }
+            "grant_type": "refresh_token",
+            "client_id": SF_CLIENT_ID,
+            "client_secret": SF_CLIENT_SECRET,
+            "refresh_token": SF_REFRESH_TOKEN,
+        },
+        timeout=10,
     )
-    return response.json()['access_token']
+    response.raise_for_status()
+    return response.json()["access_token"]
 ```
 
 ---
