@@ -17,8 +17,8 @@ from sessions.memory import SharedMemory
 def update_status_beacon():
     """Update .STATUS with current session information."""
     
-    # Get bridge root
-    bridge_root = Path(__file__).parent.parent
+    # Get bridge root (repository root)
+    bridge_root = Path(__file__).parent.parent.parent
     status_file = bridge_root / ".STATUS"
     
     # Initialize session systems
