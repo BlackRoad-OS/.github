@@ -158,7 +158,7 @@ All domains are orchestrated via Cloudflare. Cloudflare Tunnels expose local Ras
 | roadchain.io | Blockchain and Witnessing Ledger | BlackRoad-Security |
 | roadcoin.io | Tokenomics and Financial Interface | BlackRoad-Ventures |
 
-See [`routes/domains.yaml`](routes/domains.yaml) for the machine-readable registry.
+See [`routes/domains.yaml`](../routes/domains.yaml) for the machine-readable registry.
 
 ---
 
