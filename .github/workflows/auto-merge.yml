@@ -17,7 +17,7 @@ jobs:
     
     # Only run on approved PRs targeting main
     if: |
-      github.event_name == 'pull_request_review' ||
+      (github.event_name == 'pull_request_review' && github.event.review.state == 'approved') ||
       (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     
     permissions:
