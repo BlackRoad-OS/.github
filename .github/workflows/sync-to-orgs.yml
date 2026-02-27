@@ -117,7 +117,6 @@ jobs:
               
               # For each repo in the org, dispatch a workflow
               for repo in org.get('repos', []):
-                  repo_name = repo['name']
                   repo_url = repo['url']
                   
                   # Extract owner/repo from URL
