@@ -249,7 +249,7 @@ def test_integration():
         print("  ✅ Developer sent question")
         
         # Planner responds
-        reply = hub.reply("planner", msg, "Let's go with REST for now")
+        hub.reply("planner", msg, "Let's go with REST for now")
         print("  ✅ Planner replied")
         
         # Get conversation
