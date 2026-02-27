@@ -6,7 +6,6 @@ Shows how sessions can discover each other, collaborate, and share memory.
 """
 
 import sys
-import time
 from pathlib import Path
 
 # Add sessions to path
