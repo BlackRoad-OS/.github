@@ -598,9 +598,9 @@ purpose: Local LLM inference via Cloudflare Tunnel
 
 api:
   type: REST (OpenAI-compatible)
-  auth: None (tunnel-secured)
+  auth: Cloudflare Access (service token or mTLS required)
   endpoint: http://lucidia:11434
-  tunnel: Cloudflare Tunnel → lucidia:11434
+  tunnel: Cloudflare Tunnel (connectivity only; auth via Cloudflare Access) → lucidia:11434
   docs: https://github.com/ollama/ollama/blob/main/docs/api.md
 
 models:
