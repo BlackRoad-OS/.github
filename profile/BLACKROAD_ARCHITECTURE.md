@@ -220,6 +220,7 @@ Override the default GitHub Copilot endpoints to redirect traffic to a local Lit
 export GH_COPILOT_OVERRIDE_PROXY_URL="http://raspberrypi.local:4000"
 ```
 
+> **Note:** `GH_COPILOT_OVERRIDE_PROXY_URL` is a BlackRoad-specific convention used by a custom Copilot wrapper that reads this variable and forwards traffic through LiteLLM. Standard GitHub Copilot IDE extensions and official clients do **not** recognize or honor this environment variable without that custom integration.
 The LiteLLM proxy translates requests into OpenAI-compatible format and distributes them across the cluster using round-robin load balancing. This ensures proprietary codebase context never leaves the local network.
 
 ### Rate Limit Mitigation Strategies
