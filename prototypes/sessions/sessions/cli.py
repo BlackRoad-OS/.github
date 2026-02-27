@@ -327,7 +327,7 @@ def main():
     memory_search_parser.add_argument('--session', help='Session ID')
     
     # Stats command
-    stats_parser = subparsers.add_parser('stats', help='Show statistics')
+    subparsers.add_parser('stats', help='Show statistics')
     
     args = parser.parse_args()
     
