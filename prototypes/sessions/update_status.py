@@ -6,8 +6,8 @@ import sys
 from pathlib import Path
 from datetime import datetime
 
-# Add sessions to path
-sys.path.insert(0, str(Path(__file__).parent.parent / "prototypes" / "sessions"))
+# Add project root (containing the 'sessions' package) to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from sessions.registry import SessionRegistry
 from sessions.collaboration import CollaborationHub
