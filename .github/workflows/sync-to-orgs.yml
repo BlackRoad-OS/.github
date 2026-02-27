@@ -140,7 +140,6 @@ jobs:
                       'Accept': 'application/vnd.github.v3+json'
                   }
                   # Derive head commit timestamp from the GitHub event payload
-                  import json
                   head_commit_timestamp = None
                   event_path = os.environ.get('GITHUB_EVENT_PATH')
                   if event_path:
