@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BlackRoad | Mobile SDK</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --sunrise-orange:    #FF9D00;
+      --warm-orange:       #FF6B00;
+      --hot-pink:          #FF0066;
+      --electric-magenta:  #FF006B;
+      --deep-magenta:      #D600AA;
+      --vivid-purple:      #7700FF;
+      --cyber-blue:        #0066FF;
+
+      --bg:        #0a0a0a;
+      --bg-card:   #111111;
+      --bg-raised: #161616;
+      --border:    #1e1e1e;
+      --muted:     #444444;
+      --text:      #e8e8e8;
+      --text-dim:  #888888;
+
+      --gradient-br:   linear-gradient(180deg, #FF9D00 0%, #FF0066 75%);
+      --gradient-os:   linear-gradient(180deg, #FF006B 0%, #0066FF 100%);
+      --gradient-full: linear-gradient(180deg, #FF9D00 0%, #FF0066 28%, #7700FF 71%, #0066FF 100%);
+
+      --space-xs:  8px;
+      --space-sm:  13px;
+      --space-md:  21px;
+      --space-lg:  34px;
+      --space-xl:  55px;
+      --space-2xl: 89px;
+
+      --font: 'JetBrains Mono', monospace;
+      --radius: 4px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    a { color: var(--hot-pink); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-sm) var(--space-xl);
+      background: rgba(10, 10, 10, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-size: 15px;
+      font-weight: 700;
+      background: var(--gradient-br);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: var(--space-lg);
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-dim);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      transition: color 0.15s;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      padding: var(--space-2xl) var(--space-xl) var(--space-xl);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: var(--space-sm);
+    }
+
+    .hero h1 {
+      font-size: clamp(28px, 5vw, 48px);
+      font-weight: 700;
+      letter-spacing: -1.5px;
+      line-height: 1.1;
+      margin-bottom: var(--space-md);
+    }
+
+    .hero h1 span {
+      background: var(--gradient-os);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-desc {
+      font-size: 14px;
+      color: var(--text-dim);
+      max-width: 520px;
+      margin-bottom: var(--space-lg);
+      line-height: 1.7;
+    }
+
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      list-style: none;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--hot-pink);
+    }
+
+    /* ── SECTIONS ── */
+    .section {
+      padding: var(--space-xl);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: var(--space-lg);
+    }
+
+    .section-count {
+      color: var(--hot-pink);
+      margin-left: var(--space-sm);
+    }
+
+    /* ── PACKAGES ── */
+    .packages-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .pkg-card {
+      background: var(--bg-card);
+      padding: var(--space-md);
+      transition: background 0.15s;
+    }
+
+    .pkg-card:hover { background: var(--bg-raised); }
+
+    .pkg-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .pkg-name span { color: var(--hot-pink); }
+
+    .pkg-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.6;
+      margin-bottom: var(--space-sm);
+    }
+
+    .pkg-meta {
+      display: flex;
+      gap: var(--space-md);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* ── INSTALL ── */
+    .install-tabs {
+      display: flex;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius) var(--radius) 0 0;
+      overflow: hidden;
+      width: fit-content;
+    }
+
+    .tab {
+      padding: 8px 18px;
+      font-family: var(--font);
+      font-size: 12px;
+      font-weight: 500;
+      background: var(--bg-raised);
+      color: var(--text-dim);
+      border: none;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .tab.active, .tab:hover {
+      background: var(--bg-card);
+      color: var(--text);
+    }
+
+    .install-block {
+      display: none;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 var(--radius) var(--radius);
+      padding: var(--space-md);
+      font-size: 13px;
+      color: var(--cyber-blue);
+    }
+
+    .install-block.active { display: block; }
+
+    .install-block .prompt { color: var(--text-dim); user-select: none; }
+
+    .deps-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin: var(--space-lg) 0 var(--space-sm);
+    }
+
+    .dep-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-sm) 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dep-row:last-child { border-bottom: none; }
+
+    .dep-name { font-size: 13px; color: var(--text); }
+
+    .dep-badge {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .dep-required {
+      background: rgba(255, 0, 102, 0.15);
+      color: var(--hot-pink);
+      border: 1px solid rgba(255, 0, 102, 0.3);
+    }
+
+    .dep-optional {
+      background: rgba(0, 102, 255, 0.15);
+      color: var(--cyber-blue);
+      border: 1px solid rgba(0, 102, 255, 0.3);
+    }
+
+    .dep-version {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-left: var(--space-sm);
+    }
+
+    /* ── PLATFORMS ── */
+    .platforms-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .platforms-table tr {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .platforms-table tr:last-child { border-bottom: none; }
+
+    .platforms-table td {
+      padding: var(--space-sm) 0;
+      font-size: 13px;
+    }
+
+    .platforms-table td:first-child {
+      color: var(--text);
+      font-weight: 500;
+      width: 160px;
+    }
+
+    .platforms-table td:nth-child(2) {
+      color: var(--text-dim);
+      font-size: 11px;
+    }
+
+    .status-supported {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: #22c55e;
+    }
+
+    .status-experimental {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--sunrise-orange);
+    }
+
+    .status-planned {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .status-unsupported {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* ── CHANGELOG ── */
+    .changelog {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .changelog-entry {
+      display: grid;
+      grid-template-columns: 80px 1fr auto;
+      align-items: baseline;
+      gap: var(--space-lg);
+      padding: var(--space-sm) 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .changelog-entry:last-child { border-bottom: none; }
+
+    .changelog-version {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--hot-pink);
+    }
+
+    .changelog-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .changelog-date {
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: var(--space-lg) var(--space-xl);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    footer .footer-logo {
+      font-weight: 700;
+      background: var(--gradient-br);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      nav, .hero, .section { padding-left: var(--space-md); padding-right: var(--space-md); }
+      footer { flex-direction: column; gap: var(--space-sm); }
+      .changelog-entry { grid-template-columns: 60px 1fr; }
+      .changelog-date { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <span class="nav-logo">BlackRoad</span>
+    <ul class="nav-links">
+      <li><a href="#packages">packages</a></li>
+      <li><a href="#install">install</a></li>
+      <li><a href="#platforms">platforms</a></li>
+      <li><a href="#docs">docs</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <p class="hero-label">Library v0.4.2</p>
+    <h1>Mobile <span>SDK</span></h1>
+    <p class="hero-desc">Core packages, platform support, and installation for BlackRoad mobile.</p>
+    <ul class="hero-badges">
+      <li class="badge"><span class="badge-dot"></span>version 0.4.2</li>
+      <li class="badge">platforms iOS · Android · RN</li>
+      <li class="badge">license MIT</li>
+      <li class="badge">packages 8</li>
+    </ul>
+  </header>
+
+  <!-- PACKAGES -->
+  <section class="section" id="packages">
+    <p class="section-title">packages <span class="section-count">· 8</span></p>
+    <div class="packages-grid">
+
+      <div class="pkg-card">
+        <p class="pkg-name"><span>@blackroad/</span>core</p>
+        <p class="pkg-desc">Foundation layer. State machine, event bus, and trinary logic primitives.</p>
+        <div class="pkg-meta">
+          <span>v 0.4.2</span>
+          <span>size 12kb</span>
+        </div>
+      </div>
+
+      <div class="pkg-card">
+        <p class="pkg-name"><span>@blackroad/</span>agents</p>
+        <p class="pkg-desc">Agent lifecycle management, messaging, and orchestration hooks.</p>
+        <div class="pkg-meta">
+          <span>v 0.4.2</span>
+          <span>size 18kb</span>
+        </div>
+      </div>
+
+      <div class="pkg-card">
+        <p class="pkg-name"><span>@blackroad/</span>ui</p>
+        <p class="pkg-desc">Terminal-style components, ASCII rendering, and gradient palette tokens.</p>
+        <div class="pkg-meta">
+          <span>v 0.4.1</span>
+          <span>size 34kb</span>
+        </div>
+      </div>
+
+      <div class="pkg-card">
+        <p class="pkg-name"><span>@blackroad/</span>memory</p>
+        <p class="pkg-desc">PS-SHA∞ persistence layer, append-only journal, truth state commits.</p>
+        <div class="pkg-meta">
+          <span>v 0.3.9</span>
+          <span>size 9kb</span>
+        </div>
+      </div>
+
+      <div class="pkg-card">
+        <p class="pkg-name"><span>@blackroad/</span>network</p>
+        <p class="pkg-desc">Tailscale mesh bindings, NATS client, and edge routing utilities.</p>
+        <div class="pkg-meta">
+          <span>v 0.4.0</span>
+          <span>size 22kb</span>
+        </div>
+      </div>
+
+      <div class="pkg-card">
+        <p class="pkg-name"><span>@blackroad/</span>crypto</p>
+        <p class="pkg-desc">Key management, identity signing, and session token utilities.</p>
+        <div class="pkg-meta">
+          <span>v 0.4.2</span>
+          <span>size 7kb</span>
+        </div>
+      </div>
+
+      <div class="pkg-card">
+        <p class="pkg-name"><span>@blackroad/</span>inference</p>
+        <p class="pkg-desc">On-device model bindings for Hailo-8 and CoreML inference backends.</p>
+        <div class="pkg-meta">
+          <span>v 0.2.1</span>
+          <span>size 41kb</span>
+        </div>
+      </div>
+
+      <div class="pkg-card">
+        <p class="pkg-name"><span>@blackroad/</span>telemetry</p>
+        <p class="pkg-desc">Metrics, structured logging, and distributed trace propagation.</p>
+        <div class="pkg-meta">
+          <span>v 0.4.2</span>
+          <span>size 11kb</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- INSTALL -->
+  <section class="section" id="install">
+    <p class="section-title">install</p>
+
+    <div class="install-tabs">
+      <button class="tab active" onclick="showTab(this, 'npm')">npm</button>
+      <button class="tab" onclick="showTab(this, 'yarn')">yarn</button>
+      <button class="tab" onclick="showTab(this, 'pnpm')">pnpm</button>
+      <button class="tab" onclick="showTab(this, 'all')">install all</button>
+    </div>
+
+    <div class="install-block active" id="tab-npm">
+      <span class="prompt">$ </span>npm install @blackroad/core
+    </div>
+    <div class="install-block" id="tab-yarn">
+      <span class="prompt">$ </span>yarn add @blackroad/core
+    </div>
+    <div class="install-block" id="tab-pnpm">
+      <span class="prompt">$ </span>pnpm add @blackroad/core
+    </div>
+    <div class="install-block" id="tab-all">
+      <span class="prompt">$ </span>npm install @blackroad/core @blackroad/agents @blackroad/ui @blackroad/memory
+    </div>
+
+    <p class="deps-title">peer dependencies</p>
+    <div>
+      <div class="dep-row">
+        <span class="dep-name">react-native</span>
+        <span>
+          <span class="dep-badge dep-required">required</span>
+          <span class="dep-version">≥ 0.72</span>
+        </span>
+      </div>
+      <div class="dep-row">
+        <span class="dep-name">react</span>
+        <span>
+          <span class="dep-badge dep-required">required</span>
+          <span class="dep-version">≥ 18.0</span>
+        </span>
+      </div>
+      <div class="dep-row">
+        <span class="dep-name">@nats-io/nats-core</span>
+        <span>
+          <span class="dep-badge dep-optional">optional</span>
+          <span class="dep-version">≥ 3.0</span>
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLATFORMS -->
+  <section class="section" id="platforms">
+    <p class="section-title">platforms</p>
+    <table class="platforms-table">
+      <tbody>
+        <tr>
+          <td>iOS</td>
+          <td>≥ 16.0</td>
+          <td><span class="status-supported">● supported</span></td>
+        </tr>
+        <tr>
+          <td>Android</td>
+          <td>API 26+</td>
+          <td><span class="status-supported">● supported</span></td>
+        </tr>
+        <tr>
+          <td>React Native</td>
+          <td>≥ 0.72</td>
+          <td><span class="status-supported">● supported</span></td>
+        </tr>
+        <tr>
+          <td>Expo</td>
+          <td>SDK 50+</td>
+          <td><span class="status-supported">● supported</span></td>
+        </tr>
+        <tr>
+          <td>macOS Catalyst</td>
+          <td></td>
+          <td><span class="status-experimental">◐ experimental</span></td>
+        </tr>
+        <tr>
+          <td>tvOS</td>
+          <td></td>
+          <td><span class="status-planned">○ planned</span></td>
+        </tr>
+        <tr>
+          <td>watchOS</td>
+          <td></td>
+          <td><span class="status-unsupported">✕ not supported</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- CHANGELOG -->
+  <section class="section" id="docs">
+    <p class="section-title">changelog</p>
+    <div class="changelog">
+      <div class="changelog-entry">
+        <span class="changelog-version">0.4.2</span>
+        <span class="changelog-desc">Patch: memory journal flush fix on Android cold start.</span>
+        <span class="changelog-date">2025-01-18</span>
+      </div>
+      <div class="changelog-entry">
+        <span class="changelog-version">0.4.1</span>
+        <span class="changelog-desc">UI token updates for gradient palette 208→33 range.</span>
+        <span class="changelog-date">2025-01-04</span>
+      </div>
+      <div class="changelog-entry">
+        <span class="changelog-version">0.4.0</span>
+        <span class="changelog-desc">Network: NATS client + Tailscale mesh bindings added.</span>
+        <span class="changelog-date">2024-12-20</span>
+      </div>
+      <div class="changelog-entry">
+        <span class="changelog-version">0.3.9</span>
+        <span class="changelog-desc">Memory: PS-SHA∞ persistence, truth state commits.</span>
+        <span class="changelog-date">2024-12-08</span>
+      </div>
+      <div class="changelog-entry">
+        <span class="changelog-version">0.3.0</span>
+        <span class="changelog-desc">Initial public release. Core + Agents stable.</span>
+        <span class="changelog-date">2024-11-14</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span class="footer-logo">BlackRoad</span>
+    <span>BlackRoad OS, Inc. — Delaware C-Corp</span>
+    <span>8 packages · 4 platforms · MIT license</span>
+  </footer>
+
+  <script>
+    function showTab(btn, name) {
+      document.querySelectorAll('.install-block').forEach(function(el) {
+        el.classList.remove('active');
+      });
+      document.querySelectorAll('.tab').forEach(function(el) {
+        el.classList.remove('active');
+      });
+      document.getElementById('tab-' + name).classList.add('active');
+      btn.classList.add('active');
+    }
+  </script>
+
+</body>
+</html>
