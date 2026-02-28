@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BlackRoad — Library</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      background: #000000;
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #000000;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #ffffff;
+    }
+
+    .logo {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.05em;
+    }
+
+    nav {
+      font-size: 0.65rem;
+      display: flex;
+      gap: 20px;
+    }
+
+    nav a {
+      color: #888888;
+      text-decoration: none;
+    }
+
+    nav a:hover { color: #ffffff; }
+
+    .hero {
+      background: #000000;
+      padding: 48px 24px 36px;
+      border-bottom: 1px solid #ffffff;
+    }
+
+    .hero-label {
+      font-size: 0.6rem;
+      color: #555555;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .hero h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.05;
+    }
+
+    .hero p {
+      margin-top: 12px;
+      font-size: 0.7rem;
+      color: #666666;
+      line-height: 1.9;
+    }
+
+    .hero-meta {
+      margin-top: 20px;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .hero-badge {
+      font-size: 0.58rem;
+      color: #444444;
+      border: 1px solid #333333;
+      padding: 4px 10px;
+      letter-spacing: 0.1em;
+    }
+
+    .hero-badge span {
+      color: #ffffff;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+
+    .section {
+      background: #000000;
+      padding: 32px 24px;
+      border-bottom: 1px solid #ffffff;
+    }
+
+    .section-label {
+      font-size: 0.58rem;
+      color: #555555;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #333333;
+    }
+
+    /* Package cards */
+    .package-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .package-item {
+      background: #000000;
+      border: 1px solid #1a1a1a;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .package-item:hover {
+      border-color: #ffffff;
+    }
+
+    .package-item .pkg-name {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .package-item .pkg-desc {
+      font-size: 0.6rem;
+      color: #555555;
+      line-height: 1.7;
+    }
+
+    .package-item .pkg-meta {
+      display: flex;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .package-item .pkg-tag {
+      font-size: 0.55rem;
+      color: #444444;
+      letter-spacing: 0.1em;
+    }
+
+    .package-item .pkg-tag span {
+      color: #888888;
+    }
+
+    /* Install block */
+    .install-block {
+      background: #0a0a0a;
+      border: 1px solid #222222;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+    }
+
+    .install-block .install-label {
+      font-size: 0.55rem;
+      color: #444444;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .install-block .install-cmd {
+      font-size: 0.72rem;
+      color: #aaaaaa;
+      word-break: break-all;
+      line-height: 1.8;
+    }
+
+    .install-block .install-cmd .prompt {
+      color: #333333;
+      user-select: none;
+    }
+
+    .install-block .install-cmd .pkg {
+      color: #ffffff;
+    }
+
+    /* Platform list */
+    .platform-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .platform-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 10px;
+      font-size: 0.68rem;
+      color: #888888;
+      border-left: 2px solid #1a1a1a;
+    }
+
+    .platform-item.supported {
+      border-left-color: #ffffff;
+      color: #ffffff;
+    }
+
+    .platform-item .plat-status {
+      font-size: 0.55rem;
+      color: #444444;
+      letter-spacing: 0.1em;
+    }
+
+    .platform-item.supported .plat-status {
+      color: #666666;
+    }
+
+    /* Changelog list */
+    .changelog-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .changelog-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 10px 0;
+      border-bottom: 1px solid #111111;
+    }
+
+    .changelog-item:last-child {
+      border-bottom: none;
+    }
+
+    .changelog-item .ver {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #ffffff;
+      flex-shrink: 0;
+      min-width: 52px;
+    }
+
+    .changelog-item .ver.latest::after {
+      content: ' ·';
+      color: #333333;
+    }
+
+    .changelog-item .note {
+      font-size: 0.62rem;
+      color: #555555;
+      line-height: 1.8;
+    }
+
+    .changelog-item .date {
+      font-size: 0.55rem;
+      color: #333333;
+      flex-shrink: 0;
+      margin-left: auto;
+    }
+
+    footer {
+      background: #000000;
+      padding: 20px 24px;
+      border-top: 1px solid #333333;
+      font-size: 0.58rem;
+      color: #444444;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    @media (min-width: 768px) {
+      header { padding: 20px 40px; }
+      .hero { padding: 56px 40px 44px; }
+      .hero h1 { font-size: 2.4rem; }
+      .grid { grid-template-columns: repeat(3, 1fr); }
+      .section { padding: 36px 40px; border-right: 1px solid #ffffff; border-bottom: none; }
+      .section:last-child { border-right: none; }
+      footer { padding: 20px 40px; flex-direction: row; justify-content: space-between; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <span class="logo">BlackRoad</span>
+    <nav>
+      <a href="#">packages</a>
+      <a href="#">install</a>
+      <a href="#">platforms</a>
+      <a href="#">docs</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="hero-label">Library v0.4.2</div>
+    <h1>Mobile<br>SDK</h1>
+    <p>Core packages, platform support, and installation for BlackRoad mobile.</p>
+    <div class="hero-meta">
+      <div class="hero-badge">version <span>0.4.2</span></div>
+      <div class="hero-badge">platforms <span>iOS · Android · RN</span></div>
+      <div class="hero-badge">license <span>MIT</span></div>
+      <div class="hero-badge">packages <span>8</span></div>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <div class="section">
+      <div class="section-label">packages · 8</div>
+      <div class="package-list">
+
+        <div class="package-item">
+          <span class="pkg-name">@blackroad/core</span>
+          <span class="pkg-desc">Foundation layer. State machine, event bus, and trinary logic primitives.</span>
+          <div class="pkg-meta">
+            <span class="pkg-tag">v <span>0.4.2</span></span>
+            <span class="pkg-tag">size <span>12kb</span></span>
+          </div>
+        </div>
+
+        <div class="package-item">
+          <span class="pkg-name">@blackroad/agents</span>
+          <span class="pkg-desc">Agent lifecycle management, messaging, and orchestration hooks.</span>
+          <div class="pkg-meta">
+            <span class="pkg-tag">v <span>0.4.2</span></span>
+            <span class="pkg-tag">size <span>18kb</span></span>
+          </div>
+        </div>
+
+        <div class="package-item">
+          <span class="pkg-name">@blackroad/ui</span>
+          <span class="pkg-desc">Terminal-style components, ASCII rendering, and gradient palette tokens.</span>
+          <div class="pkg-meta">
+            <span class="pkg-tag">v <span>0.4.1</span></span>
+            <span class="pkg-tag">size <span>34kb</span></span>
+          </div>
+        </div>
+
+        <div class="package-item">
+          <span class="pkg-name">@blackroad/memory</span>
+          <span class="pkg-desc">PS-SHA∞ persistence layer, append-only journal, truth state commits.</span>
+          <div class="pkg-meta">
+            <span class="pkg-tag">v <span>0.3.9</span></span>
+            <span class="pkg-tag">size <span>9kb</span></span>
+          </div>
+        </div>
+
+        <div class="package-item">
+          <span class="pkg-name">@blackroad/network</span>
+          <span class="pkg-desc">Tailscale mesh bindings, NATS client, and edge routing utilities.</span>
+          <div class="pkg-meta">
+            <span class="pkg-tag">v <span>0.4.0</span></span>
+            <span class="pkg-tag">size <span>22kb</span></span>
+          </div>
+        </div>
+
+        <div class="package-item">
+          <span class="pkg-name">@blackroad/crypto</span>
+          <span class="pkg-desc">Key management, identity signing, and session token utilities.</span>
+          <div class="pkg-meta">
+            <span class="pkg-tag">v <span>0.4.2</span></span>
+            <span class="pkg-tag">size <span>7kb</span></span>
+          </div>
+        </div>
+
+        <div class="package-item">
+          <span class="pkg-name">@blackroad/inference</span>
+          <span class="pkg-desc">On-device model bindings for Hailo-8 and CoreML inference backends.</span>
+          <div class="pkg-meta">
+            <span class="pkg-tag">v <span>0.2.1</span></span>
+            <span class="pkg-tag">size <span>41kb</span></span>
+          </div>
+        </div>
+
+        <div class="package-item">
+          <span class="pkg-name">@blackroad/telemetry</span>
+          <span class="pkg-desc">Metrics, structured logging, and distributed trace propagation.</span>
+          <div class="pkg-meta">
+            <span class="pkg-tag">v <span>0.4.2</span></span>
+            <span class="pkg-tag">size <span>11kb</span></span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">install</div>
+
+      <div class="install-block">
+        <div class="install-label">npm</div>
+        <div class="install-cmd">
+          <span class="prompt">$ </span>npm install <span class="pkg">@blackroad/core</span>
+        </div>
+      </div>
+
+      <div class="install-block">
+        <div class="install-label">yarn</div>
+        <div class="install-cmd">
+          <span class="prompt">$ </span>yarn add <span class="pkg">@blackroad/core</span>
+        </div>
+      </div>
+
+      <div class="install-block">
+        <div class="install-label">pnpm</div>
+        <div class="install-cmd">
+          <span class="prompt">$ </span>pnpm add <span class="pkg">@blackroad/core</span>
+        </div>
+      </div>
+
+      <div class="install-block">
+        <div class="install-label">install all</div>
+        <div class="install-cmd">
+          <span class="prompt">$ </span>npm install <span class="pkg">@blackroad/core @blackroad/agents @blackroad/ui @blackroad/memory</span>
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-top: 24px;">peer dependencies</div>
+      <div class="package-list">
+        <div class="package-item">
+          <span class="pkg-name">react-native</span>
+          <div class="pkg-meta">
+            <span class="pkg-tag">required <span>≥ 0.72</span></span>
+          </div>
+        </div>
+        <div class="package-item">
+          <span class="pkg-name">react</span>
+          <div class="pkg-meta">
+            <span class="pkg-tag">required <span>≥ 18.0</span></span>
+          </div>
+        </div>
+        <div class="package-item">
+          <span class="pkg-name">@nats-io/nats-core</span>
+          <div class="pkg-meta">
+            <span class="pkg-tag">optional <span>≥ 3.0</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">platforms</div>
+      <div class="platform-list">
+        <div class="platform-item supported">iOS<span class="plat-status">≥ 16.0 · supported</span></div>
+        <div class="platform-item supported">Android<span class="plat-status">API 26+ · supported</span></div>
+        <div class="platform-item supported">React Native<span class="plat-status">≥ 0.72 · supported</span></div>
+        <div class="platform-item supported">Expo<span class="plat-status">SDK 50+ · supported</span></div>
+        <div class="platform-item">macOS Catalyst<span class="plat-status">experimental</span></div>
+        <div class="platform-item">tvOS<span class="plat-status">planned</span></div>
+        <div class="platform-item">watchOS<span class="plat-status">not supported</span></div>
+      </div>
+
+      <div class="section-label" style="margin-top: 28px;">changelog</div>
+      <div class="changelog-list">
+
+        <div class="changelog-item">
+          <span class="ver latest">0.4.2</span>
+          <span class="note">Patch: memory journal flush fix on Android cold start.</span>
+          <span class="date">2025-01-18</span>
+        </div>
+
+        <div class="changelog-item">
+          <span class="ver">0.4.1</span>
+          <span class="note">UI token updates for gradient palette 208→33 range.</span>
+          <span class="date">2025-01-04</span>
+        </div>
+
+        <div class="changelog-item">
+          <span class="ver">0.4.0</span>
+          <span class="note">Network: NATS client + Tailscale mesh bindings added.</span>
+          <span class="date">2024-12-20</span>
+        </div>
+
+        <div class="changelog-item">
+          <span class="ver">0.3.9</span>
+          <span class="note">Memory: PS-SHA∞ persistence, truth state commits.</span>
+          <span class="date">2024-12-08</span>
+        </div>
+
+        <div class="changelog-item">
+          <span class="ver">0.3.0</span>
+          <span class="note">Initial public release. Core + Agents stable.</span>
+          <span class="date">2024-11-14</span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <span>BlackRoad OS, Inc. — Delaware C-Corp</span>
+    <span>8 packages · 4 platforms · MIT license</span>
+  </footer>
+
+</body>
+</html>
