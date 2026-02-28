@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BlackRoad — Agent Control</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav class="nav">
+    <span class="nav-brand">BlackRoad</span>
+    <div class="nav-links">
+      <a href="#" class="active">agents</a>
+      <a href="#">metrics</a>
+      <a href="#">logs</a>
+      <a href="#">config</a>
+      <a href="#">docs</a>
+    </div>
+  </nav>
+
+  <!-- Gradient Bars -->
+  <div class="gradient-bars">
+    <div class="gradient-bar"></div>
+    <div class="gradient-bar-cool"></div>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-label">Dashboard v1.0</div>
+    <h1>Agent <span>Control</span></h1>
+    <p class="hero-desc">Live status, metrics, activity feed, and configuration for the BlackRoad agent fleet.</p>
+    <div class="hero-badges">
+      <span class="badge"><span class="badge-dot online"></span>online 4</span>
+      <span class="badge"><span class="badge-dot idle"></span>idle 2</span>
+      <span class="badge"><span class="badge-dot offline"></span>offline 3</span>
+      <span class="badge"><span class="badge-dot uptime"></span>uptime 99.2%</span>
+      <span class="badge"><span class="badge-dot sync"></span>last sync 12s ago</span>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+
+    <!-- Live Status -->
+    <div class="section-label">live status</div>
+    <div class="agent-grid">
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <span class="agent-name">Cecilia</span>
+          <span class="status-pill online">online</span>
+        </div>
+        <div class="agent-model">claude-sonnet-4-6 · orchestrator</div>
+        <div class="agent-task">Processing agent memory consolidation batch — 847 entries.</div>
+        <div class="agent-metrics">
+          <div class="agent-metric">
+            <div class="metric-label">CPU</div>
+            <div class="metric-bar-wrap"><div class="metric-bar high" style="width:72%"></div></div>
+            <div class="metric-val">72%</div>
+          </div>
+          <div class="agent-metric">
+            <div class="metric-label">MEM</div>
+            <div class="metric-bar-wrap"><div class="metric-bar mid" style="width:58%"></div></div>
+            <div class="metric-val">58%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <span class="agent-name">Cadence</span>
+          <span class="status-pill online">online</span>
+        </div>
+        <div class="agent-model">gpt-4o · comms relay</div>
+        <div class="agent-task">Routing inter-agent messages via NATS event bus.</div>
+        <div class="agent-metrics">
+          <div class="agent-metric">
+            <div class="metric-label">CPU</div>
+            <div class="metric-bar-wrap"><div class="metric-bar low" style="width:31%"></div></div>
+            <div class="metric-val">31%</div>
+          </div>
+          <div class="agent-metric">
+            <div class="metric-label">MEM</div>
+            <div class="metric-bar-wrap"><div class="metric-bar low" style="width:44%"></div></div>
+            <div class="metric-val">44%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <span class="agent-name">Eve</span>
+          <span class="status-pill online">online</span>
+        </div>
+        <div class="agent-model">grok-2 · analyst</div>
+        <div class="agent-task">Running Z-framework equilibrium scan on node cluster.</div>
+        <div class="agent-metrics">
+          <div class="agent-metric">
+            <div class="metric-label">CPU</div>
+            <div class="metric-bar-wrap"><div class="metric-bar high" style="width:88%"></div></div>
+            <div class="metric-val">88%</div>
+          </div>
+          <div class="agent-metric">
+            <div class="metric-label">MEM</div>
+            <div class="metric-bar-wrap"><div class="metric-bar mid" style="width:61%"></div></div>
+            <div class="metric-val">61%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <span class="agent-name">Gematria</span>
+          <span class="status-pill idle">idle</span>
+        </div>
+        <div class="agent-model">gemini-2.0-flash · researcher</div>
+        <div class="agent-task">Awaiting task assignment. Last active 4m ago.</div>
+        <div class="agent-metrics">
+          <div class="agent-metric">
+            <div class="metric-label">CPU</div>
+            <div class="metric-bar-wrap"><div class="metric-bar low" style="width:4%"></div></div>
+            <div class="metric-val">4%</div>
+          </div>
+          <div class="agent-metric">
+            <div class="metric-label">MEM</div>
+            <div class="metric-bar-wrap"><div class="metric-bar low" style="width:22%"></div></div>
+            <div class="metric-val">22%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <span class="agent-name">Lucidia</span>
+          <span class="status-pill idle">idle</span>
+        </div>
+        <div class="agent-model">local · hailo-8 · inference</div>
+        <div class="agent-task">Standing by on octavia node. Hailo accelerator warm.</div>
+        <div class="agent-metrics">
+          <div class="agent-metric">
+            <div class="metric-label">CPU</div>
+            <div class="metric-bar-wrap"><div class="metric-bar low" style="width:9%"></div></div>
+            <div class="metric-val">9%</div>
+          </div>
+          <div class="agent-metric">
+            <div class="metric-label">MEM</div>
+            <div class="metric-bar-wrap"><div class="metric-bar low" style="width:33%"></div></div>
+            <div class="metric-val">33%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <span class="agent-name">Olympia</span>
+          <span class="status-pill offline">offline</span>
+        </div>
+        <div class="agent-model">local · pi4b · monitor</div>
+        <div class="agent-task">Node unreachable. Last ping 14m ago.</div>
+        <div class="agent-metrics">
+          <div class="agent-metric">
+            <div class="metric-label">CPU</div>
+            <div class="metric-bar-wrap"><div class="metric-bar none" style="width:0%"></div></div>
+            <div class="metric-val">—</div>
+          </div>
+          <div class="agent-metric">
+            <div class="metric-label">MEM</div>
+            <div class="metric-bar-wrap"><div class="metric-bar none" style="width:0%"></div></div>
+            <div class="metric-val">—</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Metrics -->
+    <div class="section-label">metrics</div>
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-card-value">1,024</div>
+        <div class="metric-card-label">total agents</div>
+        <div class="metric-card-delta delta-up">↑ 12 this week</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-card-value">6</div>
+        <div class="metric-card-label">active now</div>
+        <div class="metric-card-delta">4 online · 2 idle</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-card-value">98k</div>
+        <div class="metric-card-label">msgs / hr</div>
+        <div class="metric-card-delta delta-up">↑ 3.4% vs last hr</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-card-value">14ms</div>
+        <div class="metric-card-label">avg latency</div>
+        <div class="metric-card-delta delta-down">↓ 2ms vs avg</div>
+      </div>
+    </div>
+
+    <!-- System Stats + Config -->
+    <div class="two-col">
+
+      <div class="stats-section">
+        <div class="section-label">system stats</div>
+        <table class="stats-table">
+          <tr><td>cluster nodes</td><td>8 / 9 healthy</td></tr>
+          <tr><td>NATS streams</td><td>34 active</td></tr>
+          <tr><td>K3s pods</td><td>62 running</td></tr>
+          <tr><td>Redis keys</td><td>204,871</td></tr>
+          <tr><td>D1 rows</td><td>1.2M</td></tr>
+          <tr><td>KV entries</td><td>847,302</td></tr>
+          <tr><td>CF Workers</td><td>85 deployed</td></tr>
+          <tr><td>memory commits</td><td>22,401 today</td></tr>
+          <tr><td>tasks queued</td><td>17</td></tr>
+          <tr><td>tasks completed</td><td>3,844 today</td></tr>
+          <tr><td>error rate</td><td>0.08%</td></tr>
+          <tr><td>uptime</td><td>99.2% (30d)</td></tr>
+        </table>
+      </div>
+
+      <div class="config-section">
+        <div class="section-label">config · specs</div>
+
+        <div class="config-panel">
+          <div class="config-panel-header">orchestration</div>
+          <div class="config-panel-body">
+            <div class="config-row"><span class="config-key">runtime</span><span class="config-val">BlackRoad OS v1.0</span></div>
+            <div class="config-row"><span class="config-key">logic</span><span class="config-val">trinary (1 / 0 / −1)</span></div>
+            <div class="config-row"><span class="config-key">event bus</span><span class="config-val">NATS JetStream</span></div>
+            <div class="config-row"><span class="config-key">scheduler</span><span class="config-val">K3s · Traefik</span></div>
+            <div class="config-row"><span class="config-key">mesh</span><span class="config-val">Tailscale</span></div>
+          </div>
+        </div>
+
+        <div class="config-panel">
+          <div class="config-panel-header">memory layer</div>
+          <div class="config-panel-body">
+            <div class="config-row"><span class="config-key">persistence</span><span class="config-val">PS-SHA∞</span></div>
+            <div class="config-row"><span class="config-key">journal</span><span class="config-val">append-only</span></div>
+            <div class="config-row"><span class="config-key">cache</span><span class="config-val">Redis 7.2</span></div>
+            <div class="config-row"><span class="config-key">db</span><span class="config-val">D1 · SQLite edge</span></div>
+            <div class="config-row"><span class="config-key">object store</span><span class="config-val">R2</span></div>
+          </div>
+        </div>
+
+        <div class="config-panel">
+          <div class="config-panel-header">inference</div>
+          <div class="config-panel-body">
+            <div class="config-row"><span class="config-key">accelerator</span><span class="config-val">Hailo-8 (×2)</span></div>
+            <div class="config-row"><span class="config-key">local runtime</span><span class="config-val">Ollama</span></div>
+            <div class="config-row"><span class="config-key">cloud</span><span class="config-val">Claude · GPT · Grok · Gemini</span></div>
+            <div class="config-row"><span class="config-key">routing</span><span class="config-val">Z-framework δ dispatch</span></div>
+          </div>
+        </div>
+
+        <div class="config-panel">
+          <div class="config-panel-header">network</div>
+          <div class="config-panel-body">
+            <div class="config-row"><span class="config-key">alice (Pi 400)</span><span class="config-val">100.95.120.67</span></div>
+            <div class="config-row"><span class="config-key">lucidia (Pi 5)</span><span class="config-val">100.66.235.47</span></div>
+            <div class="config-row"><span class="config-key">edge</span><span class="config-val">Cloudflare · 85 workers</span></div>
+            <div class="config-row"><span class="config-key">CDN</span><span class="config-val">global · 300 PoPs</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Activity Feed -->
+    <div class="feed-section">
+      <div class="feed-header">
+        <span class="feed-header-title">activity feed</span>
+        <span class="feed-live"><span class="feed-live-dot"></span>live</span>
+      </div>
+      <div class="feed-entries">
+        <div class="feed-entry">
+          <span class="feed-time">14:32:08</span>
+          <span class="feed-level ok">OK</span>
+          <span class="feed-agent">cecilia</span>
+          <span class="feed-msg">Memory consolidation complete — 847 entries committed to PS-SHA∞ journal.</span>
+        </div>
+        <div class="feed-entry">
+          <span class="feed-time">14:31:55</span>
+          <span class="feed-level info">INFO</span>
+          <span class="feed-agent">cadence</span>
+          <span class="feed-msg">NATS stream agents.events — 1,204 msgs dispatched this minute.</span>
+        </div>
+        <div class="feed-entry">
+          <span class="feed-time">14:31:43</span>
+          <span class="feed-level warn">WARN</span>
+          <span class="feed-agent">olympia</span>
+          <span class="feed-msg">Node heartbeat missed. Retrying in 30s. Attempt 3 of 5.</span>
+        </div>
+        <div class="feed-entry">
+          <span class="feed-time">14:31:30</span>
+          <span class="feed-level info">INFO</span>
+          <span class="feed-agent">eve</span>
+          <span class="feed-msg">Z-framework scan initiated. Target: cluster equilibrium δ. Nodes: 8.</span>
+        </div>
+        <div class="feed-entry">
+          <span class="feed-time">14:31:18</span>
+          <span class="feed-level ok">OK</span>
+          <span class="feed-agent">lucidia</span>
+          <span class="feed-msg">Hailo-8 accelerator warmed on octavia. Inference ready.</span>
+        </div>
+        <div class="feed-entry">
+          <span class="feed-time">14:31:02</span>
+          <span class="feed-level info">INFO</span>
+          <span class="feed-agent">cecilia</span>
+          <span class="feed-msg">Task queue polled — 17 tasks pending. Dispatching to available agents.</span>
+        </div>
+        <div class="feed-entry">
+          <span class="feed-time">14:30:51</span>
+          <span class="feed-level ok">OK</span>
+          <span class="feed-agent">gematria</span>
+          <span class="feed-msg">Research task #3841 completed. Output committed to R2 object store.</span>
+        </div>
+        <div class="feed-entry">
+          <span class="feed-time">14:30:39</span>
+          <span class="feed-level info">INFO</span>
+          <span class="feed-agent">cadence</span>
+          <span class="feed-msg">Inter-agent message relay — cecilia → eve. Subject: equilibrium.request.</span>
+        </div>
+        <div class="feed-entry">
+          <span class="feed-time">14:30:27</span>
+          <span class="feed-level warn">WARN</span>
+          <span class="feed-agent">eve</span>
+          <span class="feed-msg">Contradiction detected in reasoning path. Paraconsistent handler invoked for node-7.</span>
+        </div>
+        <div class="feed-entry">
+          <span class="feed-time">14:30:15</span>
+          <span class="feed-level ok">OK</span>
+          <span class="feed-agent">system</span>
+          <span class="feed-msg">K3s cluster healthy — 62 pods running. 0 restarts in last 60m.</span>
+        </div>
+        <div class="feed-entry">
+          <span class="feed-time">14:30:02</span>
+          <span class="feed-level info">INFO</span>
+          <span class="feed-agent">system</span>
+          <span class="feed-msg">Cloudflare Workers heartbeat — 85 / 85 healthy. Edge latency 11ms avg.</span>
+        </div>
+        <div class="feed-entry">
+          <span class="feed-time">14:29:48</span>
+          <span class="feed-level ok">OK</span>
+          <span class="feed-agent">cecilia</span>
+          <span class="feed-msg">Truth state commit #22401 sealed. Hash verified against PS-SHA∞ chain.</span>
+        </div>
+        <div class="feed-entry">
+          <span class="feed-time">14:29:33</span>
+          <span class="feed-level err">ERR</span>
+          <span class="feed-agent">olympia</span>
+          <span class="feed-msg">SSH connection refused on 100.95.120.67. Agent suspended pending recovery.</span>
+        </div>
+        <div class="feed-entry">
+          <span class="feed-time">14:29:18</span>
+          <span class="feed-level info">INFO</span>
+          <span class="feed-agent">lucidia</span>
+          <span class="feed-msg">Tailscale mesh status: 8 peers online. MTU 1280. Handshake fresh.</span>
+        </div>
+        <div class="feed-entry">
+          <span class="feed-time">14:29:01</span>
+          <span class="feed-level ok">OK</span>
+          <span class="feed-agent">system</span>
+          <span class="feed-msg">Daily Redis flush complete — 204,871 keys retained. 3,102 expired.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Links -->
+    <div class="section-label">links · nav</div>
+    <div class="links-grid">
+
+      <div class="links-group">
+        <div class="links-group-title">infrastructure</div>
+        <a href="https://github.com/enterprises/blackroad-os" target="_blank" rel="noopener noreferrer">GitHub Enterprise ↗</a>
+        <a href="https://dash.cloudflare.com" target="_blank" rel="noopener noreferrer">Cloudflare Dashboard ↗</a>
+        <a href="#" target="_blank" rel="noopener noreferrer">K3s Cluster ↗</a>
+        <a href="https://login.tailscale.com" target="_blank" rel="noopener noreferrer">Tailscale Console ↗</a>
+        <a href="#" target="_blank" rel="noopener noreferrer">DigitalOcean Droplets ↗</a>
+      </div>
+
+      <div class="links-group">
+        <div class="links-group-title">agents</div>
+        <a href="#" target="_blank" rel="noopener noreferrer">Cecilia (Claude) ↗</a>
+        <a href="#" target="_blank" rel="noopener noreferrer">Cadence (ChatGPT) ↗</a>
+        <a href="#" target="_blank" rel="noopener noreferrer">Eve (Grok) ↗</a>
+        <a href="#" target="_blank" rel="noopener noreferrer">Gematria (Gemini) ↗</a>
+        <a href="#" target="_blank" rel="noopener noreferrer">Lucidia (Local) ↗</a>
+      </div>
+
+      <div class="links-group">
+        <div class="links-group-title">repositories</div>
+        <a href="https://github.com/BlackRoad-OS" target="_blank" rel="noopener noreferrer">BlackRoad-OS ↗</a>
+        <a href="https://github.com/BlackRoad-AI" target="_blank" rel="noopener noreferrer">BlackRoad-AI ↗</a>
+        <a href="https://github.com/BlackRoad-Cloud" target="_blank" rel="noopener noreferrer">BlackRoad-Cloud ↗</a>
+        <a href="https://github.com/BlackRoad-Hardware" target="_blank" rel="noopener noreferrer">BlackRoad-Hardware ↗</a>
+        <a href="https://github.com/BlackRoad-Security" target="_blank" rel="noopener noreferrer">BlackRoad-Security ↗</a>
+      </div>
+
+      <div class="links-group">
+        <div class="links-group-title">docs</div>
+        <a href="#" target="_blank" rel="noopener noreferrer">Architecture Overview ↗</a>
+        <a href="#" target="_blank" rel="noopener noreferrer">Agent Spec ↗</a>
+        <a href="#" target="_blank" rel="noopener noreferrer">Z-Framework Reference ↗</a>
+        <a href="#" target="_blank" rel="noopener noreferrer">Memory System ↗</a>
+        <a href="#" target="_blank" rel="noopener noreferrer">API Reference ↗</a>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <span>BlackRoad OS, Inc. — Delaware C-Corp</span>
+    <div class="footer-stats">
+      <span>6 active · 1,024 fleet · 99.2% uptime</span>
+    </div>
+  </footer>
+
+</body>
+</html>
