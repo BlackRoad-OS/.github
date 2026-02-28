@@ -1,0 +1,263 @@
+/* ============================================================
+   BlackRoad OS — Approved Design System
+   Shared stylesheet for all BlackRoad page templates.
+   Brand reference: BRAND.md
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+
+/* ---- Tokens ---- */
+:root {
+  /* Background */
+  --bg:        #000000;
+  --bg-panel:  #0a0a0a;
+  --bg-card:   #0f0f0f;
+  --bg-hover:  #141414;
+
+  /* Borders */
+  --border:    #1c1c1c;
+  --border-mid:#2a2a2a;
+
+  /* Text */
+  --text:      #e0e0e0;
+  --text-mid:  #888888;
+  --text-dim:  #3a3a3a;
+
+  /* Brand colours */
+  --orange:    #FF9D00;
+  --hot-pink:  #FF0066;
+  --purple:    #7700FF;
+  --blue:      #0066FF;
+
+  /* Status */
+  --ok:        #22c55e;
+  --warn:      #f59e0b;
+  --err:       #ef4444;
+  --info:      #60a5fa;
+  --idle:      #888888;
+
+  /* Gradients */
+  --grad-full: linear-gradient(90deg, #FF9D00 0%, #FF0066 33%, #7700FF 66%, #0066FF 100%);
+  --grad-os:   linear-gradient(90deg, #FF006B 0%, #0066FF 100%);
+
+  /* Spacing (golden-ratio φ ≈ 1.618) */
+  --sp-xs: 8px;
+  --sp-sm: 13px;
+  --sp-md: 21px;
+  --sp-lg: 34px;
+  --sp-xl: 55px;
+
+  --font: 'JetBrains Mono', 'Courier New', monospace;
+  --radius: 4px;
+}
+
+/* ---- Reset ---- */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 13px;
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+a { color: inherit; text-decoration: none; }
+a:hover { color: #fff; }
+
+/* ---- Gradient bar ---- */
+.grad-bar {
+  height: 2px;
+  background: var(--grad-full);
+  flex-shrink: 0;
+}
+
+/* ---- Header / Nav ---- */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-md) var(--sp-xl);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.brand {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #fff;
+}
+
+header nav {
+  display: flex;
+  gap: 2px;
+}
+
+header nav a {
+  color: var(--text-mid);
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  transition: color 0.15s, background 0.15s;
+}
+
+header nav a:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* ---- Page hero ---- */
+.page-hero {
+  padding: var(--sp-xl) var(--sp-xl) var(--sp-lg);
+  border-bottom: 1px solid var(--border);
+}
+
+.page-label {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: var(--sp-xs);
+}
+
+.page-hero h1 {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: var(--sp-xs);
+}
+
+.page-hero p {
+  color: var(--text-mid);
+  font-size: 13px;
+  max-width: 520px;
+}
+
+.hero-stats {
+  display: flex;
+  gap: var(--sp-md);
+  margin-top: var(--sp-md);
+  flex-wrap: wrap;
+}
+
+.hero-stat {
+  font-size: 12px;
+  color: var(--text-mid);
+}
+
+.hero-stat strong {
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ---- Layout ---- */
+main {
+  flex: 1;
+  padding: var(--sp-xl);
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-xl);
+}
+
+/* ---- Section ---- */
+.section-label {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: var(--sp-md);
+}
+
+/* ---- Card ---- */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--sp-md);
+}
+
+.card:hover {
+  border-color: var(--border-mid);
+  background: var(--bg-hover);
+}
+
+/* ---- Tag / Badge ---- */
+.badge {
+  display: inline-block;
+  font-size: 11px;
+  color: var(--text-mid);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2px 8px;
+}
+
+/* ---- Status dot ---- */
+.dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-right: 5px;
+  flex-shrink: 0;
+}
+.dot-ok     { background: var(--ok);   box-shadow: 0 0 6px var(--ok); }
+.dot-warn   { background: var(--warn); }
+.dot-err    { background: var(--err);  }
+.dot-idle   { background: var(--idle); }
+.dot-info   { background: var(--info); }
+
+/* ---- Log level chips ---- */
+.level {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 1px 6px;
+  border-radius: 2px;
+}
+.level-ok   { color: var(--ok);   border: 1px solid var(--ok); }
+.level-warn { color: var(--warn); border: 1px solid var(--warn); }
+.level-err  { color: var(--err);  border: 1px solid var(--err); }
+.level-info { color: var(--info); border: 1px solid var(--info); }
+
+/* ---- Progress bar ---- */
+.progress-bar {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--grad-os);
+}
+
+/* ---- Footer ---- */
+footer {
+  border-top: 1px solid var(--border);
+  padding: var(--sp-md) var(--sp-xl);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--text-dim);
+  font-size: 11px;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+  header { padding: var(--sp-sm) var(--sp-md); flex-wrap: wrap; gap: var(--sp-sm); }
+  .page-hero { padding: var(--sp-lg) var(--sp-md); }
+  main { padding: var(--sp-lg) var(--sp-md); }
+  footer { padding: var(--sp-sm) var(--sp-md); flex-direction: column; gap: var(--sp-xs); text-align: center; }
+}

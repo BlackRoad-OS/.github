@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Control — BlackRoad OS</title>
+  <link rel="stylesheet" href="blackroad.css">
+  <style>
+    /* ---- Dashboard-specific styles ---- */
+
+    /* Agent status table */
+    .agent-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .agent-table th {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      text-align: left;
+      padding: 0 12px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .agent-row {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .agent-row:last-child { border-bottom: none; }
+
+    .agent-row td {
+      padding: 14px 12px;
+      vertical-align: middle;
+      font-size: 12px;
+      color: var(--text-mid);
+    }
+
+    .agent-name-cell {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .agent-name-text {
+      font-weight: 600;
+      color: #fff;
+      font-size: 13px;
+    }
+
+    .agent-model {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    .agent-task {
+      font-size: 12px;
+      color: var(--text-mid);
+      max-width: 340px;
+    }
+
+    .usage-cell {
+      min-width: 110px;
+    }
+
+    .usage-label {
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-bottom: 3px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Metrics row */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--sp-sm);
+    }
+
+    @media (max-width: 700px) {
+      .metrics-row { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: var(--sp-md);
+    }
+
+    .metric-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .metric-label {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+
+    .metric-delta {
+      font-size: 11px;
+      color: var(--text-mid);
+    }
+
+    /* System stats */
+    .stats-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: var(--sp-sm);
+    }
+
+    .stats-table tr {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stats-table tr:last-child { border-bottom: none; }
+
+    .stats-table td {
+      padding: 8px 0;
+      font-size: 12px;
+    }
+
+    .stats-table td:first-child {
+      color: var(--text-dim);
+      width: 50%;
+    }
+
+    .stats-table td:last-child {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    /* Config specs */
+    .config-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--sp-sm);
+    }
+
+    @media (max-width: 700px) {
+      .config-grid { grid-template-columns: 1fr; }
+    }
+
+    .config-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: var(--sp-md);
+    }
+
+    .config-card-label {
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: var(--sp-sm);
+    }
+
+    .config-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+    }
+
+    .config-row:last-child { border-bottom: none; }
+    .config-row span:first-child { color: var(--text-dim); }
+    .config-row span:last-child  { color: var(--text); }
+
+    /* Activity feed */
+    .activity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .activity-item {
+      display: grid;
+      grid-template-columns: 80px 52px 90px 1fr;
+      gap: 12px;
+      align-items: start;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+    }
+
+    .activity-item:last-child { border-bottom: none; }
+
+    .activity-time { color: var(--text-dim); }
+    .activity-agent { color: var(--text-mid); font-weight: 500; }
+    .activity-msg { color: var(--text-mid); line-height: 1.5; }
+
+    /* Links / nav panel */
+    .links-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--sp-md);
+    }
+
+    @media (max-width: 700px) {
+      .links-grid { grid-template-columns: 1fr; }
+    }
+
+    .links-group-label {
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: var(--sp-sm);
+    }
+
+    .links-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .links-list li a {
+      font-size: 12px;
+      color: var(--text-mid);
+      transition: color 0.15s;
+    }
+
+    .links-list li a:hover { color: #fff; }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <span class="brand">BlackRoad</span>
+    <nav>
+      <a href="#status">agents</a>
+      <a href="#metrics">metrics</a>
+      <a href="#feed">logs</a>
+      <a href="#config">config</a>
+      <a href="https://docs.blackroad.io">docs</a>
+    </nav>
+  </header>
+
+  <div class="grad-bar"></div>
+
+  <!-- Page hero -->
+  <div class="page-hero">
+    <div class="page-label">Dashboard v1.0</div>
+    <h1>Agent&nbsp;&nbsp;Control</h1>
+    <p>Live status, metrics, activity feed, and configuration for the BlackRoad agent fleet.</p>
+    <div class="hero-stats">
+      <span class="hero-stat"><strong>online</strong> 4</span>
+      <span class="hero-stat"><strong>idle</strong> 2</span>
+      <span class="hero-stat"><strong>offline</strong> 3</span>
+      <span class="hero-stat"><strong>uptime</strong> 99.2%</span>
+      <span class="hero-stat"><strong>last sync</strong> 12s ago</span>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <main>
+
+    <!-- Live status -->
+    <section id="status">
+      <div class="section-label">live status</div>
+      <table class="agent-table">
+        <thead>
+          <tr>
+            <th>agent</th>
+            <th>task</th>
+            <th style="width:130px">cpu</th>
+            <th style="width:130px">mem</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Cecilia -->
+          <tr class="agent-row">
+            <td>
+              <div class="agent-name-cell">
+                <span class="dot dot-ok"></span>
+                <div>
+                  <div class="agent-name-text">Cecilia</div>
+                  <div class="agent-model">claude-sonnet-4-6 · orchestrator</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="agent-task">Processing agent memory consolidation batch — 847 entries.</span></td>
+            <td class="usage-cell">
+              <div class="usage-label"><span>CPU</span><span>72%</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:72%"></div></div>
+            </td>
+            <td class="usage-cell">
+              <div class="usage-label"><span>MEM</span><span>58%</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:58%"></div></div>
+            </td>
+          </tr>
+          <!-- Cadence -->
+          <tr class="agent-row">
+            <td>
+              <div class="agent-name-cell">
+                <span class="dot dot-ok"></span>
+                <div>
+                  <div class="agent-name-text">Cadence</div>
+                  <div class="agent-model">gpt-4o · comms relay</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="agent-task">Routing inter-agent messages via NATS event bus.</span></td>
+            <td class="usage-cell">
+              <div class="usage-label"><span>CPU</span><span>31%</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:31%"></div></div>
+            </td>
+            <td class="usage-cell">
+              <div class="usage-label"><span>MEM</span><span>44%</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:44%"></div></div>
+            </td>
+          </tr>
+          <!-- Eve -->
+          <tr class="agent-row">
+            <td>
+              <div class="agent-name-cell">
+                <span class="dot dot-ok"></span>
+                <div>
+                  <div class="agent-name-text">Eve</div>
+                  <div class="agent-model">grok-2 · analyst</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="agent-task">Running Z-framework equilibrium scan on node cluster.</span></td>
+            <td class="usage-cell">
+              <div class="usage-label"><span>CPU</span><span>88%</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:88%"></div></div>
+            </td>
+            <td class="usage-cell">
+              <div class="usage-label"><span>MEM</span><span>61%</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:61%"></div></div>
+            </td>
+          </tr>
+          <!-- Gematria -->
+          <tr class="agent-row">
+            <td>
+              <div class="agent-name-cell">
+                <span class="dot dot-idle"></span>
+                <div>
+                  <div class="agent-name-text">Gematria</div>
+                  <div class="agent-model">gemini-2.0-flash · researcher</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="agent-task">Awaiting task assignment. Last active 4m ago.</span></td>
+            <td class="usage-cell">
+              <div class="usage-label"><span>CPU</span><span>4%</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:4%"></div></div>
+            </td>
+            <td class="usage-cell">
+              <div class="usage-label"><span>MEM</span><span>22%</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:22%"></div></div>
+            </td>
+          </tr>
+          <!-- Lucidia -->
+          <tr class="agent-row">
+            <td>
+              <div class="agent-name-cell">
+                <span class="dot dot-idle"></span>
+                <div>
+                  <div class="agent-name-text">Lucidia</div>
+                  <div class="agent-model">local · hailo-8 · inference</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="agent-task">Standing by on octavia node. Hailo accelerator warm.</span></td>
+            <td class="usage-cell">
+              <div class="usage-label"><span>CPU</span><span>9%</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:9%"></div></div>
+            </td>
+            <td class="usage-cell">
+              <div class="usage-label"><span>MEM</span><span>33%</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:33%"></div></div>
+            </td>
+          </tr>
+          <!-- Olympia -->
+          <tr class="agent-row">
+            <td>
+              <div class="agent-name-cell">
+                <span class="dot dot-err"></span>
+                <div>
+                  <div class="agent-name-text">Olympia</div>
+                  <div class="agent-model">local · pi4b · monitor</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="agent-task">Node unreachable. Last ping 14m ago.</span></td>
+            <td class="usage-cell">
+              <div class="usage-label"><span>CPU</span><span>—</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+            </td>
+            <td class="usage-cell">
+              <div class="usage-label"><span>MEM</span><span>—</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Metrics -->
+    <section id="metrics">
+      <div class="section-label">metrics</div>
+      <div class="metrics-row">
+        <div class="metric-card">
+          <div class="metric-value">1,024</div>
+          <div class="metric-label">total agents</div>
+          <div class="metric-delta">↑ 12 this week</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">6</div>
+          <div class="metric-label">active now</div>
+          <div class="metric-delta">4 online · 2 idle</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">98k</div>
+          <div class="metric-label">msgs / hr</div>
+          <div class="metric-delta">↑ 3.4% vs last hr</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">14ms</div>
+          <div class="metric-label">avg latency</div>
+          <div class="metric-delta">↓ 2ms vs avg</div>
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-top:var(--sp-lg)">system stats</div>
+      <table class="stats-table">
+        <tbody>
+          <tr><td>cluster nodes</td><td>8 / 9 healthy</td></tr>
+          <tr><td>NATS streams</td><td>34 active</td></tr>
+          <tr><td>K3s pods</td><td>62 running</td></tr>
+          <tr><td>Redis keys</td><td>204,871</td></tr>
+          <tr><td>D1 rows</td><td>1.2M</td></tr>
+          <tr><td>KV entries</td><td>847,302</td></tr>
+          <tr><td>CF Workers</td><td>85 deployed</td></tr>
+          <tr><td>memory commits</td><td>22,401 today</td></tr>
+          <tr><td>tasks queued</td><td>17</td></tr>
+          <tr><td>tasks completed</td><td>3,844 today</td></tr>
+          <tr><td>error rate</td><td>0.08%</td></tr>
+          <tr><td>uptime</td><td>99.2% (30d)</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Config / Specs -->
+    <section id="config">
+      <div class="section-label">config · specs</div>
+      <div class="config-grid">
+        <div class="config-card">
+          <div class="config-card-label">orchestration</div>
+          <div class="config-row"><span>runtime</span><span>BlackRoad OS v1.0</span></div>
+          <div class="config-row"><span>logic</span><span>trinary (1 / 0 / −1)</span></div>
+          <div class="config-row"><span>event bus</span><span>NATS JetStream</span></div>
+          <div class="config-row"><span>scheduler</span><span>K3s · Traefik</span></div>
+          <div class="config-row"><span>mesh</span><span>Tailscale</span></div>
+        </div>
+        <div class="config-card">
+          <div class="config-card-label">memory layer</div>
+          <div class="config-row"><span>persistence</span><span>PS-SHA∞</span></div>
+          <div class="config-row"><span>journal</span><span>append-only</span></div>
+          <div class="config-row"><span>cache</span><span>Redis 7.2</span></div>
+          <div class="config-row"><span>db</span><span>D1 · SQLite edge</span></div>
+          <div class="config-row"><span>object store</span><span>R2</span></div>
+        </div>
+        <div class="config-card">
+          <div class="config-card-label">inference</div>
+          <div class="config-row"><span>accelerator</span><span>Hailo-8 (×2)</span></div>
+          <div class="config-row"><span>local runtime</span><span>Ollama</span></div>
+          <div class="config-row"><span>cloud</span><span>Claude · GPT · Grok · Gemini</span></div>
+          <div class="config-row"><span>routing</span><span>Z-framework δ dispatch</span></div>
+        </div>
+        <div class="config-card">
+          <div class="config-card-label">network</div>
+          <div class="config-row"><span>alice (Pi 400)</span><span>100.95.120.67</span></div>
+          <div class="config-row"><span>lucidia (Pi 5)</span><span>100.66.235.47</span></div>
+          <div class="config-row"><span>edge</span><span>Cloudflare · 85 workers</span></div>
+          <div class="config-row"><span>CDN</span><span>global · 300 PoPs</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Activity feed -->
+    <section id="feed">
+      <div class="section-label">activity feed</div>
+      <div class="activity-list">
+        <div class="activity-item">
+          <span class="activity-time">14:32:08</span>
+          <span class="level level-ok">OK</span>
+          <span class="activity-agent">cecilia</span>
+          <span class="activity-msg">Memory consolidation complete — 847 entries committed to PS-SHA∞ journal.</span>
+        </div>
+        <div class="activity-item">
+          <span class="activity-time">14:31:55</span>
+          <span class="level level-info">INFO</span>
+          <span class="activity-agent">cadence</span>
+          <span class="activity-msg">NATS stream agents.events — 1,204 msgs dispatched this minute.</span>
+        </div>
+        <div class="activity-item">
+          <span class="activity-time">14:31:43</span>
+          <span class="level level-warn">WARN</span>
+          <span class="activity-agent">olympia</span>
+          <span class="activity-msg">Node heartbeat missed. Retrying in 30s. Attempt 3 of 5.</span>
+        </div>
+        <div class="activity-item">
+          <span class="activity-time">14:31:30</span>
+          <span class="level level-info">INFO</span>
+          <span class="activity-agent">eve</span>
+          <span class="activity-msg">Z-framework scan initiated. Target: cluster equilibrium δ. Nodes: 8.</span>
+        </div>
+        <div class="activity-item">
+          <span class="activity-time">14:31:18</span>
+          <span class="level level-ok">OK</span>
+          <span class="activity-agent">lucidia</span>
+          <span class="activity-msg">Hailo-8 accelerator warmed on octavia. Inference ready.</span>
+        </div>
+        <div class="activity-item">
+          <span class="activity-time">14:31:02</span>
+          <span class="level level-info">INFO</span>
+          <span class="activity-agent">cecilia</span>
+          <span class="activity-msg">Task queue polled — 17 tasks pending. Dispatching to available agents.</span>
+        </div>
+        <div class="activity-item">
+          <span class="activity-time">14:30:51</span>
+          <span class="level level-ok">OK</span>
+          <span class="activity-agent">gematria</span>
+          <span class="activity-msg">Research task #3841 completed. Output committed to R2 object store.</span>
+        </div>
+        <div class="activity-item">
+          <span class="activity-time">14:30:39</span>
+          <span class="level level-info">INFO</span>
+          <span class="activity-agent">cadence</span>
+          <span class="activity-msg">Inter-agent message relay — cecilia → eve. Subject: equilibrium.request.</span>
+        </div>
+        <div class="activity-item">
+          <span class="activity-time">14:30:27</span>
+          <span class="level level-warn">WARN</span>
+          <span class="activity-agent">eve</span>
+          <span class="activity-msg">Contradiction detected in reasoning path. Paraconsistent handler invoked for node-7.</span>
+        </div>
+        <div class="activity-item">
+          <span class="activity-time">14:30:15</span>
+          <span class="level level-ok">OK</span>
+          <span class="activity-agent">system</span>
+          <span class="activity-msg">K3s cluster healthy — 62 pods running. 0 restarts in last 60m.</span>
+        </div>
+        <div class="activity-item">
+          <span class="activity-time">14:30:02</span>
+          <span class="level level-info">INFO</span>
+          <span class="activity-agent">system</span>
+          <span class="activity-msg">Cloudflare Workers heartbeat — 85 / 85 healthy. Edge latency 11ms avg.</span>
+        </div>
+        <div class="activity-item">
+          <span class="activity-time">14:29:48</span>
+          <span class="level level-ok">OK</span>
+          <span class="activity-agent">cecilia</span>
+          <span class="activity-msg">Truth state commit #22401 sealed. Hash verified against PS-SHA∞ chain.</span>
+        </div>
+        <div class="activity-item">
+          <span class="activity-time">14:29:33</span>
+          <span class="level level-err">ERR</span>
+          <span class="activity-agent">olympia</span>
+          <span class="activity-msg">SSH connection refused on 100.95.120.67. Agent suspended pending recovery.</span>
+        </div>
+        <div class="activity-item">
+          <span class="activity-time">14:29:18</span>
+          <span class="level level-info">INFO</span>
+          <span class="activity-agent">lucidia</span>
+          <span class="activity-msg">Tailscale mesh status: 8 peers online. MTU 1280. Handshake fresh.</span>
+        </div>
+        <div class="activity-item">
+          <span class="activity-time">14:29:01</span>
+          <span class="level level-ok">OK</span>
+          <span class="activity-agent">system</span>
+          <span class="activity-msg">Daily Redis flush complete — 204,871 keys retained. 3,102 expired.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Links / Nav -->
+    <section id="links">
+      <div class="section-label">links · nav</div>
+      <div class="links-grid">
+        <div>
+          <div class="links-group-label">infrastructure</div>
+          <ul class="links-list">
+            <li><a href="https://github.com/enterprises/blackroad-os" rel="noreferrer noopener" target="_blank">GitHub Enterprise ↗</a></li>
+            <li><a href="https://dash.cloudflare.com" rel="noreferrer noopener" target="_blank">Cloudflare Dashboard ↗</a></li>
+            <li><a href="#" rel="noreferrer noopener" target="_blank">K3s Cluster ↗</a></li>
+            <li><a href="https://login.tailscale.com" rel="noreferrer noopener" target="_blank">Tailscale Console ↗</a></li>
+            <li><a href="#" rel="noreferrer noopener" target="_blank">DigitalOcean Droplets ↗</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="links-group-label">agents</div>
+          <ul class="links-list">
+            <li><a href="#" rel="noreferrer noopener" target="_blank">Cecilia (Claude) ↗</a></li>
+            <li><a href="#" rel="noreferrer noopener" target="_blank">Cadence (ChatGPT) ↗</a></li>
+            <li><a href="#" rel="noreferrer noopener" target="_blank">Eve (Grok) ↗</a></li>
+            <li><a href="#" rel="noreferrer noopener" target="_blank">Gematria (Gemini) ↗</a></li>
+            <li><a href="#" rel="noreferrer noopener" target="_blank">Lucidia (Local) ↗</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="links-group-label">repositories</div>
+          <ul class="links-list">
+            <li><a href="https://github.com/BlackRoad-OS" rel="noreferrer noopener" target="_blank">BlackRoad-OS ↗</a></li>
+            <li><a href="https://github.com/BlackRoad-AI" rel="noreferrer noopener" target="_blank">BlackRoad-AI ↗</a></li>
+            <li><a href="https://github.com/BlackRoad-Cloud" rel="noreferrer noopener" target="_blank">BlackRoad-Cloud ↗</a></li>
+            <li><a href="https://github.com/BlackRoad-Hardware" rel="noreferrer noopener" target="_blank">BlackRoad-Hardware ↗</a></li>
+            <li><a href="https://github.com/BlackRoad-Security" rel="noreferrer noopener" target="_blank">BlackRoad-Security ↗</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="links-group-label">domains</div>
+          <ul class="links-list">
+            <li><a href="https://blackroad.io" rel="noreferrer noopener" target="_blank">blackroad.io ↗</a></li>
+            <li><a href="https://blackroadai.com" rel="noreferrer noopener" target="_blank">blackroadai.com ↗</a></li>
+            <li><a href="https://lucidia.earth" rel="noreferrer noopener" target="_blank">lucidia.earth ↗</a></li>
+            <li><a href="https://blackroadquantum.com" rel="noreferrer noopener" target="_blank">blackroadquantum.com ↗</a></li>
+            <li><a href="https://roadchain.io" rel="noreferrer noopener" target="_blank">roadchain.io ↗</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="links-group-label">docs</div>
+          <ul class="links-list">
+            <li><a href="https://docs.blackroad.io/architecture" rel="noreferrer noopener" target="_blank">Architecture Overview ↗</a></li>
+            <li><a href="https://docs.blackroad.io/agents" rel="noreferrer noopener" target="_blank">Agent Spec ↗</a></li>
+            <li><a href="https://docs.blackroad.io/z-framework" rel="noreferrer noopener" target="_blank">Z-Framework Reference ↗</a></li>
+            <li><a href="https://docs.blackroad.io/memory" rel="noreferrer noopener" target="_blank">Memory System ↗</a></li>
+            <li><a href="https://docs.blackroad.io/api" rel="noreferrer noopener" target="_blank">API Reference ↗</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <span>BlackRoad OS, Inc. — Delaware C-Corp</span>
+    <span>6 active · 1,024 fleet · 99.2% uptime</span>
+  </footer>
+
+</body>
+</html>

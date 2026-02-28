@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Infrastructure Index — BlackRoad OS</title>
+  <link rel="stylesheet" href="blackroad.css">
+  <style>
+    /* ---- Directory-specific styles ---- */
+
+    .index-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 21px;
+    }
+
+    @media (max-width: 700px) {
+      .index-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Enterprise block */
+    .enterprise-block {
+      grid-column: 1 / -1;
+    }
+
+    .enterprise-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .enterprise-link:hover {
+      border-color: var(--border-mid);
+      background: var(--bg-hover);
+      color: #fff;
+    }
+
+    .enterprise-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .enterprise-url {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    .arrow {
+      color: var(--text-dim);
+      font-size: 16px;
+    }
+
+    /* Org and domain lists */
+    .section-count {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-left: 6px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      margin-bottom: var(--sp-md);
+    }
+
+    .org-list,
+    .domain-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .org-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 14px;
+      border-radius: var(--radius);
+      border: 1px solid transparent;
+      transition: border-color 0.15s, background 0.15s;
+      color: var(--text-mid);
+      font-size: 12px;
+    }
+
+    .org-item:hover {
+      border-color: var(--border);
+      background: var(--bg-card);
+      color: #fff;
+    }
+
+    .org-item .ext {
+      font-size: 10px;
+      color: var(--text-dim);
+    }
+
+    .domain-item {
+      padding: 8px 14px;
+      border-radius: var(--radius);
+      border: 1px solid transparent;
+      color: var(--text-mid);
+      font-size: 12px;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .domain-item:hover {
+      border-color: var(--border);
+      background: var(--bg-card);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <span class="brand">BlackRoad</span>
+    <nav>
+      <a href="#enterprise">enterprise</a>
+      <a href="#orgs">orgs</a>
+      <a href="#domains">domains</a>
+      <a href="https://docs.blackroad.io">docs</a>
+    </nav>
+  </header>
+
+  <div class="grad-bar"></div>
+
+  <!-- Page hero -->
+  <div class="page-hero">
+    <div class="page-label">Directory v1.0</div>
+    <h1>Infrastructure&nbsp;&nbsp;Index</h1>
+    <p>GitHub enterprise, organizations, and registered domains.</p>
+  </div>
+
+  <!-- Content -->
+  <main>
+
+    <!-- GitHub Enterprise -->
+    <section id="enterprise">
+      <div class="section-label">github enterprise</div>
+      <div class="enterprise-block">
+        <a class="enterprise-link" href="https://github.com/enterprises/blackroad-os" rel="noreferrer noopener" target="_blank">
+          <div>
+            <div class="enterprise-name">blackroad-os</div>
+            <div class="enterprise-url">github.com/enterprises/blackroad-os</div>
+          </div>
+          <span class="arrow">↗</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Organizations + Domains (two-column) -->
+    <div class="index-grid">
+
+      <!-- Organizations -->
+      <section id="orgs">
+        <div class="section-header">
+          <div class="section-label">organizations</div>
+          <span class="section-count">· 15</span>
+        </div>
+        <div class="org-list">
+          <a class="org-item" href="https://github.com/Blackbox-Enterprises" rel="noreferrer noopener" target="_blank">
+            Blackbox-Enterprises <span class="ext">↗</span>
+          </a>
+          <a class="org-item" href="https://github.com/BlackRoad-AI" rel="noreferrer noopener" target="_blank">
+            BlackRoad-AI <span class="ext">↗</span>
+          </a>
+          <a class="org-item" href="https://github.com/BlackRoad-Archive" rel="noreferrer noopener" target="_blank">
+            BlackRoad-Archive <span class="ext">↗</span>
+          </a>
+          <a class="org-item" href="https://github.com/BlackRoad-Cloud" rel="noreferrer noopener" target="_blank">
+            BlackRoad-Cloud <span class="ext">↗</span>
+          </a>
+          <a class="org-item" href="https://github.com/BlackRoad-Education" rel="noreferrer noopener" target="_blank">
+            BlackRoad-Education <span class="ext">↗</span>
+          </a>
+          <a class="org-item" href="https://github.com/BlackRoad-Foundation" rel="noreferrer noopener" target="_blank">
+            BlackRoad-Foundation <span class="ext">↗</span>
+          </a>
+          <a class="org-item" href="https://github.com/BlackRoad-Gov" rel="noreferrer noopener" target="_blank">
+            BlackRoad-Gov <span class="ext">↗</span>
+          </a>
+          <a class="org-item" href="https://github.com/BlackRoad-Hardware" rel="noreferrer noopener" target="_blank">
+            BlackRoad-Hardware <span class="ext">↗</span>
+          </a>
+          <a class="org-item" href="https://github.com/BlackRoad-Interactive" rel="noreferrer noopener" target="_blank">
+            BlackRoad-Interactive <span class="ext">↗</span>
+          </a>
+          <a class="org-item" href="https://github.com/BlackRoad-Labs" rel="noreferrer noopener" target="_blank">
+            BlackRoad-Labs <span class="ext">↗</span>
+          </a>
+          <a class="org-item" href="https://github.com/BlackRoad-Media" rel="noreferrer noopener" target="_blank">
+            BlackRoad-Media <span class="ext">↗</span>
+          </a>
+          <a class="org-item" href="https://github.com/BlackRoad-OS" rel="noreferrer noopener" target="_blank">
+            BlackRoad-OS <span class="ext">↗</span>
+          </a>
+          <a class="org-item" href="https://github.com/BlackRoad-Security" rel="noreferrer noopener" target="_blank">
+            BlackRoad-Security <span class="ext">↗</span>
+          </a>
+          <a class="org-item" href="https://github.com/BlackRoad-Studio" rel="noreferrer noopener" target="_blank">
+            BlackRoad-Studio <span class="ext">↗</span>
+          </a>
+          <a class="org-item" href="https://github.com/BlackRoad-Ventures" rel="noreferrer noopener" target="_blank">
+            BlackRoad-Ventures <span class="ext">↗</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- Domains -->
+      <section id="domains">
+        <div class="section-header">
+          <div class="section-label">domains</div>
+          <span class="section-count">· 19</span>
+        </div>
+        <div class="domain-list">
+          <span class="domain-item">blackboxprogramming.io</span>
+          <span class="domain-item">blackroad.company</span>
+          <span class="domain-item">blackroad.io</span>
+          <span class="domain-item">blackroad.me</span>
+          <span class="domain-item">blackroad.network</span>
+          <span class="domain-item">blackroad.systems</span>
+          <span class="domain-item">blackroadai.com</span>
+          <span class="domain-item">blackroadinc.us</span>
+          <span class="domain-item">blackroadqi.com</span>
+          <span class="domain-item">blackroadquantum.com</span>
+          <span class="domain-item">blackroadquantum.info</span>
+          <span class="domain-item">blackroadquantum.net</span>
+          <span class="domain-item">blackroadquantum.shop</span>
+          <span class="domain-item">blackroadquantum.store</span>
+          <span class="domain-item">lucidia.earth</span>
+          <span class="domain-item">lucidia.studio</span>
+          <span class="domain-item">lucidiaqi.com</span>
+          <span class="domain-item">roadchain.io</span>
+          <span class="domain-item">roadcoin.io</span>
+        </div>
+      </section>
+
+    </div><!-- /index-grid -->
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <span>BlackRoad OS, Inc. — Delaware C-Corp</span>
+    <span>1 enterprise · 15 orgs · 19 domains</span>
+  </footer>
+
+</body>
+</html>
