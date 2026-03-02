@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BlackRoad — Integrations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { background: #000; color: #fff; font-family: 'JetBrains Mono', monospace; min-height: 100vh; }
+    :root { --grad: linear-gradient(90deg, #FF8400, #FF4400, #FF0066, #CC00AA, #8800FF, #0066FF, #2233CC); }
+
+    nav { position: sticky; top: 0; z-index: 100; background: #000; padding: 0 24px; height: 48px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #fff; }
+    .nav-logo { font-size: 0.75rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a { font-size: 0.52rem; color: #fff; opacity: 0.4; text-decoration: none; letter-spacing: 0.12em; text-transform: uppercase; transition: opacity 0.15s; }
+    .nav-links a:hover, .nav-links a.active { opacity: 1; }
+    .grad-rule { height: 3px; background: var(--grad); }
+
+    .page { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+    .header { padding: 48px 0 32px; border-bottom: 1px solid #fff; }
+    .header-eyebrow { font-size: 0.52rem; opacity: 0.3; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 12px; }
+    .header h1 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 700; line-height: 1; letter-spacing: -0.02em; }
+    .header-sub { font-size: 0.68rem; opacity: 0.4; margin-top: 12px; line-height: 1.8; }
+
+    .sec { padding: 32px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .sec-label { font-size: 0.52rem; opacity: 0.3; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+    .sec-label::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
+
+    .s-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 6px; flex-shrink: 0; }
+
+    /* INTEGRATION CARD */
+    .int-card { display: flex; align-items: flex-start; gap: 16px; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .int-card:last-child { border-bottom: none; }
+
+    .int-icon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.1); font-family: 'Space Grotesk', sans-serif; font-size: 0.9rem; font-weight: 700; flex-shrink: 0; }
+
+    .int-body { flex: 1; }
+    .int-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .int-name { font-size: 0.66rem; font-weight: 700; }
+    .int-badge { font-size: 0.4rem; font-weight: 700; padding: 1px 5px; border: 1px solid; letter-spacing: 0.06em; }
+    .int-desc { font-size: 0.54rem; opacity: 0.35; line-height: 1.7; }
+    .int-meta { font-size: 0.44rem; opacity: 0.2; margin-top: 6px; }
+
+    .int-action { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+
+    .btn { font-family: 'JetBrains Mono', monospace; font-size: 0.5rem; font-weight: 700; letter-spacing: 0.05em; cursor: default; border: none; padding: 6px 12px; }
+    .btn-primary { background: #fff; color: #000; }
+    .btn-ghost { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+    .btn-connected { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.1); opacity: 0.4; }
+
+    /* CATEGORY GRID */
+    .cat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0; }
+    .cat-stat { padding: 16px 16px 16px 0; border-right: 1px solid rgba(255,255,255,0.05); }
+    .cat-stat:last-child { border-right: none; }
+    .cat-num { font-family: 'Space Grotesk', sans-serif; font-size: 1.6rem; font-weight: 700; }
+    .cat-label { font-size: 0.44rem; opacity: 0.25; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 4px; }
+
+    footer { padding: 32px 0; display: flex; justify-content: space-between; font-size: 0.5rem; opacity: 0.18; flex-wrap: wrap; gap: 8px; }
+
+    @media (max-width: 600px) {
+      .page { padding: 0 16px; }
+      nav { padding: 0 16px; }
+      .int-action { flex-direction: row; }
+      .cat-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="grad-rule"></div>
+
+<nav>
+  <span class="nav-logo">BlackRoad</span>
+  <div class="nav-links">
+    <a href="#">dashboard</a>
+    <a href="#">agents</a>
+    <a href="#" class="active">integrations</a>
+    <a href="#">settings</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="header">
+    <div class="header-eyebrow">BlackRoad OS · Integration Hub</div>
+    <h1>Integrations</h1>
+    <p class="header-sub">Connect external services to your BlackRoad OS instance.</p>
+  </div>
+
+  <!-- STATS -->
+  <div class="sec">
+    <div class="cat-grid">
+      <div class="cat-stat">
+        <div class="cat-num">4</div>
+        <div class="cat-label">Connected</div>
+      </div>
+      <div class="cat-stat">
+        <div class="cat-num">8</div>
+        <div class="cat-label">Available</div>
+      </div>
+      <div class="cat-stat">
+        <div class="cat-num">12.4k</div>
+        <div class="cat-label">Events / 24h</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONNECTED -->
+  <div class="sec">
+    <div class="sec-label">Connected</div>
+
+    <div class="int-card">
+      <div class="int-icon" style="border-color:rgba(255,255,255,0.2);">GH</div>
+      <div class="int-body">
+        <div class="int-header">
+          <div class="int-name">GitHub</div>
+          <div class="int-badge" style="color:#000;background:#FF8400;border-color:#FF8400;">ACTIVE</div>
+        </div>
+        <div class="int-desc">Repository sync, issue tracking, PR automation, and Actions orchestration.</div>
+        <div class="int-meta"><span class="s-dot" style="background:#FF8400;"></span>Connected · 4,208 events today · last sync: 2m ago</div>
+      </div>
+      <div class="int-action">
+        <button class="btn btn-ghost">Configure</button>
+      </div>
+    </div>
+
+    <div class="int-card">
+      <div class="int-icon" style="border-color:rgba(255,255,255,0.2);">NT</div>
+      <div class="int-body">
+        <div class="int-header">
+          <div class="int-name">NATS</div>
+          <div class="int-badge" style="color:#000;background:#FF8400;border-color:#FF8400;">ACTIVE</div>
+        </div>
+        <div class="int-desc">Event bus for agent communication, task routing, and stream processing.</div>
+        <div class="int-meta"><span class="s-dot" style="background:#FF8400;"></span>Connected · 6,847 events today · 3 streams active</div>
+      </div>
+      <div class="int-action">
+        <button class="btn btn-ghost">Configure</button>
+      </div>
+    </div>
+
+    <div class="int-card">
+      <div class="int-icon" style="border-color:rgba(255,255,255,0.2);">CF</div>
+      <div class="int-body">
+        <div class="int-header">
+          <div class="int-name">Cloudflare</div>
+          <div class="int-badge" style="color:#000;background:#FF8400;border-color:#FF8400;">ACTIVE</div>
+        </div>
+        <div class="int-desc">Edge workers, KV storage, D1 database, and R2 object store.</div>
+        <div class="int-meta"><span class="s-dot" style="background:#FF8400;"></span>Connected · 1,204 worker invocations today</div>
+      </div>
+      <div class="int-action">
+        <button class="btn btn-ghost">Configure</button>
+      </div>
+    </div>
+
+    <div class="int-card">
+      <div class="int-icon" style="border-color:rgba(255,255,255,0.2);">ST</div>
+      <div class="int-body">
+        <div class="int-header">
+          <div class="int-name">Stripe</div>
+          <div class="int-badge" style="color:#000;background:#FF8400;border-color:#FF8400;">ACTIVE</div>
+        </div>
+        <div class="int-desc">Billing, subscription management, and usage-based metering.</div>
+        <div class="int-meta"><span class="s-dot" style="background:#FF8400;"></span>Connected · 142 events today · webhook verified</div>
+      </div>
+      <div class="int-action">
+        <button class="btn btn-ghost">Configure</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AVAILABLE -->
+  <div class="sec" style="border-bottom:none;">
+    <div class="sec-label">Available</div>
+
+    <div class="int-card">
+      <div class="int-icon">SL</div>
+      <div class="int-body">
+        <div class="int-header">
+          <div class="int-name">Slack</div>
+        </div>
+        <div class="int-desc">Send alerts, agent status updates, and deploy notifications to Slack channels.</div>
+      </div>
+      <div class="int-action">
+        <button class="btn btn-primary">Connect</button>
+      </div>
+    </div>
+
+    <div class="int-card">
+      <div class="int-icon">SF</div>
+      <div class="int-body">
+        <div class="int-header">
+          <div class="int-name">Salesforce</div>
+        </div>
+        <div class="int-desc">Bidirectional record sync, contact management, and opportunity tracking.</div>
+      </div>
+      <div class="int-action">
+        <button class="btn btn-primary">Connect</button>
+      </div>
+    </div>
+
+    <div class="int-card">
+      <div class="int-icon">GD</div>
+      <div class="int-body">
+        <div class="int-header">
+          <div class="int-name">Google Drive</div>
+        </div>
+        <div class="int-desc">Document sync, export to Markdown, and shared drive access for agent contexts.</div>
+      </div>
+      <div class="int-action">
+        <button class="btn btn-primary">Connect</button>
+      </div>
+    </div>
+
+    <div class="int-card">
+      <div class="int-icon">FG</div>
+      <div class="int-body">
+        <div class="int-header">
+          <div class="int-name">Figma</div>
+        </div>
+        <div class="int-desc">Design asset pipeline, component sync, and brand style enforcement.</div>
+      </div>
+      <div class="int-action">
+        <button class="btn btn-primary">Connect</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>BlackRoad OS, Inc. · Integrations v1.0</span>
+    <span>4 connected · 4 available</span>
+  </footer>
+
+</div>
+
+<div class="grad-rule"></div>
+
+</body>
+</html>

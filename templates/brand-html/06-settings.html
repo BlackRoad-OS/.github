@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BlackRoad — Settings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { background: #000; color: #fff; font-family: 'JetBrains Mono', monospace; min-height: 100vh; }
+    :root { --grad: linear-gradient(90deg, #FF8400, #FF4400, #FF0066, #CC00AA, #8800FF, #0066FF, #2233CC); }
+
+    nav { position: sticky; top: 0; z-index: 100; background: #000; padding: 0 24px; height: 48px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #fff; }
+    .nav-logo { font-size: 0.75rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a { font-size: 0.52rem; color: #fff; opacity: 0.4; text-decoration: none; letter-spacing: 0.12em; text-transform: uppercase; transition: opacity 0.15s; }
+    .nav-links a:hover, .nav-links a.active { opacity: 1; }
+    .grad-rule { height: 3px; background: var(--grad); }
+
+    .page { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+    .header { padding: 48px 0 32px; border-bottom: 1px solid #fff; }
+    .header-eyebrow { font-size: 0.52rem; opacity: 0.3; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 12px; }
+    .header h1 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 700; line-height: 1; letter-spacing: -0.02em; }
+
+    .sec { padding: 32px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .sec-label { font-size: 0.52rem; opacity: 0.3; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+    .sec-label::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
+
+    /* SETTING ROW */
+    .setting { display: flex; align-items: center; gap: 16px; padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap; }
+    .setting:last-child { border-bottom: none; }
+    .setting-info { flex: 1; min-width: 200px; }
+    .setting-name { font-size: 0.62rem; font-weight: 700; margin-bottom: 3px; }
+    .setting-desc { font-size: 0.5rem; opacity: 0.3; line-height: 1.6; }
+
+    /* TOGGLE */
+    .toggle { width: 36px; height: 18px; background: rgba(255,255,255,0.1); position: relative; cursor: default; flex-shrink: 0; }
+    .toggle::after { content: ''; position: absolute; width: 14px; height: 14px; background: rgba(255,255,255,0.3); top: 2px; left: 2px; transition: transform 0.15s, background 0.15s; }
+    .toggle.on { background: rgba(255,255,255,0.08); }
+    .toggle.on::after { transform: translateX(18px); background: #fff; }
+
+    /* INPUT */
+    .inp { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; color: #fff; background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.2); padding: 8px 0; width: 200px; outline: none; }
+    .inp::placeholder { color: rgba(255,255,255,0.15); }
+
+    /* SELECT */
+    .sel { font-family: 'JetBrains Mono', monospace; font-size: 0.56rem; color: #fff; background: #000; border: 1px solid rgba(255,255,255,0.2); padding: 6px 8px; outline: none; cursor: default; appearance: none; min-width: 160px; }
+
+    /* KEY */
+    .key-row { display: flex; align-items: center; gap: 12px; }
+    .key-value { font-size: 0.56rem; opacity: 0.3; letter-spacing: 0.02em; }
+    .key-btn { font-family: 'JetBrains Mono', monospace; font-size: 0.46rem; font-weight: 700; color: #fff; background: transparent; border: 1px solid rgba(255,255,255,0.2); padding: 4px 8px; cursor: default; letter-spacing: 0.06em; }
+
+    /* DANGER */
+    .danger-zone { padding: 20px 0; }
+    .danger-item { display: flex; align-items: center; gap: 16px; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .danger-item:last-child { border-bottom: none; }
+    .danger-info { flex: 1; }
+    .danger-name { font-size: 0.58rem; font-weight: 700; margin-bottom: 2px; }
+    .danger-desc { font-size: 0.48rem; opacity: 0.25; }
+    .btn-danger { font-family: 'JetBrains Mono', monospace; font-size: 0.5rem; font-weight: 700; color: #000; background: #FF0066; border: none; padding: 6px 12px; cursor: default; letter-spacing: 0.04em; }
+
+    .btn { font-family: 'JetBrains Mono', monospace; font-size: 0.54rem; font-weight: 700; letter-spacing: 0.05em; cursor: default; border: none; padding: 8px 16px; }
+    .btn-primary { background: #fff; color: #000; }
+    .btn-ghost { background: transparent; color: #fff; border: 1px solid #fff; }
+
+    footer { padding: 32px 0; display: flex; justify-content: space-between; font-size: 0.5rem; opacity: 0.18; flex-wrap: wrap; gap: 8px; }
+
+    @media (max-width: 600px) {
+      .page { padding: 0 16px; }
+      nav { padding: 0 16px; }
+      .setting { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="grad-rule"></div>
+
+<nav>
+  <span class="nav-logo">BlackRoad</span>
+  <div class="nav-links">
+    <a href="#">dashboard</a>
+    <a href="#">agents</a>
+    <a href="#">streams</a>
+    <a href="#" class="active">settings</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="header">
+    <div class="header-eyebrow">BlackRoad OS · Configuration</div>
+    <h1>Settings</h1>
+  </div>
+
+  <!-- GENERAL -->
+  <div class="sec">
+    <div class="sec-label">General</div>
+    <div class="setting">
+      <div class="setting-info">
+        <div class="setting-name">Organization Name</div>
+        <div class="setting-desc">Display name across all dashboards</div>
+      </div>
+      <input class="inp" type="text" value="BlackRoad OS" readonly>
+    </div>
+    <div class="setting">
+      <div class="setting-info">
+        <div class="setting-name">Default Region</div>
+        <div class="setting-desc">Primary deployment region for new agents</div>
+      </div>
+      <select class="sel" disabled>
+        <option>us-east-1</option>
+        <option>us-west-2</option>
+        <option>eu-west-1</option>
+      </select>
+    </div>
+    <div class="setting">
+      <div class="setting-info">
+        <div class="setting-name">Timezone</div>
+        <div class="setting-desc">Used for scheduling and log timestamps</div>
+      </div>
+      <select class="sel" disabled>
+        <option>UTC</option>
+        <option>America/New_York</option>
+        <option>America/Los_Angeles</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- AGENTS -->
+  <div class="sec">
+    <div class="sec-label">Agent Defaults</div>
+    <div class="setting">
+      <div class="setting-info">
+        <div class="setting-name">Auto-restart on failure</div>
+        <div class="setting-desc">Automatically restart agents that crash or become unresponsive</div>
+      </div>
+      <div class="toggle on"></div>
+    </div>
+    <div class="setting">
+      <div class="setting-info">
+        <div class="setting-name">Memory persistence</div>
+        <div class="setting-desc">Persist agent memory contexts to disk between restarts</div>
+      </div>
+      <div class="toggle on"></div>
+    </div>
+    <div class="setting">
+      <div class="setting-info">
+        <div class="setting-name">Max memory per agent</div>
+        <div class="setting-desc">Default memory ceiling for new agent instances</div>
+      </div>
+      <input class="inp" type="text" value="512 MB" readonly style="width:100px;">
+    </div>
+    <div class="setting">
+      <div class="setting-info">
+        <div class="setting-name">Task timeout</div>
+        <div class="setting-desc">Maximum execution time before a task is marked failed</div>
+      </div>
+      <input class="inp" type="text" value="30s" readonly style="width:80px;">
+    </div>
+  </div>
+
+  <!-- NOTIFICATIONS -->
+  <div class="sec">
+    <div class="sec-label">Notifications</div>
+    <div class="setting">
+      <div class="setting-info">
+        <div class="setting-name">Alert on agent failure</div>
+        <div class="setting-desc">Send notification when an agent enters error state</div>
+      </div>
+      <div class="toggle on"></div>
+    </div>
+    <div class="setting">
+      <div class="setting-info">
+        <div class="setting-name">Alert on deploy</div>
+        <div class="setting-desc">Notify on successful production deployments</div>
+      </div>
+      <div class="toggle on"></div>
+    </div>
+    <div class="setting">
+      <div class="setting-info">
+        <div class="setting-name">Security alerts</div>
+        <div class="setting-desc">Notify on security scan findings</div>
+      </div>
+      <div class="toggle on"></div>
+    </div>
+    <div class="setting">
+      <div class="setting-info">
+        <div class="setting-name">Daily digest</div>
+        <div class="setting-desc">Daily summary of system activity</div>
+      </div>
+      <div class="toggle"></div>
+    </div>
+  </div>
+
+  <!-- API KEYS -->
+  <div class="sec">
+    <div class="sec-label">API Keys</div>
+    <div class="setting">
+      <div class="setting-info">
+        <div class="setting-name">Production Key</div>
+        <div class="setting-desc">Used for production API access</div>
+      </div>
+      <div class="key-row">
+        <div class="key-value">br_prod_••••••••••••k7x2</div>
+        <button class="key-btn">REVEAL</button>
+        <button class="key-btn">ROTATE</button>
+      </div>
+    </div>
+    <div class="setting">
+      <div class="setting-info">
+        <div class="setting-name">Development Key</div>
+        <div class="setting-desc">Used for local development and staging</div>
+      </div>
+      <div class="key-row">
+        <div class="key-value">br_dev_••••••••••••m3f9</div>
+        <button class="key-btn">REVEAL</button>
+        <button class="key-btn">ROTATE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DANGER -->
+  <div class="sec" style="border-bottom:none;">
+    <div class="sec-label">Danger Zone</div>
+    <div class="danger-item">
+      <div class="danger-info">
+        <div class="danger-name">Reset all agents</div>
+        <div class="danger-desc">Terminate all running agents and clear memory stores</div>
+      </div>
+      <button class="btn-danger">RESET</button>
+    </div>
+    <div class="danger-item">
+      <div class="danger-info">
+        <div class="danger-name">Delete organization</div>
+        <div class="danger-desc">Permanently delete this organization and all data</div>
+      </div>
+      <button class="btn-danger">DELETE</button>
+    </div>
+  </div>
+
+  <div style="padding:24px 0;display:flex;gap:12px;">
+    <button class="btn btn-primary">Save Changes</button>
+    <button class="btn btn-ghost">Cancel</button>
+  </div>
+
+  <footer>
+    <span>BlackRoad OS, Inc. · Settings v1.0</span>
+    <span>Org: blackroad-os</span>
+  </footer>
+
+</div>
+
+<div class="grad-rule"></div>
+
+</body>
+</html>

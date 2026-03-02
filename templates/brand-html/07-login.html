@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BlackRoad — Sign In</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { background: #000; color: #fff; font-family: 'JetBrains Mono', monospace; min-height: 100vh; display: flex; flex-direction: column; }
+    :root { --grad: linear-gradient(90deg, #FF8400, #FF4400, #FF0066, #CC00AA, #8800FF, #0066FF, #2233CC); }
+
+    .grad-rule { height: 3px; background: var(--grad); }
+
+    .login-page { flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px; }
+
+    .login-box { width: 100%; max-width: 380px; }
+
+    /* WORDMARK */
+    .login-logo { font-family: 'Space Grotesk', sans-serif; font-size: 2rem; font-weight: 700; text-align: center; margin-bottom: 8px; }
+    .login-rule { height: 2px; width: 48px; background: var(--grad); margin: 0 auto 32px; }
+    .login-eyebrow { font-size: 0.48rem; opacity: 0.25; letter-spacing: 0.2em; text-transform: uppercase; text-align: center; margin-bottom: 40px; }
+
+    /* FORM */
+    .field { margin-bottom: 24px; }
+    .field-label { font-size: 0.46rem; opacity: 0.3; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 8px; }
+    .field-input { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; color: #fff; background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.2); padding: 10px 0; width: 100%; outline: none; display: block; }
+    .field-input::placeholder { color: rgba(255,255,255,0.12); }
+    .field-input:focus { border-bottom-color: #fff; }
+
+    .btn { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.05em; cursor: default; border: none; padding: 10px 0; width: 100%; display: block; text-align: center; }
+    .btn-primary { background: #fff; color: #000; margin-bottom: 12px; }
+    .btn-ghost { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.25); }
+
+    .divider { display: flex; align-items: center; gap: 12px; margin: 24px 0; }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
+    .divider span { font-size: 0.44rem; opacity: 0.2; letter-spacing: 0.1em; text-transform: uppercase; }
+
+    .login-footer { text-align: center; margin-top: 32px; }
+    .login-footer a { font-size: 0.5rem; color: #fff; opacity: 0.3; text-decoration: none; }
+    .login-footer a:hover { opacity: 0.7; }
+
+    .login-terms { font-size: 0.44rem; opacity: 0.15; text-align: center; margin-top: 40px; line-height: 1.7; }
+
+    /* STATUS */
+    .status-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 32px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; font-size: 0.44rem; opacity: 0.15; border-top: 1px solid rgba(255,255,255,0.05); }
+    .s-dot { width: 5px; height: 5px; border-radius: 50%; display: inline-block; margin-right: 4px; background: rgba(255,255,255,0.3); }
+
+    @keyframes cursor-k { 0%,49%,100%{opacity:1} 50%,99%{opacity:0} }
+  </style>
+</head>
+<body>
+
+<div class="grad-rule"></div>
+
+<div class="login-page">
+  <div class="login-box">
+
+    <div class="login-logo">BlackRoad</div>
+    <div class="login-rule"></div>
+    <div class="login-eyebrow">Sign in to your account</div>
+
+    <div class="field">
+      <div class="field-label">Email</div>
+      <input class="field-input" type="email" placeholder="you@blackroad.dev" readonly>
+    </div>
+
+    <div class="field">
+      <div class="field-label">Password</div>
+      <input class="field-input" type="password" placeholder="••••••••••••" readonly>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;">
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div style="width:14px;height:14px;border:1px solid rgba(255,255,255,0.25);"></div>
+        <span style="font-size:0.48rem;opacity:0.3;">Remember me</span>
+      </div>
+      <a href="#" style="font-size:0.48rem;color:#fff;opacity:0.3;text-decoration:none;">Forgot password?</a>
+    </div>
+
+    <button class="btn btn-primary">Sign In</button>
+
+    <div class="divider"><span>or</span></div>
+
+    <button class="btn btn-ghost">Continue with GitHub</button>
+
+    <div class="login-footer">
+      <a href="#">Don't have an account? Create one</a>
+    </div>
+
+    <div class="login-terms">By signing in, you agree to BlackRoad's Terms of Service and Privacy Policy.</div>
+  </div>
+</div>
+
+<div class="status-bar">
+  <span><span class="s-dot"></span>system online</span>
+  <span>BlackRoad OS v2.4.1</span>
+</div>
+
+<div class="grad-rule"></div>
+
+</body>
+</html>

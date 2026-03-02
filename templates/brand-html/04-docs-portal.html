@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BlackRoad — Documentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { background: #000; color: #fff; font-family: 'JetBrains Mono', monospace; min-height: 100vh; }
+    :root { --grad: linear-gradient(90deg, #FF8400, #FF4400, #FF0066, #CC00AA, #8800FF, #0066FF, #2233CC); }
+
+    nav { position: sticky; top: 0; z-index: 100; background: #000; padding: 0 24px; height: 48px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #fff; }
+    .nav-logo { font-size: 0.75rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a { font-size: 0.52rem; color: #fff; opacity: 0.4; text-decoration: none; letter-spacing: 0.12em; text-transform: uppercase; transition: opacity 0.15s; }
+    .nav-links a:hover, .nav-links a.active { opacity: 1; }
+    .grad-rule { height: 3px; background: var(--grad); }
+
+    .layout { display: flex; max-width: 960px; margin: 0 auto; min-height: calc(100vh - 51px); }
+
+    /* SIDEBAR */
+    .sidebar { width: 200px; flex-shrink: 0; padding: 32px 24px 32px 24px; border-right: 1px solid rgba(255,255,255,0.08); }
+    .sb-section { margin-bottom: 24px; }
+    .sb-title { font-size: 0.44rem; opacity: 0.25; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 10px; }
+    .sb-link { display: block; font-size: 0.52rem; opacity: 0.4; padding: 5px 0; text-decoration: none; color: #fff; transition: opacity 0.15s; border-left: 2px solid transparent; padding-left: 10px; }
+    .sb-link:hover { opacity: 0.8; }
+    .sb-link.active { opacity: 1; border-left-color: #fff; }
+
+    /* CONTENT */
+    .content { flex: 1; padding: 48px 32px; }
+    .content-eyebrow { font-size: 0.46rem; opacity: 0.25; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 12px; }
+    .content h1 { font-family: 'Space Grotesk', sans-serif; font-size: 2.2rem; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; }
+    .content h2 { font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; font-weight: 700; margin-top: 40px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+
+    .body-text { font-size: 0.68rem; opacity: 0.5; line-height: 1.9; margin-bottom: 16px; }
+
+    .code-block { background: #0a0a0a; padding: 16px; margin: 16px 0; border-left: 2px solid rgba(255,255,255,0.08); }
+    .code-block pre { font-family: 'JetBrains Mono', monospace; font-size: 0.56rem; line-height: 1.8; white-space: pre-wrap; }
+    .dim { opacity: 0.3; }
+
+    .callout { padding: 16px; border-left: 2px solid; margin: 20px 0; }
+    .callout-info { border-color: #0066FF; }
+    .callout-warn { border-color: #FF8400; }
+    .callout-label { font-size: 0.46rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; }
+    .callout-text { font-size: 0.58rem; opacity: 0.45; line-height: 1.7; }
+
+    .step { display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .step:last-child { border-bottom: none; }
+    .step-num { font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; font-weight: 700; opacity: 0.15; min-width: 28px; }
+    .step-content { flex: 1; }
+    .step-title { font-size: 0.62rem; font-weight: 700; margin-bottom: 4px; }
+    .step-desc { font-size: 0.56rem; opacity: 0.4; line-height: 1.7; }
+
+    .breadcrumb { font-size: 0.46rem; opacity: 0.25; margin-bottom: 20px; }
+    .breadcrumb span { margin: 0 6px; }
+
+    .toc { margin: 20px 0; padding: 16px 0; border-top: 1px solid rgba(255,255,255,0.06); border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .toc-title { font-size: 0.46rem; opacity: 0.25; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px; }
+    .toc-link { display: block; font-size: 0.54rem; opacity: 0.35; padding: 4px 0; text-decoration: none; color: #fff; }
+    .toc-link:hover { opacity: 0.7; }
+
+    footer { padding: 32px; display: flex; justify-content: space-between; font-size: 0.5rem; opacity: 0.18; flex-wrap: wrap; gap: 8px; border-top: 1px solid rgba(255,255,255,0.08); }
+
+    @media (max-width: 700px) {
+      .layout { flex-direction: column; }
+      .sidebar { width: 100%; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); padding: 16px; }
+      .content { padding: 24px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="grad-rule"></div>
+
+<nav>
+  <span class="nav-logo">BlackRoad</span>
+  <div class="nav-links">
+    <a href="#">dashboard</a>
+    <a href="#" class="active">docs</a>
+    <a href="#">api</a>
+    <a href="#">settings</a>
+  </div>
+</nav>
+
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="sb-section">
+      <div class="sb-title">Getting Started</div>
+      <a href="#" class="sb-link active">Introduction</a>
+      <a href="#" class="sb-link">Installation</a>
+      <a href="#" class="sb-link">Quick Start</a>
+    </div>
+    <div class="sb-section">
+      <div class="sb-title">Core Concepts</div>
+      <a href="#" class="sb-link">Agents</a>
+      <a href="#" class="sb-link">Streams</a>
+      <a href="#" class="sb-link">Memory</a>
+      <a href="#" class="sb-link">Tasks</a>
+    </div>
+    <div class="sb-section">
+      <div class="sb-title">Architecture</div>
+      <a href="#" class="sb-link">NATS Event Bus</a>
+      <a href="#" class="sb-link">K3s Orchestration</a>
+      <a href="#" class="sb-link">Control Plane</a>
+    </div>
+    <div class="sb-section">
+      <div class="sb-title">Reference</div>
+      <a href="#" class="sb-link">API</a>
+      <a href="#" class="sb-link">CLI</a>
+      <a href="#" class="sb-link">Config</a>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div class="breadcrumb">Docs <span>/</span> Getting Started <span>/</span> Introduction</div>
+    <div class="content-eyebrow">Getting Started</div>
+    <h1>Introduction</h1>
+
+    <p class="body-text">BlackRoad OS is a distributed network of autonomous agents coordinated via NATS event bus and K3s orchestration. Each agent maintains persistent memory, processes task streams, and communicates through structured events.</p>
+
+    <div class="toc">
+      <div class="toc-title">On this page</div>
+      <a href="#" class="toc-link">What is BlackRoad OS</a>
+      <a href="#" class="toc-link">Core Architecture</a>
+      <a href="#" class="toc-link">Quick Start</a>
+    </div>
+
+    <h2>What is BlackRoad OS</h2>
+    <p class="body-text">BlackRoad OS provides a runtime for spawning, managing, and coordinating AI agents at scale. Agents are first-class primitives with identity, memory, and task-processing capabilities built in.</p>
+
+    <div class="callout callout-info">
+      <div class="callout-label">Note</div>
+      <div class="callout-text">BlackRoad OS requires Node.js 20+ and a running NATS server. K3s is optional for single-node deployments.</div>
+    </div>
+
+    <h2>Core Architecture</h2>
+    <p class="body-text">The system is built on three pillars: agents (autonomous workers), streams (event transport via NATS), and memory (persistent context per agent).</p>
+
+    <div class="code-block">
+<pre><span class="dim">// Spawn an agent with memory and stream bindings</span>
+const agent = await Agent.spawn({
+  id: 'cecilia',
+  role: 'orchestrator',
+  memory: { max_mb: 512, persist: true },
+  streams: ['tasks.inbound', 'events.system']
+})
+
+<span class="dim">// Agent is now active and processing</span>
+console.log(agent.status) <span class="dim">// → 'active'</span></pre>
+    </div>
+
+    <h2>Quick Start</h2>
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Install the CLI</div>
+        <div class="step-desc">npm install -g @blackroad/cli</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Initialize a project</div>
+        <div class="step-desc">br init my-project</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Spawn your first agent</div>
+        <div class="step-desc">br agent spawn --id cecilia --role orchestrator</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">Send a task</div>
+        <div class="step-desc">br task create --agent cecilia --payload '{"action": "hello"}'</div>
+      </div>
+    </div>
+
+    <div class="callout callout-warn">
+      <div class="callout-label">Important</div>
+      <div class="callout-text">Ensure your NATS server is running before spawning agents. Agents will fail to connect without an active event bus.</div>
+    </div>
+
+    <footer>
+      <span>BlackRoad OS, Inc. · Docs v1.0</span>
+      <span>Last updated: Mar 2026</span>
+    </footer>
+  </main>
+
+</div>
+
+<div class="grad-rule"></div>
+
+</body>
+</html>

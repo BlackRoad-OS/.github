@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BlackRoad — Deployments</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { background: #000; color: #fff; font-family: 'JetBrains Mono', monospace; min-height: 100vh; }
+    :root { --grad: linear-gradient(90deg, #FF8400, #FF4400, #FF0066, #CC00AA, #8800FF, #0066FF, #2233CC); }
+
+    nav { position: sticky; top: 0; z-index: 100; background: #000; padding: 0 24px; height: 48px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #fff; }
+    .nav-logo { font-size: 0.75rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a { font-size: 0.52rem; color: #fff; opacity: 0.4; text-decoration: none; letter-spacing: 0.12em; text-transform: uppercase; transition: opacity 0.15s; }
+    .nav-links a:hover, .nav-links a.active { opacity: 1; }
+    .grad-rule { height: 3px; background: var(--grad); }
+
+    .page { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+    .header { padding: 48px 0 32px; border-bottom: 1px solid #fff; }
+    .header-eyebrow { font-size: 0.52rem; opacity: 0.3; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 12px; }
+    .header h1 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 700; line-height: 1; letter-spacing: -0.02em; }
+
+    .sec { padding: 32px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .sec-label { font-size: 0.52rem; opacity: 0.3; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+    .sec-label::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
+
+    .s-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 6px; flex-shrink: 0; }
+    @keyframes pulse-s { 0%,100%{transform:scale(1)} 50%{transform:scale(1.7)} }
+    .pulse-s { animation: pulse-s 1.5s ease-in-out infinite; }
+
+    /* PIPELINE */
+    .pipeline { display: flex; align-items: center; gap: 0; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.06); flex-wrap: wrap; }
+    .pipe-stage { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 80px; }
+    .pipe-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .pipe-label { font-size: 0.44rem; opacity: 0.3; letter-spacing: 0.1em; text-transform: uppercase; }
+    .pipe-time { font-size: 0.4rem; opacity: 0.2; }
+    .pipe-line { flex: 1; height: 2px; min-width: 20px; }
+    .pipe-line-done { background: linear-gradient(90deg, #FF8400, #0066FF); }
+    .pipe-line-pending { background: rgba(255,255,255,0.08); }
+
+    @keyframes grow-k { 0%,100%{transform:scaleX(0.08)} 50%{transform:scaleX(1)} }
+    .pipe-line-active { background: var(--grad); background-size: 300% 100%; transform-origin: left; animation: grow-k 2s ease-in-out infinite; }
+
+    /* DEPLOY ROW */
+    .deploy-row { display: flex; align-items: center; gap: 16px; padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .deploy-row:last-child { border-bottom: none; }
+    .deploy-hash { font-size: 0.56rem; font-weight: 700; min-width: 72px; }
+    .deploy-msg { font-size: 0.54rem; opacity: 0.4; flex: 1; }
+    .deploy-env { font-size: 0.44rem; font-weight: 700; padding: 2px 7px; border: 1px solid; letter-spacing: 0.08em; min-width: 60px; text-align: center; }
+    .deploy-time { font-size: 0.46rem; opacity: 0.2; min-width: 80px; text-align: right; }
+    .deploy-dur { font-size: 0.46rem; opacity: 0.15; min-width: 50px; text-align: right; }
+
+    /* ENV STRIP */
+    .env-strip { display: flex; gap: 0; margin-top: 8px; }
+    .env-cell { flex: 1; padding: 16px 0; border-right: 1px solid rgba(255,255,255,0.05); }
+    .env-cell:last-child { border-right: none; }
+    .env-name { font-size: 0.46rem; opacity: 0.25; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; }
+    .env-version { font-size: 0.62rem; font-weight: 700; }
+    .env-status { font-size: 0.48rem; opacity: 0.4; margin-top: 4px; }
+
+    /* LOG OUTPUT */
+    .log-output { background: #0a0a0a; padding: 16px; margin-top: 12px; border-left: 2px solid rgba(255,255,255,0.08); max-height: 200px; overflow-y: auto; }
+    .log-line { font-size: 0.5rem; opacity: 0.35; padding: 2px 0; line-height: 1.7; }
+    .log-line span { opacity: 0.4; margin-right: 8px; }
+    .log-ok { opacity: 0.5; }
+
+    .btn { font-family: 'JetBrains Mono', monospace; font-size: 0.54rem; font-weight: 700; letter-spacing: 0.05em; cursor: default; border: none; padding: 8px 16px; }
+    .btn-primary { background: #fff; color: #000; }
+    .btn-ghost { background: transparent; color: #fff; border: 1px solid #fff; }
+
+    footer { padding: 32px 0; display: flex; justify-content: space-between; font-size: 0.5rem; opacity: 0.18; flex-wrap: wrap; gap: 8px; }
+
+    @media (max-width: 600px) {
+      .page { padding: 0 16px; }
+      nav { padding: 0 16px; }
+      .deploy-msg, .deploy-dur { display: none; }
+      .env-strip { flex-direction: column; }
+      .env-cell { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 10px 0; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="grad-rule"></div>
+
+<nav>
+  <span class="nav-logo">BlackRoad</span>
+  <div class="nav-links">
+    <a href="#">dashboard</a>
+    <a href="#" class="active">deploy</a>
+    <a href="#">agents</a>
+    <a href="#">settings</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="header">
+    <div class="header-eyebrow">BlackRoad OS · Deployment Console</div>
+    <h1>Deployments</h1>
+  </div>
+
+  <!-- ENVIRONMENTS -->
+  <div class="sec">
+    <div class="sec-label">Environments</div>
+    <div class="env-strip">
+      <div class="env-cell">
+        <div class="env-name">Production</div>
+        <div class="env-version"><span class="s-dot" style="background:#FF8400;"></span>v2.4.1</div>
+        <div class="env-status">deployed 2h ago</div>
+      </div>
+      <div class="env-cell">
+        <div class="env-name">Staging</div>
+        <div class="env-version"><span class="s-dot pulse-s" style="background:#0066FF;"></span>v2.5.0-rc.1</div>
+        <div class="env-status">deploying...</div>
+      </div>
+      <div class="env-cell">
+        <div class="env-name">Preview</div>
+        <div class="env-version"><span class="s-dot" style="background:#8800FF;"></span>v2.5.0-dev.47</div>
+        <div class="env-status">deployed 14m ago</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIVE PIPELINE -->
+  <div class="sec">
+    <div class="sec-label">Active Pipeline · v2.5.0-rc.1 → Staging</div>
+    <div class="pipeline">
+      <div class="pipe-stage">
+        <div class="pipe-dot" style="background:#FF8400;"></div>
+        <div class="pipe-label">Build</div>
+        <div class="pipe-time">32s</div>
+      </div>
+      <div class="pipe-line pipe-line-done"></div>
+      <div class="pipe-stage">
+        <div class="pipe-dot" style="background:#FF0066;"></div>
+        <div class="pipe-label">Test</div>
+        <div class="pipe-time">1m 14s</div>
+      </div>
+      <div class="pipe-line pipe-line-done"></div>
+      <div class="pipe-stage">
+        <div class="pipe-dot" style="background:#8800FF;"></div>
+        <div class="pipe-label">Scan</div>
+        <div class="pipe-time">28s</div>
+      </div>
+      <div class="pipe-line pipe-line-active"></div>
+      <div class="pipe-stage">
+        <div class="pipe-dot" style="background:rgba(255,255,255,0.15);"></div>
+        <div class="pipe-label">Deploy</div>
+        <div class="pipe-time">—</div>
+      </div>
+      <div class="pipe-line pipe-line-pending"></div>
+      <div class="pipe-stage">
+        <div class="pipe-dot" style="background:rgba(255,255,255,0.15);"></div>
+        <div class="pipe-label">Verify</div>
+        <div class="pipe-time">—</div>
+      </div>
+    </div>
+
+    <div class="log-output">
+      <div class="log-line log-ok"><span>14:32:08</span>build completed — 12 modules bundled</div>
+      <div class="log-line log-ok"><span>14:32:40</span>tests passed — 247/247 assertions</div>
+      <div class="log-line log-ok"><span>14:33:54</span>coverage: 94.2% statements, 89.1% branches</div>
+      <div class="log-line"><span>14:34:22</span>security scan in progress...</div>
+      <div class="log-line"><span>14:34:28</span>scanning dependencies — 0 critical, 0 high</div>
+      <div class="log-line"><span>14:34:41</span>scanning container image...</div>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="sec">
+    <div class="sec-label">Recent Deployments</div>
+    <div class="deploy-row">
+      <span class="s-dot" style="background:#FF8400;"></span>
+      <div class="deploy-hash">a3f7c21</div>
+      <div class="deploy-msg">fix: agent memory leak in stream processor</div>
+      <div class="deploy-env" style="color:#000;background:#FF8400;border-color:#FF8400;">PROD</div>
+      <div class="deploy-time">2h ago</div>
+      <div class="deploy-dur">2m 41s</div>
+    </div>
+    <div class="deploy-row">
+      <span class="s-dot" style="background:#FF8400;"></span>
+      <div class="deploy-hash">e8b4d09</div>
+      <div class="deploy-msg">feat: add NATS jetstream consumer groups</div>
+      <div class="deploy-env" style="color:#000;background:#FF8400;border-color:#FF8400;">PROD</div>
+      <div class="deploy-time">1d ago</div>
+      <div class="deploy-dur">3m 12s</div>
+    </div>
+    <div class="deploy-row">
+      <span class="s-dot" style="background:#8800FF;"></span>
+      <div class="deploy-hash">9c1a5f3</div>
+      <div class="deploy-msg">feat: agent spawn API rate limiting</div>
+      <div class="deploy-env" style="color:#fff;border-color:#8800FF;">PREVIEW</div>
+      <div class="deploy-time">1d ago</div>
+      <div class="deploy-dur">2m 08s</div>
+    </div>
+    <div class="deploy-row">
+      <span class="s-dot" style="background:#FF0066;"></span>
+      <div class="deploy-hash">1d7e2b8</div>
+      <div class="deploy-msg">fix: control plane reconnect on NATS timeout</div>
+      <div class="deploy-env" style="color:#000;background:#FF8400;border-color:#FF8400;">PROD</div>
+      <div class="deploy-time">3d ago</div>
+      <div class="deploy-dur">2m 55s</div>
+    </div>
+    <div class="deploy-row">
+      <span class="s-dot" style="background:#FF8400;"></span>
+      <div class="deploy-hash">7f3c4a6</div>
+      <div class="deploy-msg">chore: upgrade K3s to v1.29</div>
+      <div class="deploy-env" style="color:#000;background:#FF8400;border-color:#FF8400;">PROD</div>
+      <div class="deploy-time">5d ago</div>
+      <div class="deploy-dur">4m 33s</div>
+    </div>
+  </div>
+
+  <div style="padding:24px 0;display:flex;gap:12px;">
+    <button class="btn btn-primary">Deploy to Production</button>
+    <button class="btn btn-ghost">Rollback</button>
+  </div>
+
+  <footer>
+    <span>BlackRoad OS, Inc. · Deploy Console v1.0</span>
+    <span>Pipeline: staging active</span>
+  </footer>
+
+</div>
+
+<div class="grad-rule"></div>
+
+</body>
+</html>

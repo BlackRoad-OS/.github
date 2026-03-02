@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BlackRoad — Tasks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { background: #000; color: #fff; font-family: 'JetBrains Mono', monospace; min-height: 100vh; }
+    :root { --grad: linear-gradient(90deg, #FF8400, #FF4400, #FF0066, #CC00AA, #8800FF, #0066FF, #2233CC); }
+
+    nav { position: sticky; top: 0; z-index: 100; background: #000; padding: 0 24px; height: 48px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #fff; }
+    .nav-logo { font-size: 0.75rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a { font-size: 0.52rem; color: #fff; opacity: 0.4; text-decoration: none; letter-spacing: 0.12em; text-transform: uppercase; transition: opacity 0.15s; }
+    .nav-links a:hover, .nav-links a.active { opacity: 1; }
+    .grad-rule { height: 3px; background: var(--grad); }
+
+    .page { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+    .header { padding: 48px 0 32px; border-bottom: 1px solid #fff; }
+    .header-eyebrow { font-size: 0.52rem; opacity: 0.3; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 12px; }
+    .header h1 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 700; line-height: 1; letter-spacing: -0.02em; }
+
+    /* TOOLBAR */
+    .toolbar { display: flex; align-items: center; gap: 12px; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.08); flex-wrap: wrap; }
+    .search { font-family: 'JetBrains Mono', monospace; font-size: 0.56rem; color: #fff; background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.2); padding: 6px 0; width: 200px; outline: none; }
+    .search::placeholder { color: rgba(255,255,255,0.15); }
+    .filter { font-size: 0.48rem; font-weight: 700; padding: 4px 10px; border: 1px solid rgba(255,255,255,0.15); background: transparent; color: #fff; cursor: default; letter-spacing: 0.06em; }
+    .filter.active { border-color: #fff; }
+    .toolbar-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+    .count { font-size: 0.48rem; opacity: 0.25; }
+
+    /* TABLE */
+    .table { width: 100%; border-collapse: collapse; }
+    .table th { font-size: 0.44rem; opacity: 0.25; letter-spacing: 0.12em; text-transform: uppercase; text-align: left; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.12); }
+    .table td { font-size: 0.56rem; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
+    .table tr:hover td { background: rgba(255,255,255,0.02); }
+
+    .s-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 6px; flex-shrink: 0; }
+    @keyframes pulse-s { 0%,100%{transform:scale(1)} 50%{transform:scale(1.7)} }
+    .pulse-s { animation: pulse-s 1.5s ease-in-out infinite; }
+
+    .td-id { font-weight: 700; min-width: 80px; }
+    .td-desc { opacity: 0.45; }
+    .td-agent { opacity: 0.5; min-width: 80px; }
+    .td-time { opacity: 0.2; min-width: 70px; font-size: 0.5rem; }
+    .td-dur { opacity: 0.2; min-width: 50px; font-size: 0.5rem; text-align: right; }
+
+    .badge { font-size: 0.42rem; font-weight: 700; padding: 2px 6px; border: 1px solid; letter-spacing: 0.06em; white-space: nowrap; }
+
+    /* PAGINATION */
+    .pagination { display: flex; align-items: center; justify-content: space-between; padding: 20px 0; }
+    .page-info { font-size: 0.48rem; opacity: 0.25; }
+    .page-btns { display: flex; gap: 4px; }
+    .page-btn { font-family: 'JetBrains Mono', monospace; font-size: 0.5rem; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: #fff; cursor: default; }
+    .page-btn.active { border-color: #fff; }
+
+    .btn { font-family: 'JetBrains Mono', monospace; font-size: 0.52rem; font-weight: 700; letter-spacing: 0.05em; cursor: default; border: none; padding: 6px 12px; background: #fff; color: #000; }
+
+    footer { padding: 32px 0; display: flex; justify-content: space-between; font-size: 0.5rem; opacity: 0.18; flex-wrap: wrap; gap: 8px; border-top: 1px solid rgba(255,255,255,0.06); }
+
+    @media (max-width: 600px) {
+      .page { padding: 0 16px; }
+      nav { padding: 0 16px; }
+      .td-desc, .td-dur { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="grad-rule"></div>
+
+<nav>
+  <span class="nav-logo">BlackRoad</span>
+  <div class="nav-links">
+    <a href="#">dashboard</a>
+    <a href="#">agents</a>
+    <a href="#" class="active">tasks</a>
+    <a href="#">settings</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="header">
+    <div class="header-eyebrow">BlackRoad OS · Task Manager</div>
+    <h1>Tasks</h1>
+  </div>
+
+  <div class="toolbar">
+    <input class="search" type="text" placeholder="Search tasks..." readonly>
+    <button class="filter active">ALL</button>
+    <button class="filter">ACTIVE</button>
+    <button class="filter">COMPLETE</button>
+    <button class="filter">FAILED</button>
+    <div class="toolbar-right">
+      <div class="count">247 tasks</div>
+      <button class="btn">+ New Task</button>
+    </div>
+  </div>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Status</th>
+        <th>Description</th>
+        <th>Agent</th>
+        <th>Created</th>
+        <th style="text-align:right;">Duration</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="td-id">tsk_a3f7</td>
+        <td><span class="badge" style="color:#000;background:#FF8400;border-color:#FF8400;">RUNNING</span></td>
+        <td class="td-desc">Process inbound stream batch #847</td>
+        <td class="td-agent">cecilia</td>
+        <td class="td-time">2m ago</td>
+        <td class="td-dur">1m 42s</td>
+      </tr>
+      <tr>
+        <td class="td-id">tsk_e8b4</td>
+        <td><span class="badge" style="color:#000;background:#FF8400;border-color:#FF8400;">RUNNING</span></td>
+        <td class="td-desc">Scan auth patterns on node-3</td>
+        <td class="td-agent">eve</td>
+        <td class="td-time">4m ago</td>
+        <td class="td-dur">3m 58s</td>
+      </tr>
+      <tr>
+        <td class="td-id">tsk_9c1a</td>
+        <td><span class="badge" style="color:#fff;border-color:rgba(255,255,255,0.25);">COMPLETE</span></td>
+        <td class="td-desc">Sync NATS consumer offsets</td>
+        <td class="td-agent">cadence</td>
+        <td class="td-time">14m ago</td>
+        <td class="td-dur">28s</td>
+      </tr>
+      <tr>
+        <td class="td-id">tsk_1d7e</td>
+        <td><span class="badge" style="color:#fff;border-color:rgba(255,255,255,0.25);">COMPLETE</span></td>
+        <td class="td-desc">Memory compaction — cecilia context</td>
+        <td class="td-agent">cecilia</td>
+        <td class="td-time">22m ago</td>
+        <td class="td-dur">4m 12s</td>
+      </tr>
+      <tr>
+        <td class="td-id">tsk_7f3c</td>
+        <td><span class="badge" style="color:#000;background:#FF0066;border-color:#FF0066;">FAILED</span></td>
+        <td class="td-desc">Deploy preview build v2.5.0-dev.46</td>
+        <td class="td-agent">cadence</td>
+        <td class="td-time">31m ago</td>
+        <td class="td-dur">1m 08s</td>
+      </tr>
+      <tr>
+        <td class="td-id">tsk_4b2d</td>
+        <td><span class="badge" style="color:#fff;border-color:rgba(255,255,255,0.25);">COMPLETE</span></td>
+        <td class="td-desc">Route 34 tasks across us-east nodes</td>
+        <td class="td-agent">cecilia</td>
+        <td class="td-time">38m ago</td>
+        <td class="td-dur">12s</td>
+      </tr>
+      <tr>
+        <td class="td-id">tsk_8e5a</td>
+        <td><span class="badge" style="color:#fff;border-color:rgba(255,255,255,0.25);">COMPLETE</span></td>
+        <td class="td-desc">Security scan — container image v2.4.1</td>
+        <td class="td-agent">eve</td>
+        <td class="td-time">45m ago</td>
+        <td class="td-dur">2m 33s</td>
+      </tr>
+      <tr>
+        <td class="td-id">tsk_3f9b</td>
+        <td><span class="badge" style="color:#fff;border-color:rgba(255,255,255,0.25);">COMPLETE</span></td>
+        <td class="td-desc">Aggregate daily metrics digest</td>
+        <td class="td-agent">cadence</td>
+        <td class="td-time">1h ago</td>
+        <td class="td-dur">8s</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="pagination">
+    <div class="page-info">Showing 1–8 of 247</div>
+    <div class="page-btns">
+      <div class="page-btn">&lt;</div>
+      <div class="page-btn active">1</div>
+      <div class="page-btn">2</div>
+      <div class="page-btn">3</div>
+      <div class="page-btn">...</div>
+      <div class="page-btn">31</div>
+      <div class="page-btn">&gt;</div>
+    </div>
+  </div>
+
+  <footer>
+    <span>BlackRoad OS, Inc. · Tasks v1.0</span>
+    <span>2 running · 5 complete · 1 failed</span>
+  </footer>
+
+</div>
+
+<div class="grad-rule"></div>
+
+</body>
+</html>

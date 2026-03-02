@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BlackRoad — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { background: #000; color: #fff; font-family: 'JetBrains Mono', monospace; min-height: 100vh; }
+    :root { --grad: linear-gradient(90deg, #FF8400, #FF4400, #FF0066, #CC00AA, #8800FF, #0066FF, #2233CC); }
+
+    /* NAV */
+    nav { position: sticky; top: 0; z-index: 100; background: #000; padding: 0 24px; height: 48px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #fff; }
+    .nav-logo { font-size: 0.75rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a { font-size: 0.52rem; color: #fff; opacity: 0.4; text-decoration: none; letter-spacing: 0.12em; text-transform: uppercase; transition: opacity 0.15s; }
+    .nav-links a:hover { opacity: 1; }
+    .nav-links a.active { opacity: 1; }
+    .grad-rule { height: 3px; background: var(--grad); }
+
+    /* PAGE */
+    .page { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+    /* HEADER */
+    .header { padding: 48px 0 32px; border-bottom: 1px solid #fff; }
+    .header-eyebrow { font-size: 0.52rem; opacity: 0.3; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 12px; }
+    .header h1 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 700; line-height: 1; letter-spacing: -0.02em; }
+    .header-sub { margin-top: 12px; font-size: 0.68rem; opacity: 0.4; line-height: 1.8; }
+
+    /* STATS ROW */
+    .stats { display: flex; gap: 0; padding: 32px 0; border-bottom: 1px solid rgba(255,255,255,0.08); flex-wrap: wrap; }
+    .stat { flex: 1; min-width: 120px; padding: 16px 0; border-right: 1px solid rgba(255,255,255,0.08); }
+    .stat:last-child { border-right: none; }
+    .stat-num { font-family: 'Space Grotesk', sans-serif; font-size: 2rem; font-weight: 700; line-height: 1; }
+    .stat-label { font-size: 0.46rem; opacity: 0.3; letter-spacing: 0.15em; text-transform: uppercase; margin-top: 6px; }
+    .stat-change { font-size: 0.48rem; opacity: 0.5; margin-top: 4px; }
+
+    /* STATUS DOT */
+    .s-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+    @keyframes pulse-s { 0%,100%{transform:scale(1)} 50%{transform:scale(1.7)} }
+    .pulse-s { animation: pulse-s 1.5s ease-in-out infinite; }
+
+    /* SECTION */
+    .sec { padding: 32px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .sec-label { font-size: 0.52rem; opacity: 0.3; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+    .sec-label::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
+
+    /* CHART PLACEHOLDER */
+    .chart-area { position: relative; height: 160px; border-left: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.1); margin-top: 16px; }
+    .chart-bar { position: absolute; bottom: 0; width: 16px; background: var(--grad); background-size: 300% 100%; }
+    .chart-y { position: absolute; left: -32px; font-size: 0.4rem; opacity: 0.2; }
+
+    /* ACTIVITY LIST */
+    .activity-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.58rem; }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-time { font-size: 0.46rem; opacity: 0.2; min-width: 60px; }
+    .activity-text { opacity: 0.5; flex: 1; }
+    .activity-badge { font-size: 0.44rem; font-weight: 700; padding: 2px 6px; border: 1px solid; letter-spacing: 0.08em; }
+
+    /* AGENT ROW */
+    .agent-row { display: flex; align-items: center; gap: 16px; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .agent-row:last-child { border-bottom: none; }
+    .agent-name { font-size: 0.62rem; font-weight: 700; min-width: 100px; }
+    .agent-status { font-size: 0.52rem; opacity: 0.4; flex: 1; }
+    .agent-metric { font-size: 0.52rem; opacity: 0.3; min-width: 80px; text-align: right; }
+
+    /* PROGRESS BAR */
+    .progress { height: 2px; background: rgba(255,255,255,0.08); flex: 1; max-width: 120px; }
+    .progress-fill { height: 100%; background: var(--grad); background-size: 300% 100%; }
+
+    /* FOOTER */
+    footer { padding: 32px 0; display: flex; justify-content: space-between; font-size: 0.5rem; opacity: 0.18; flex-wrap: wrap; gap: 8px; }
+
+    @media (max-width: 600px) {
+      .page { padding: 0 16px; }
+      nav { padding: 0 16px; }
+      .stats { flex-direction: column; }
+      .stat { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="grad-rule"></div>
+
+<nav>
+  <span class="nav-logo">BlackRoad</span>
+  <div class="nav-links">
+    <a href="#" class="active">dashboard</a>
+    <a href="#">agents</a>
+    <a href="#">streams</a>
+    <a href="#">settings</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="header">
+    <div class="header-eyebrow">BlackRoad OS · Dashboard</div>
+    <h1>System Overview</h1>
+    <p class="header-sub">Real-time operational metrics across all active nodes and agents.</p>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num">12</div>
+      <div class="stat-label">Active Agents</div>
+      <div class="stat-change">+3 this week</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">847</div>
+      <div class="stat-label">Tasks / 24h</div>
+      <div class="stat-change">+12% vs avg</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">99.4%</div>
+      <div class="stat-label">Uptime</div>
+      <div class="stat-change">30-day rolling</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">24ms</div>
+      <div class="stat-label">Avg Latency</div>
+      <div class="stat-change">p95: 68ms</div>
+    </div>
+  </div>
+
+  <!-- THROUGHPUT CHART -->
+  <div class="sec">
+    <div class="sec-label">Throughput · Last 12h</div>
+    <div class="chart-area">
+      <div class="chart-y" style="bottom:0;">0</div>
+      <div class="chart-y" style="bottom:78px;">50</div>
+      <div class="chart-y" style="bottom:155px;">100</div>
+      <div class="chart-bar" style="left:10%;height:45%;"></div>
+      <div class="chart-bar" style="left:17%;height:62%;"></div>
+      <div class="chart-bar" style="left:24%;height:38%;"></div>
+      <div class="chart-bar" style="left:31%;height:74%;"></div>
+      <div class="chart-bar" style="left:38%;height:55%;"></div>
+      <div class="chart-bar" style="left:45%;height:88%;"></div>
+      <div class="chart-bar" style="left:52%;height:92%;"></div>
+      <div class="chart-bar" style="left:59%;height:67%;"></div>
+      <div class="chart-bar" style="left:66%;height:80%;"></div>
+      <div class="chart-bar" style="left:73%;height:71%;"></div>
+      <div class="chart-bar" style="left:80%;height:95%;"></div>
+      <div class="chart-bar" style="left:87%;height:85%;"></div>
+    </div>
+  </div>
+
+  <!-- AGENTS -->
+  <div class="sec">
+    <div class="sec-label">Active Agents</div>
+    <div class="agent-row">
+      <span class="s-dot" style="background:#FF8400;"></span>
+      <div class="agent-name">cecilia</div>
+      <div class="agent-status"><span class="s-dot" style="background:#FF8400;"></span>processing</div>
+      <div class="progress"><div class="progress-fill" style="width:78%;"></div></div>
+      <div class="agent-metric">342 tasks</div>
+    </div>
+    <div class="agent-row">
+      <span class="s-dot" style="background:#0066FF;"></span>
+      <div class="agent-name">cadence</div>
+      <div class="agent-status"><span class="s-dot" style="background:#0066FF;"></span>idle</div>
+      <div class="progress"><div class="progress-fill" style="width:12%;"></div></div>
+      <div class="agent-metric">189 tasks</div>
+    </div>
+    <div class="agent-row">
+      <span class="s-dot pulse-s" style="background:#FF0066;"></span>
+      <div class="agent-name">eve</div>
+      <div class="agent-status"><span class="s-dot pulse-s" style="background:#FF0066;"></span>alert</div>
+      <div class="progress"><div class="progress-fill" style="width:95%;"></div></div>
+      <div class="agent-metric">516 tasks</div>
+    </div>
+    <div class="agent-row">
+      <span class="s-dot" style="background:rgba(255,255,255,0.15);"></span>
+      <div class="agent-name">olympia</div>
+      <div class="agent-status" style="opacity:0.2;"><span class="s-dot" style="background:rgba(255,255,255,0.15);"></span>offline</div>
+      <div class="progress"><div class="progress-fill" style="width:0%;"></div></div>
+      <div class="agent-metric" style="opacity:0.15;">—</div>
+    </div>
+  </div>
+
+  <!-- ACTIVITY -->
+  <div class="sec" style="border-bottom:none;">
+    <div class="sec-label">Recent Activity</div>
+    <div class="activity-item">
+      <div class="activity-time">2m ago</div>
+      <span class="s-dot" style="background:#FF8400;"></span>
+      <div class="activity-text">cecilia completed task batch #847</div>
+      <div class="activity-badge" style="color:#000;background:#FF8400;border-color:#FF8400;">COMPLETE</div>
+    </div>
+    <div class="activity-item">
+      <div class="activity-time">8m ago</div>
+      <span class="s-dot pulse-s" style="background:#FF0066;"></span>
+      <div class="activity-text">eve triggered alert — memory threshold exceeded</div>
+      <div class="activity-badge" style="color:#000;background:#FF0066;border-color:#FF0066;">ALERT</div>
+    </div>
+    <div class="activity-item">
+      <div class="activity-time">14m ago</div>
+      <span class="s-dot" style="background:#0066FF;"></span>
+      <div class="activity-text">cadence synced NATS stream — 12 events processed</div>
+      <div class="activity-badge" style="color:#fff;border-color:#0066FF;">SYNC</div>
+    </div>
+    <div class="activity-item">
+      <div class="activity-time">22m ago</div>
+      <span class="s-dot" style="background:#8800FF;"></span>
+      <div class="activity-text">dispatcher routed 34 tasks across 3 nodes</div>
+      <div class="activity-badge" style="color:#fff;border-color:#8800FF;">ROUTE</div>
+    </div>
+    <div class="activity-item">
+      <div class="activity-time">31m ago</div>
+      <span class="s-dot" style="background:#FF8400;"></span>
+      <div class="activity-text">cecilia loaded memory context — 2.4MB</div>
+      <div class="activity-badge" style="color:#fff;border-color:rgba(255,255,255,0.25);">LOAD</div>
+    </div>
+  </div>
+
+  <footer>
+    <span>BlackRoad OS, Inc. · Dashboard v1.0</span>
+    <span>Last sync: 12s ago</span>
+  </footer>
+
+</div>
+
+<div class="grad-rule"></div>
+
+</body>
+</html>

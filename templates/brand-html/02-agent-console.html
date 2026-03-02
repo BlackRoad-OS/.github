@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BlackRoad — Agent Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { background: #000; color: #fff; font-family: 'JetBrains Mono', monospace; min-height: 100vh; }
+    :root { --grad: linear-gradient(90deg, #FF8400, #FF4400, #FF0066, #CC00AA, #8800FF, #0066FF, #2233CC); }
+
+    nav { position: sticky; top: 0; z-index: 100; background: #000; padding: 0 24px; height: 48px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #fff; }
+    .nav-logo { font-size: 0.75rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a { font-size: 0.52rem; color: #fff; opacity: 0.4; text-decoration: none; letter-spacing: 0.12em; text-transform: uppercase; transition: opacity 0.15s; }
+    .nav-links a:hover, .nav-links a.active { opacity: 1; }
+    .grad-rule { height: 3px; background: var(--grad); }
+
+    .page { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+    .header { padding: 48px 0 32px; border-bottom: 1px solid #fff; }
+    .header-eyebrow { font-size: 0.52rem; opacity: 0.3; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 12px; }
+    .header h1 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 700; line-height: 1; letter-spacing: -0.02em; }
+
+    .sec { padding: 32px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .sec:last-of-type { border-bottom: none; }
+    .sec-label { font-size: 0.52rem; opacity: 0.3; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+    .sec-label::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
+
+    .s-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 6px; flex-shrink: 0; }
+    @keyframes pulse-s { 0%,100%{transform:scale(1)} 50%{transform:scale(1.7)} }
+    .pulse-s { animation: pulse-s 1.5s ease-in-out infinite; }
+
+    /* AGENT CARD */
+    .agent-card { padding: 24px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .agent-card:last-child { border-bottom: none; }
+    .agent-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .agent-id { font-family: 'Space Grotesk', sans-serif; font-size: 1.4rem; font-weight: 700; }
+    .agent-role { font-size: 0.48rem; opacity: 0.3; letter-spacing: 0.12em; text-transform: uppercase; }
+    .agent-badge { font-size: 0.44rem; font-weight: 700; padding: 2px 7px; border: 1px solid; letter-spacing: 0.08em; margin-left: auto; }
+
+    .agent-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0; }
+    .agent-field { padding: 10px 16px 10px 0; border-right: 1px solid rgba(255,255,255,0.05); }
+    .agent-field:last-child { border-right: none; }
+    .field-label { font-size: 0.44rem; opacity: 0.25; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; }
+    .field-value { font-size: 0.6rem; font-weight: 700; }
+    .field-sub { font-size: 0.46rem; opacity: 0.3; margin-top: 2px; }
+
+    /* MEMORY BAR */
+    .mem-bar { height: 2px; background: rgba(255,255,255,0.08); margin-top: 6px; }
+    .mem-fill { height: 100%; }
+
+    /* LOG */
+    .log { margin-top: 16px; padding: 16px 0; border-top: 1px solid rgba(255,255,255,0.05); }
+    .log-title { font-size: 0.46rem; opacity: 0.25; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px; }
+    .log-line { font-size: 0.52rem; opacity: 0.35; padding: 4px 0; line-height: 1.7; }
+    .log-line span { opacity: 0.4; margin-right: 8px; }
+
+    /* CONSOLE INPUT */
+    .console { padding: 24px 0; }
+    .console-input { display: flex; align-items: center; gap: 8px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px; }
+    .console-prompt { font-size: 0.6rem; opacity: 0.3; }
+    .console-field { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: #fff; background: transparent; border: none; flex: 1; outline: none; }
+    .console-field::placeholder { color: rgba(255,255,255,0.15); }
+    @keyframes cursor-k { 0%,49%,100%{opacity:1} 50%,99%{opacity:0} }
+    .cursor { width: 1.5px; height: 14px; background: #fff; animation: cursor-k 0.8s step-end infinite; }
+
+    footer { padding: 32px 0; display: flex; justify-content: space-between; font-size: 0.5rem; opacity: 0.18; flex-wrap: wrap; gap: 8px; }
+
+    @media (max-width: 600px) {
+      .page { padding: 0 16px; }
+      nav { padding: 0 16px; }
+      .agent-grid { grid-template-columns: 1fr 1fr; }
+      .agent-field { border-right: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="grad-rule"></div>
+
+<nav>
+  <span class="nav-logo">BlackRoad</span>
+  <div class="nav-links">
+    <a href="#">dashboard</a>
+    <a href="#" class="active">agents</a>
+    <a href="#">streams</a>
+    <a href="#">settings</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="header">
+    <div class="header-eyebrow">BlackRoad OS · Agent Console</div>
+    <h1>Agents</h1>
+  </div>
+
+  <!-- AGENT: CECILIA -->
+  <div class="sec">
+    <div class="agent-card">
+      <div class="agent-header">
+        <span class="s-dot" style="background:#FF8400;"></span>
+        <div class="agent-id">cecilia</div>
+        <div class="agent-role">Primary Orchestrator</div>
+        <div class="agent-badge" style="color:#000;background:#FF8400;border-color:#FF8400;">ACTIVE</div>
+      </div>
+      <div class="agent-grid">
+        <div class="agent-field">
+          <div class="field-label">Uptime</div>
+          <div class="field-value">14d 7h 32m</div>
+          <div class="field-sub">since last restart</div>
+        </div>
+        <div class="agent-field">
+          <div class="field-label">Tasks</div>
+          <div class="field-value">2,847</div>
+          <div class="field-sub">342 today</div>
+        </div>
+        <div class="agent-field">
+          <div class="field-label">Memory</div>
+          <div class="field-value">67%</div>
+          <div class="mem-bar"><div class="mem-fill" style="width:67%;background:linear-gradient(90deg,#FF8400,#FF0066);"></div></div>
+        </div>
+        <div class="agent-field">
+          <div class="field-label">Latency</div>
+          <div class="field-value">18ms</div>
+          <div class="field-sub">p95: 42ms</div>
+        </div>
+      </div>
+      <div class="log">
+        <div class="log-title">Recent Log</div>
+        <div class="log-line"><span>14:32:08</span>task batch #847 completed — 12 items processed</div>
+        <div class="log-line"><span>14:31:55</span>memory context loaded — 2.4MB from store</div>
+        <div class="log-line"><span>14:31:41</span>NATS subscription active — stream.tasks.inbound</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AGENT: EVE -->
+  <div class="sec">
+    <div class="agent-card">
+      <div class="agent-header">
+        <span class="s-dot pulse-s" style="background:#FF0066;"></span>
+        <div class="agent-id">eve</div>
+        <div class="agent-role">Security Monitor</div>
+        <div class="agent-badge" style="color:#000;background:#FF0066;border-color:#FF0066;">ALERT</div>
+      </div>
+      <div class="agent-grid">
+        <div class="agent-field">
+          <div class="field-label">Uptime</div>
+          <div class="field-value">14d 7h 32m</div>
+          <div class="field-sub">continuous</div>
+        </div>
+        <div class="agent-field">
+          <div class="field-label">Scans</div>
+          <div class="field-value">1,204</div>
+          <div class="field-sub">3 alerts active</div>
+        </div>
+        <div class="agent-field">
+          <div class="field-label">Memory</div>
+          <div class="field-value">91%</div>
+          <div class="mem-bar"><div class="mem-fill" style="width:91%;background:linear-gradient(90deg,#FF0066,#CC00AA);"></div></div>
+        </div>
+        <div class="agent-field">
+          <div class="field-label">Threat Level</div>
+          <div class="field-value">Elevated</div>
+          <div class="field-sub">since 14:24</div>
+        </div>
+      </div>
+      <div class="log">
+        <div class="log-title">Recent Log</div>
+        <div class="log-line"><span>14:32:01</span>memory threshold warning — 91% utilized</div>
+        <div class="log-line"><span>14:28:44</span>anomaly detected — unusual auth pattern on node-3</div>
+        <div class="log-line"><span>14:24:12</span>threat level elevated — monitoring intensified</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AGENT: CADENCE -->
+  <div class="sec">
+    <div class="agent-card">
+      <div class="agent-header">
+        <span class="s-dot" style="background:#0066FF;"></span>
+        <div class="agent-id">cadence</div>
+        <div class="agent-role">Stream Processor</div>
+        <div class="agent-badge" style="color:#fff;border-color:#0066FF;">IDLE</div>
+      </div>
+      <div class="agent-grid">
+        <div class="agent-field">
+          <div class="field-label">Uptime</div>
+          <div class="field-value">14d 7h 32m</div>
+        </div>
+        <div class="agent-field">
+          <div class="field-label">Events</div>
+          <div class="field-value">9,412</div>
+          <div class="field-sub">12 last hour</div>
+        </div>
+        <div class="agent-field">
+          <div class="field-label">Memory</div>
+          <div class="field-value">23%</div>
+          <div class="mem-bar"><div class="mem-fill" style="width:23%;background:linear-gradient(90deg,#0066FF,#2233CC);"></div></div>
+        </div>
+        <div class="agent-field">
+          <div class="field-label">Latency</div>
+          <div class="field-value">8ms</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONSOLE -->
+  <div class="console">
+    <div class="sec-label">Command</div>
+    <div class="console-input">
+      <div class="console-prompt">br &gt;</div>
+      <input class="console-field" type="text" placeholder="agent.spawn({ id: 'name' })" readonly>
+      <div class="cursor"></div>
+    </div>
+  </div>
+
+  <footer>
+    <span>BlackRoad OS, Inc. · Agent Console v1.0</span>
+    <span>3 agents online · 1 alert</span>
+  </footer>
+
+</div>
+
+<div class="grad-rule"></div>
+
+</body>
+</html>
