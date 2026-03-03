@@ -24,7 +24,8 @@
 
 ## Intelligence Layer (AI)
 
-- [ ] Build AI provider failover chain (Claude -> GPT -> Llama)
+- [x] Build AI provider failover chain (Local Workers AI → OpenAI → Anthropic)
+- [x] Build AI vendor proxy Worker (all vendor calls route through BlackRoad edge)
 - [ ] Implement prompt template registry
 - [ ] Add token usage tracking per-route
 - [ ] Set up Hailo-8 inference pipeline on lucidia
@@ -32,9 +33,10 @@
 
 ## Cloud & Edge (CLD)
 
-- [ ] Deploy API gateway worker to Cloudflare
+- [x] Deploy API gateway worker to Cloudflare
+- [x] Deploy AI vendor proxy worker to Cloudflare (workers/ai-proxy)
 - [ ] Set up webhook receiver worker
-- [ ] Configure Cloudflare Tunnel to Pi cluster
+- [x] Configure Cloudflare Tunnel to Pi cluster (config files ready in tunnels/)
 - [ ] Implement edge caching for common routes
 - [ ] Add geo-routing rules
 

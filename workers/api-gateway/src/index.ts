@@ -45,6 +45,7 @@ export interface Env {
   ORIGIN_STORAGE: Fetcher;   // → aria
   ORIGIN_AGENTS: Fetcher;    // → alice
   ORIGIN_COMPUTE: Fetcher;   // → octavia
+  AI_PROXY: Fetcher;         // → blackroad-ai-proxy Worker (vendor bridge)
 
   // Secrets
   JWT_SECRET: string;

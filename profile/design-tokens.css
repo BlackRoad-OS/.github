@@ -1,0 +1,286 @@
+/**
+ * BlackRoad Design System — Official Tokens
+ *
+ * Approved design templates from issues #26, #28, #31, #33, #35.
+ * Apply these tokens across every BlackRoad page, domain, and component.
+ *
+ * Font:    JetBrains Mono (monospace terminal aesthetic)
+ * Palette: Orange → Pink → Purple → Blue spectrum
+ * Spacing: Golden ratio scale (φ = 1.618)
+ */
+
+/* ── Color Palette ──────────────────────────────────────────────── */
+:root {
+  /* Primary brand spectrum */
+  --sunrise-orange:     #FF9D00;
+  --warm-orange:        #FF6B00;
+  --hot-pink:           #FF0066;   /* PRIMARY BRAND COLOR */
+  --electric-magenta:   #FF006B;
+  --deep-magenta:       #D600AA;
+  --vivid-purple:       #7700FF;
+  --cyber-blue:         #0066FF;
+
+  /* Neutral / surface */
+  --bg-base:            #000000;
+  --bg-surface:         #0a0a0a;
+  --bg-card:            #111111;
+  --bg-hover:           #1a1a1a;
+  --border:             rgba(255, 255, 255, 0.08);
+  --border-accent:      rgba(255, 0, 102, 0.3);
+
+  /* Text */
+  --text-primary:       #ffffff;
+  --text-secondary:     rgba(255, 255, 255, 0.6);
+  --text-muted:         rgba(255, 255, 255, 0.3);
+  --text-brand:         var(--hot-pink);
+
+  /* Status */
+  --status-online:      #00ff88;
+  --status-idle:        #ffaa00;
+  --status-offline:     #ff3366;
+  --status-warning:     #ff9d00;
+
+  /* ── Gradients ────────────────────────────────────────────────── */
+
+  /* BR Gradient — Orange → Pink (primary hero) */
+  --gradient-br:        linear-gradient(180deg, #FF9D00 0%, #FF0066 75%);
+
+  /* OS Gradient — Magenta → Blue */
+  --gradient-os:        linear-gradient(180deg, #FF006B 0%, #0066FF 100%);
+
+  /* Full Spectrum */
+  --gradient-full:      linear-gradient(180deg, #FF9D00 0%, #FF0066 28%, #7700FF 71%, #0066FF 100%);
+
+  /* Horizontal accent */
+  --gradient-h:         linear-gradient(90deg,  #FF9D00 0%, #FF0066 50%, #0066FF 100%);
+
+  /* ── Spacing (Golden Ratio φ = 1.618) ────────────────────────── */
+  --space-xs:           8px;
+  --space-sm:           13px;
+  --space-md:           21px;
+  --space-lg:           34px;
+  --space-xl:           55px;
+  --space-2xl:          89px;
+
+  /* ── Typography ─────────────────────────────────────────────── */
+  --font-mono:          'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  --font-size-xs:       11px;
+  --font-size-sm:       13px;
+  --font-size-md:       15px;
+  --font-size-lg:       18px;
+  --font-size-xl:       24px;
+  --font-size-2xl:      32px;
+  --font-size-3xl:      48px;
+
+  /* ── Borders & Radius ───────────────────────────────────────── */
+  --radius-sm:          4px;
+  --radius-md:          8px;
+  --radius-lg:          12px;
+  --radius-pill:        9999px;
+
+  /* ── Shadows ────────────────────────────────────────────────── */
+  --shadow-glow-pink:   0 0 20px rgba(255, 0, 102, 0.3);
+  --shadow-glow-blue:   0 0 20px rgba(0, 102, 255, 0.3);
+  --shadow-card:        0 2px 8px rgba(0, 0, 0, 0.5);
+
+  /* ── Transitions ────────────────────────────────────────────── */
+  --transition-fast:    150ms ease;
+  --transition-base:    250ms ease;
+  --transition-slow:    400ms ease;
+}
+
+/* ── Base reset (terminal aesthetic) ───────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-md);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Approved component patterns (from issues #26, #28, #31, #33, #35) ── */
+
+/* Header (issue #26) */
+.br-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-xl);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-surface);
+}
+
+.br-header__logo {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  background: var(--gradient-br);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.br-header__nav { display: flex; gap: var(--space-lg); }
+.br-header__nav a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  transition: color var(--transition-fast);
+}
+.br-header__nav a:hover { color: var(--text-primary); }
+
+/* Page header block (issues #31, #33, #35) */
+.br-page-header {
+  padding: var(--space-2xl) var(--space-xl) var(--space-xl);
+  border-bottom: 1px solid var(--border);
+}
+
+.br-page-header__eyebrow {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.br-tag {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  text-transform: lowercase;
+  letter-spacing: 0.05em;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 2px var(--space-xs);
+}
+
+.br-page-header__version {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  text-transform: lowercase;
+}
+
+.br-page-header h1 {
+  font-size: var(--font-size-3xl);
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: var(--space-md);
+}
+
+.br-page-header h1 span {
+  display: block;
+  background: var(--gradient-br);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.br-page-header p {
+  font-size: var(--font-size-md);
+  color: var(--text-secondary);
+  max-width: 520px;
+}
+
+/* Stats bar */
+.br-stats {
+  display: flex;
+  gap: var(--space-xl);
+  padding: var(--space-md) var(--space-xl);
+  border-bottom: 1px solid var(--border);
+}
+
+.br-stat { display: flex; flex-direction: column; gap: 2px; }
+.br-stat__label { font-size: var(--font-size-xs); color: var(--text-muted); }
+.br-stat__value { font-size: var(--font-size-sm); color: var(--text-primary); }
+
+/* Card grid */
+.br-grid {
+  display: grid;
+  gap: var(--space-md);
+  padding: var(--space-xl);
+}
+
+.br-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.br-card:hover {
+  border-color: var(--border-accent);
+  box-shadow: var(--shadow-glow-pink);
+}
+
+/* Agent status dot */
+.br-status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.br-status-dot--online  { background: var(--status-online);  box-shadow: 0 0 6px var(--status-online); }
+.br-status-dot--idle    { background: var(--status-idle);    box-shadow: 0 0 6px var(--status-idle); }
+.br-status-dot--offline { background: var(--status-offline); }
+
+/* Progress bar */
+.br-bar {
+  height: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-hover);
+  overflow: hidden;
+}
+
+.br-bar__fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--gradient-br);
+  transition: width var(--transition-base);
+}
+
+/* Code block */
+.br-code {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  overflow-x: auto;
+}
+
+.br-code .prompt { color: var(--text-muted); user-select: none; }
+.br-code .cmd    { color: var(--text-primary); }
+
+/* Footer */
+.br-footer {
+  padding: var(--space-xl);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.br-footer__copy {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.br-footer__links {
+  display: flex;
+  gap: var(--space-lg);
+}
+
+.br-footer__links a {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  transition: color var(--transition-fast);
+}
+
+.br-footer__links a:hover { color: var(--text-primary); }

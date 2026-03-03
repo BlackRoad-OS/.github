@@ -500,15 +500,50 @@ api:
 
 ## AI & ML
 
+### AI Vendor Proxy (BlackRoad-owned bridge)
+```yaml
+service: BlackRoad AI Proxy
+org: BlackRoad-AI (AI)
+worker: workers/ai-proxy
+endpoint: https://ai.blackroad.ai
+
+purpose: >
+  Single choke-point for ALL AI vendor traffic.
+  Clients call api.blackroad.ai — never OpenAI or Anthropic directly.
+  Vendor API keys live only in Cloudflare Worker secrets.
+
+flow: >
+  Client → ai.blackroad.ai (Cloudflare Worker)
+         → Workers AI (on-edge, no external call)   ← priority 1
+         → api.openai.com                            ← priority 2 fallback
+         → api.anthropic.com                         ← priority 3 fallback
+
+routes:
+  - /v1/ai/local/*      → Cloudflare Workers AI (llama-3.1-8b, bge embeddings)
+  - /v1/ai/openai/*     → api.openai.com  (key injected at edge)
+  - /v1/ai/anthropic/*  → api.anthropic.com (key injected at edge)
+  - /v1/ai/complete     → smart router (local → openai → anthropic)
+  - /v1/ai/embed        → smart router (local → openai)
+
+auth: BlackRoad JWT (from api.blackroad.ai/v1/auth/login)
+
+confirmation: >
+  CONFIRMED: OpenAI / Anthropic traffic does NOT route through the
+  Pi cluster by default.  The Pis are outbound clients only.
+  This Worker is the explicit proxy that brings vendor traffic
+  under BlackRoad ownership.
+```
+
 ### OpenAI
 ```yaml
 service: OpenAI
 org: BlackRoad-AI (AI)
 purpose: GPT models, embeddings, DALL-E
+access: via BlackRoad AI Proxy only (ai.blackroad.ai/v1/ai/openai/*)
 
 api:
   type: REST
-  auth: API Key
+  auth: API Key (stored as Cloudflare Worker secret — never in client)
   models:
     - gpt-4
     - gpt-3.5-turbo
@@ -521,10 +556,11 @@ api:
 service: Anthropic
 org: BlackRoad-AI (AI)
 purpose: Claude models
+access: via BlackRoad AI Proxy only (ai.blackroad.ai/v1/ai/anthropic/*)
 
 api:
   type: REST
-  auth: API Key
+  auth: API Key (stored as Cloudflare Worker secret — never in client)
   models:
     - claude-3-opus
     - claude-3-sonnet

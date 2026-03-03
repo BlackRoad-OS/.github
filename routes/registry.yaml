@@ -59,6 +59,14 @@ orgs:
     primary_node: alice
 
     services:
+      vendor_proxy:
+        description: Unified AI vendor proxy (OpenAI, Anthropic, etc. via BlackRoad edge)
+        type: external
+        endpoint: https://ai.blackroad.ai/v1/ai
+        health: https://ai.blackroad.ai/health
+        worker: workers/ai-proxy
+        note: "All vendor calls route through this proxy — no direct client→vendor traffic"
+
       router:
         description: AI provider routing
         type: internal
@@ -631,6 +639,27 @@ rules:
     org: ARC
     service: gdrive
     priority: 100
+
+  # ── AI Vendor Proxy (all vendor calls route through BlackRoad edge) ──
+  # Never call OpenAI / Anthropic directly — always via ai.blackroad.ai
+  - pattern: "openai|gpt|chatgpt|codex"
+    org: AI
+    service: vendor_proxy
+    priority: 95
+    upstream: https://ai.blackroad.ai/v1/ai/openai
+
+  - pattern: "anthropic|claude|sonnet|haiku|opus"
+    org: AI
+    service: vendor_proxy
+    priority: 95
+    upstream: https://ai.blackroad.ai/v1/ai/anthropic
+
+  - pattern: "copilot|github.copilot"
+    org: AI
+    service: vendor_proxy
+    priority: 95
+    upstream: https://ai.blackroad.ai/v1/ai/openai
+    note: "GitHub Copilot routes through OpenAI endpoint via BlackRoad proxy"
 
   # AI routing (catch-all for intelligence)
   - pattern: "ask|question|what|how|why|explain"

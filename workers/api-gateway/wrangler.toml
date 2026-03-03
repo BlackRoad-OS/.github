@@ -126,6 +126,10 @@ binding = "ORIGIN_AGENTS"
 service = "blackroad-tunnel-alice"
 
 [[services]]
+binding = "AI_PROXY"
+service = "blackroad-ai-proxy"
+
+[[services]]
 binding = "ORIGIN_COMPUTE"
 service = "blackroad-tunnel-octavia"
 

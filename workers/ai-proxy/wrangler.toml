@@ -1,0 +1,69 @@
+# ═══════════════════════════════════════════════════════════════════
+# BlackRoad AI Proxy Worker
+# Unified AI vendor proxy — all vendor API calls route through
+# BlackRoad's Cloudflare edge. No direct client→vendor traffic.
+#
+# Flow: Client → api.blackroad.ai/v1/ai/[vendor]/* → (this Worker)
+#         → Vendor API (OpenAI / Anthropic / etc.)
+#
+# Deploy: wrangler deploy --config workers/ai-proxy/wrangler.toml
+# ═══════════════════════════════════════════════════════════════════
+
+name = "blackroad-ai-proxy"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# ─── Routes ──────────────────────────────────────────────────────
+routes = [
+  { pattern = "ai.blackroad.ai/*", zone_name = "blackroad.ai" },
+  { pattern = "api.blackroad.ai/v1/ai/*", zone_name = "blackroad.ai" },
+]
+
+# ─── KV — API key store & per-vendor rate limits ─────────────────
+[[kv_namespaces]]
+binding = "API_KEYS"
+id = "API_KEYS_KV_ID"
+preview_id = "API_KEYS_KV_PREVIEW_ID"
+
+[[kv_namespaces]]
+binding = "RATE_LIMITS"
+id = "RATE_LIMITS_KV_ID"
+preview_id = "RATE_LIMITS_KV_PREVIEW_ID"
+
+# ─── Analytics ────────────────────────────────────────────────────
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+
+# ─── Workers AI (local fallback via Cloudflare) ───────────────────
+[ai]
+binding = "AI"
+
+# ─── Secrets (set via `wrangler secret put`) ─────────────────────
+# OPENAI_API_KEY        — forwarded as Authorization header to OpenAI
+# ANTHROPIC_API_KEY     — forwarded as x-api-key header to Anthropic
+# BLACKROAD_JWT_SECRET  — validates inbound requests from BlackRoad clients
+#
+# Usage:
+#   wrangler secret put OPENAI_API_KEY --config workers/ai-proxy/wrangler.toml
+#   wrangler secret put ANTHROPIC_API_KEY --config workers/ai-proxy/wrangler.toml
+#   wrangler secret put BLACKROAD_JWT_SECRET --config workers/ai-proxy/wrangler.toml
+
+# ─── Vars ─────────────────────────────────────────────────────────
+[vars]
+ENVIRONMENT = "production"
+
+# Ordered list of preferred providers — first healthy provider wins
+# Set to "local" to use Cloudflare Workers AI (no external vendor)
+AI_PROVIDER_PRIORITY = "local,openai,anthropic"
+
+# ─── Staging environment ──────────────────────────────────────────
+[env.staging]
+name = "blackroad-ai-proxy-staging"
+routes = [
+  { pattern = "staging-ai.blackroad.ai/*", zone_name = "blackroad.ai" },
+]
+
+[env.staging.vars]
+ENVIRONMENT = "staging"
+AI_PROVIDER_PRIORITY = "local,openai,anthropic"

@@ -52,6 +52,29 @@ tunnels:
       - mcp.blackroad.ai
       - hailo-alice.blackroad.ai
 
+# ─── AI Vendor Proxy (Cloudflare Workers — no Pi required) ──────
+# When Pi nodes are offline the AI proxy Worker still operates at
+# Cloudflare edge, forwarding authenticated requests to vendors.
+# Flow: Client → ai.blackroad.ai (Worker) → OpenAI / Anthropic / Workers AI
+ai_vendor_proxy:
+  worker: blackroad-ai-proxy
+  domain: ai.blackroad.ai
+  note: >
+    This Worker runs entirely at Cloudflare edge (300+ PoPs).
+    It does NOT require any Pi to be online.
+    Vendor API keys are stored as Cloudflare Worker secrets —
+    they never leave BlackRoad's edge.
+  priority_chain:
+    1: Cloudflare Workers AI (local, no external vendor call)
+    2: OpenAI (via OPENAI_API_KEY secret)
+    3: Anthropic (via ANTHROPIC_API_KEY secret)
+  confirmation: >
+    CONFIRMED: OpenAI and Anthropic traffic does NOT route through
+    your Pi cluster by default.  Your Pis are outbound-only clients.
+    To route vendor traffic through your infra you MUST explicitly
+    configure a reverse proxy (e.g. this Worker or an nginx relay on
+    lucidia).  That configuration now exists in workers/ai-proxy/.
+
   blackroad-compute:
     node: octavia
     config: /etc/cloudflared/octavia.yaml
@@ -197,13 +220,15 @@ dns:
       target: blackroad-storage.cfargotunnel.com
       proxied: true
 
+    # ── AI Vendor Proxy (Workers AI — no tunnel, edge-direct) ──
+    - name: ai
+      type: CNAME
+      target: blackroad-ai-proxy.workers.dev
+      proxied: true
+      note: "Routes to blackroad-ai-proxy Worker (not a tunnel — edge only)"
+
     # ── Agents (alice via tunnel) ──
     - name: agents
-      type: CNAME
-      target: blackroad-agents.cfargotunnel.com
-      proxied: true
-
-    - name: ai
       type: CNAME
       target: blackroad-agents.cfargotunnel.com
       proxied: true
