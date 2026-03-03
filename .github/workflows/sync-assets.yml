@@ -38,26 +38,26 @@ jobs:
       FIGMA_FILE_KEY: ${{ vars.FIGMA_FILE_KEY }}
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Setup Node.js
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a
+        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
           node-version: '20'
 
       - name: Export Figma components
         run: |
-          echo "🎨 Syncing from Figma..."
+          echo "Syncing from Figma..."
           echo "  File: $FIGMA_FILE_KEY"
           # npx figma-export components $FIGMA_FILE_KEY
-          echo "✓ Figma sync complete"
+          echo "Figma sync complete"
 
       - name: Commit changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
-          git diff --cached --quiet || git commit -m "🎨 Sync Figma assets"
+          git diff --cached --quiet || git commit -m "Sync Figma assets"
 
   # Sync Salesforce data
   sync-salesforce:
@@ -70,7 +70,7 @@ jobs:
       SF_INSTANCE_URL: ${{ vars.SF_INSTANCE_URL }}
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Set up Python
         uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
@@ -82,12 +82,12 @@ jobs:
 
       - name: Sync Salesforce metadata
         run: |
-          echo "☁️ Syncing from Salesforce..."
+          echo "Syncing from Salesforce..."
           python -c "
           # from simple_salesforce import Salesforce
           # sf = Salesforce(...)
           # Export objects, fields, etc.
-          print('✓ Salesforce sync complete')
+          print('Salesforce sync complete')
           "
 
   # Sync Google Drive
@@ -99,7 +99,7 @@ jobs:
       GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Set up Python
         uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
@@ -111,9 +111,9 @@ jobs:
 
       - name: Sync Drive files
         run: |
-          echo "📁 Syncing from Google Drive..."
+          echo "Syncing from Google Drive..."
           # Export shared documents, assets
-          echo "✓ Drive sync complete"
+          echo "Drive sync complete"
 
   # Summary
   summary:
@@ -124,7 +124,7 @@ jobs:
     steps:
       - name: Report results
         run: |
-          echo "📡 SYNC COMPLETE"
+          echo "SYNC COMPLETE"
           echo ""
           echo "Results:"
           echo "  Figma:      ${{ needs.sync-figma.result || 'skipped' }}"

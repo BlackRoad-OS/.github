@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Set up Python
         uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
@@ -38,7 +38,7 @@ jobs:
           WEBHOOK_TYPE: ${{ github.event.action }}
           WEBHOOK_PAYLOAD: ${{ toJson(github.event.client_payload) }}
         run: |
-          echo "📥 Webhook received"
+          echo "Webhook received"
           echo "  Type: $WEBHOOK_TYPE"
           echo ""
 
@@ -74,7 +74,7 @@ jobs:
         env:
           WEBHOOK_PAYLOAD: ${{ toJson(github.event.client_payload) }}
         run: |
-          echo "🎯 Routing signal..."
+          echo "Routing signal..."
 
           # Extract target org from payload
           TARGET_ORG=$(echo "$WEBHOOK_PAYLOAD" | python -c "import sys,json; d=json.load(sys.stdin); print(d.get('target_org', 'OS'))")
@@ -100,7 +100,7 @@ jobs:
       - name: Log signal
         run: |
           echo ""
-          echo "📡 Signal logged"
+          echo "Signal logged"
           echo "  Timestamp: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
           echo "  Event: ${{ github.event.action }}"
           echo "  Run: ${{ github.run_id }}"
