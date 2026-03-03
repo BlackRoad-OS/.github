@@ -24,6 +24,15 @@ class Classification:
 # Default classification rules
 DEFAULT_RULES = [
     {
+        "category": "ollama",
+        "org_code": "AI",
+        "patterns": [
+            r"@(copilot|lucidia|blackboxprogramming|ollama)\b",
+        ],
+        "keywords": [],
+        "_ollama_only": True,  # Flag: route exclusively to local Ollama
+    },
+    {
         "category": "ai",
         "org_code": "AI",
         "patterns": [

@@ -59,6 +59,13 @@ orgs:
     primary_node: alice
 
     services:
+      ollama:
+        description: Local Ollama inference (no cloud dependency)
+        type: internal
+        endpoint: http://localhost:11434/api/chat
+        health: http://localhost:11434/api/tags
+        note: Used for @copilot, @lucidia, @blackboxprogramming, @ollama mentions
+
       router:
         description: AI provider routing
         type: internal
@@ -601,6 +608,31 @@ defaults:
 # ═══════════════════════════════════════════════════════════════════
 
 rules:
+  # @mention routing: always resolve to local Ollama - no cloud providers
+  - pattern: "@copilot"
+    org: AI
+    service: ollama
+    provider: ollama
+    priority: 1000
+
+  - pattern: "@lucidia"
+    org: AI
+    service: ollama
+    provider: ollama
+    priority: 1000
+
+  - pattern: "@blackboxprogramming"
+    org: AI
+    service: ollama
+    provider: ollama
+    priority: 1000
+
+  - pattern: "@ollama"
+    org: AI
+    service: ollama
+    provider: ollama
+    priority: 1000
+
   # High-priority exact matches
   - pattern: "salesforce"
     org: FND

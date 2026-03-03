@@ -281,6 +281,28 @@ class CloudFirst(RoutingStrategy):
         return sorted(scores, key=lambda x: x.score, reverse=True)
 
 
+class OllamaOnly(RoutingStrategy):
+    """
+    Route exclusively to Ollama. No cloud providers. No fallback.
+
+    Used when @copilot, @lucidia, @blackboxprogramming, or @ollama
+    mentions are detected - requests stay on local hardware.
+    """
+
+    name = "ollama_only"
+
+    def rank_providers(
+        self,
+        providers: List[Provider],
+        request: CompletionRequest,
+        capability: ModelCapability = ModelCapability.CHAT,
+    ) -> List[ProviderScore]:
+        ollama = next((p for p in providers if p.name == "ollama"), None)
+        if ollama:
+            return [ProviderScore(provider=ollama, score=9999.0, reason="Ollama-only: local inference")]
+        return []
+
+
 # Strategy registry
 STRATEGIES: Dict[str, RoutingStrategy] = {
     "cost": CostOptimized(),
@@ -288,6 +310,7 @@ STRATEGIES: Dict[str, RoutingStrategy] = {
     "quality": QualityOptimized(),
     "local_first": LocalFirst(),
     "cloud_first": CloudFirst(),
+    "ollama_only": OllamaOnly(),
 }
 
 

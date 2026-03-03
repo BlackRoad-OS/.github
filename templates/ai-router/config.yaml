@@ -22,16 +22,26 @@ providers:
     enabled: true
     default_model: llama3.2
     base_url: http://localhost:11434
+    # Override via OLLAMA_HOST env var
 
 routing:
-  # Default strategy: cost, latency, quality, local_first, cloud_first
-  default_strategy: cost
+  # Default strategy: cost, latency, quality, local_first, cloud_first, ollama_only
+  default_strategy: local_first
 
   # Enable automatic fallback on failure
   fallback_enabled: true
 
   # Max providers to try before giving up
   max_retries: 3
+
+  # Mention-based routing: these @mentions always resolve to Ollama only.
+  # No cloud provider is contacted. Requests stay on local hardware.
+  mention_routing:
+    ollama_only:
+      - "@copilot"
+      - "@lucidia"
+      - "@blackboxprogramming"
+      - "@ollama"
 
 tracking:
   enabled: true

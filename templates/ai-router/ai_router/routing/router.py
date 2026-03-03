@@ -5,6 +5,7 @@ This is the core of BlackRoad's AI routing.
 """
 
 import asyncio
+import re
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional, List, Dict, Any, AsyncIterator, Union
@@ -24,6 +25,12 @@ from ..providers.anthropic import AnthropicProvider
 from ..providers.hailo import HailoProvider
 from ..providers.ollama import OllamaProvider
 from .strategy import RoutingStrategy, CostOptimized, get_strategy
+
+# Mentions that always resolve to local Ollama inference - no cloud providers
+OLLAMA_MENTIONS = re.compile(
+    r"@(copilot|lucidia|blackboxprogramming|ollama)\b",
+    re.IGNORECASE,
+)
 
 
 @dataclass
@@ -189,6 +196,15 @@ class Router:
             temperature=temperature,
             stream=stream,
         )
+
+        # @mention detection: @copilot, @lucidia, @blackboxprogramming, @ollama
+        # → always route to local Ollama, no cloud providers
+        if provider is None:
+            _text = prompt if isinstance(prompt, str) else " ".join(
+                m.content for m in prompt if hasattr(m, "content")
+            )
+            if OLLAMA_MENTIONS.search(_text):
+                provider = "ollama"
 
         # Determine provider order
         if provider:
