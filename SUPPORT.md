@@ -94,7 +94,7 @@ A: This `.github` repository - the central coordination point where all architec
 A: 
 ```bash
 cd prototypes/operator
-python -m operator.cli "your query here"
+python -m prototypes.operator.cli "your query here"
 ```
 
 **Q: How do I check system health?**
