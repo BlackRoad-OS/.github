@@ -1,4 +1,4 @@
-name: 🎨 Brand Compliance Check
+name: Brand Compliance Check
 
 on:
   pull_request:
@@ -6,38 +6,41 @@ on:
   push:
     branches: [main, master]
 
+permissions:
+  contents: read
+
 jobs:
   brand-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-      
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
       - name: Check Brand Colors
         run: |
-          echo "🎨 Checking for official BlackRoad brand colors..."
-          
+          echo "Checking for official BlackRoad brand colors..."
+
           # Check for deprecated colors
           if grep -r "#F5A623\|#FF1D6C\|#2979FF\|#9C27B0" --include="*.css" --include="*.html" --include="*.js" --include="*.jsx" --include="*.tsx" .; then
-            echo "❌ Deprecated colors found! Please use official colors:"
+            echo "Deprecated colors found! Please use official colors:"
             echo "  - #FF9D00 (Sunrise Orange)"
             echo "  - #FF0066 (Hot Pink)"
             echo "  - #7700FF (Vivid Purple)"
             echo "  - #0066FF (Cyber Blue)"
             exit 1
           fi
-          
-          echo "✅ No deprecated colors found"
-      
+
+          echo "No deprecated colors found"
+
       - name: Check README Branding
         run: |
           if [ -f "README.md" ]; then
             if ! grep -q "BlackRoad" README.md; then
-              echo "⚠️ README.md should reference BlackRoad organization"
+              echo "README.md should reference BlackRoad organization"
             fi
           fi
-      
+
       - name: Check License
         run: |
           if [ ! -f "LICENSE" ] && [ ! -f "LICENSE.md" ]; then
-            echo "⚠️ Missing LICENSE file"
+            echo "Missing LICENSE file"
           fi

@@ -7,6 +7,10 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   # Analyze changes
   analyze:
@@ -19,7 +23,7 @@ jobs:
       has_workflows: ${{ steps.changes.outputs.workflows }}
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
 
@@ -42,10 +46,10 @@ jobs:
     if: needs.analyze.outputs.has_python == 'true'
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
         with:
           python-version: '3.11'
 
@@ -70,13 +74,13 @@ jobs:
     if: needs.analyze.outputs.has_yaml == 'true'
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Validate YAML
         run: |
           echo "## YAML Validation" >> $GITHUB_STEP_SUMMARY
           find . -name "*.yaml" -o -name "*.yml" | while read f; do
-            python -c "import yaml; yaml.safe_load(open('$f'))" && echo "✓ $f" || echo "✗ $f"
+            python -c "import yaml; yaml.safe_load(open('$f'))" && echo "v $f" || echo "x $f"
           done >> $GITHUB_STEP_SUMMARY
 
   # Review workflow changes
@@ -89,7 +93,7 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Check workflow syntax
         run: |
@@ -97,11 +101,11 @@ jobs:
           for f in .github/workflows/*.yml; do
             echo "Checking $f..."
             # Basic YAML validation
-            python -c "import yaml; yaml.safe_load(open('$f'))" && echo "✓ $f valid" || echo "✗ $f invalid"
+            python -c "import yaml; yaml.safe_load(open('$f'))" && echo "v $f valid" || echo "x $f invalid"
           done >> $GITHUB_STEP_SUMMARY
 
       - name: Comment on PR
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           script: |
             const body = `## Workflow Changes Detected

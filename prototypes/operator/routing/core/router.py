@@ -6,7 +6,7 @@ This is the brain of BlackRoad.
 
 from dataclasses import dataclass
 from typing import Optional, Dict, Any, List
-from datetime import datetime
+from datetime import datetime, timezone
 
 from .parser import Parser, Request, InputType
 from .classifier import Classifier, Classification
@@ -121,10 +121,10 @@ class Operator:
 
         # Get org info
         org_code = classification.org_code
-        org_info = ORGS.get(org_code, ORGS["AI"])
+        org_info = ORGS.get(org_code, ORGS.get("OS", {"name": "BlackRoad-OS", "description": "Core infrastructure"}))
 
         # Generate timestamp
-        timestamp = datetime.utcnow().isoformat() + "Z"
+        timestamp = datetime.now(timezone.utc).isoformat()
 
         # Generate signal
         signal = f"🎯 OS → {org_code} : {classification.category}"
@@ -201,7 +201,7 @@ class Operator:
             f"Destination:",
             f"  Org: {result.org}",
             f"  Code: {result.org_code}",
-            f"  Description: {ORGS[result.org_code]['description']}",
+            f"  Description: {ORGS.get(result.org_code, {}).get('description', 'Unknown')}",
             f"",
             f"Signal: {result.signal}",
         ]

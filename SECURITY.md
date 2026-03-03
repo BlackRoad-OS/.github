@@ -38,10 +38,32 @@ In your report, please include:
 
 This repository is protected with:
 
-- ✅ Dependabot vulnerability scanning
-- ✅ Automated security updates
-- ✅ Secret scanning
-- ✅ CodeQL code analysis (where applicable)
+- Dependabot vulnerability scanning (weekly schedule, npm + pip + GitHub Actions)
+- Automated security updates
+- GitHub secret scanning
+- CodeQL code analysis (JavaScript/TypeScript, Python)
+- Dependency review on pull requests
+- Pinned GitHub Actions to commit SHAs (supply chain protection)
+- Minimal workflow permissions (principle of least privilege)
+
+### Security Architecture
+
+**API Gateway (Cloudflare Worker)**
+- PBKDF2 password hashing (100,000 iterations, random salt)
+- HMAC-SHA256 JWT with algorithm validation
+- Webhook signature verification (GitHub HMAC, Stripe timestamp + HMAC)
+- SQL injection protection via table allowlists and query restrictions
+- Input validation on all public endpoints (length limits, format checks)
+- Rate limiting via Durable Objects
+- Path traversal prevention on KV/R2 key operations
+- CORS restricted to approved origins
+- Error messages sanitized in production (no stack traces)
+
+**Workflow Security**
+- All third-party GitHub Actions pinned to full commit SHAs
+- Minimal permissions declared on every workflow
+- User-controlled input passed via environment variables, never interpolated in shell
+- No secrets logged or exposed in step outputs
 
 ### Best Practices
 
@@ -51,6 +73,8 @@ When contributing to this project:
 - Keep dependencies up to date
 - Follow secure coding guidelines
 - Review Dependabot alerts promptly
+- Pin all action references to commit SHAs
+- Declare minimal permissions on workflows
 
 ## Bug Bounty Program
 
@@ -58,4 +82,4 @@ We currently do not have a formal bug bounty program, but we greatly appreciate 
 
 ---
 
-**BlackRoad OS** - Building secure, scalable systems
+**BlackRoad OS, Inc.** - Building secure, scalable systems

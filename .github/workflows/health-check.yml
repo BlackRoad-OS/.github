@@ -15,6 +15,9 @@ on:
         default: 'all'
         type: string
 
+permissions:
+  contents: read
+
 env:
   # Node endpoints (would come from secrets in production)
   LUCIDIA_ENDPOINT: ${{ vars.LUCIDIA_ENDPOINT || 'http://lucidia.local:8080' }}
@@ -29,30 +32,30 @@ jobs:
       status: ${{ steps.summary.outputs.status }}
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Check Lucidia (Primary)
         id: lucidia
         continue-on-error: true
         run: |
-          echo "🔍 Checking Lucidia..."
+          echo "Checking Lucidia..."
           # curl -sf "$LUCIDIA_ENDPOINT/health" || echo "status=unhealthy" >> $GITHUB_OUTPUT
           echo "status=healthy" >> $GITHUB_OUTPUT
-          echo "✓ Lucidia: healthy"
+          echo "Lucidia: healthy"
 
       - name: Check Shellfish (Cloud Gateway)
         id: shellfish
         continue-on-error: true
         run: |
-          echo "🔍 Checking Shellfish..."
+          echo "Checking Shellfish..."
           # curl -sf "$SHELLFISH_ENDPOINT/health" || echo "status=unhealthy" >> $GITHUB_OUTPUT
           echo "status=healthy" >> $GITHUB_OUTPUT
-          echo "✓ Shellfish: healthy"
+          echo "Shellfish: healthy"
 
       - name: Summary
         id: summary
         run: |
-          echo "📊 NODE HEALTH"
+          echo "NODE HEALTH"
           echo "=============="
           echo "Lucidia:   ${{ steps.lucidia.outputs.status || 'unknown' }}"
           echo "Shellfish: ${{ steps.shellfish.outputs.status || 'unknown' }}"
@@ -72,13 +75,13 @@ jobs:
     steps:
       - name: Check GitHub API
         run: |
-          echo "🔍 Checking GitHub API..."
-          curl -sf "https://api.github.com/rate_limit" > /dev/null && echo "✓ GitHub: healthy" || echo "✗ GitHub: unhealthy"
+          echo "Checking GitHub API..."
+          curl -sf "https://api.github.com/rate_limit" > /dev/null && echo "GitHub: healthy" || echo "GitHub: unhealthy"
 
       - name: Check Cloudflare
         run: |
-          echo "🔍 Checking Cloudflare..."
-          curl -sf "https://www.cloudflare.com/cdn-cgi/trace" > /dev/null && echo "✓ Cloudflare: healthy" || echo "✗ Cloudflare: unhealthy"
+          echo "Checking Cloudflare..."
+          curl -sf "https://www.cloudflare.com/cdn-cgi/trace" > /dev/null && echo "Cloudflare: healthy" || echo "Cloudflare: unhealthy"
 
   # Update status badge
   update-status:
@@ -88,7 +91,7 @@ jobs:
     if: always()
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Update status file
         run: |
@@ -104,7 +107,7 @@ jobs:
           - Services: ${{ needs.check-services.result }}
 
           ## Signals
-          📡 health_check completed
+          health_check completed
           EOF
 
       - name: Commit status
@@ -112,7 +115,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .STATUS
-          git diff --cached --quiet || git commit -m "📊 Update health status"
+          git diff --cached --quiet || git commit -m "Update health status"
           # git push || true
 
   # Alert on degraded status
@@ -125,7 +128,7 @@ jobs:
     steps:
       - name: Send alert
         run: |
-          echo "⚠️ ALERT: Mesh status degraded"
+          echo "ALERT: Mesh status degraded"
           echo ""
           echo "Some nodes are unhealthy. Check the logs for details."
           # Would send to Slack, PagerDuty, etc.

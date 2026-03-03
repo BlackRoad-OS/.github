@@ -1,60 +1,66 @@
-name: 🔧 Self-Healing
+name: Self-Healing
 
 on:
   schedule:
     - cron: '*/30 * * * *'  # Every 30 minutes
   workflow_dispatch:
   workflow_run:
-    workflows: ["🚀 Auto Deploy"]
+    workflows: ["Auto Deploy"]
     types: [completed]
+
+permissions:
+  contents: read
+  issues: write
 
 jobs:
   monitor:
     name: Monitor Deployments
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-      
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
       - name: Check Health
         id: health
+        env:
+          DEPLOY_URL: ${{ secrets.DEPLOY_URL }}
         run: |
-          if [ ! -z "${{ secrets.DEPLOY_URL }}" ]; then
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" ${{ secrets.DEPLOY_URL }}/api/health || echo "000")
+          if [ ! -z "$DEPLOY_URL" ]; then
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${DEPLOY_URL}/api/health" || echo "000")
             echo "status=$STATUS" >> $GITHUB_OUTPUT
           else
             echo "status=skip" >> $GITHUB_OUTPUT
           fi
-      
+
       - name: Auto-Rollback
         if: steps.health.outputs.status != '200' && steps.health.outputs.status != 'skip'
         run: |
-          echo "🚨 Health check failed (Status: ${{ steps.health.outputs.status }})"
+          echo "Health check failed (Status: ${{ steps.health.outputs.status }})"
           echo "Triggering rollback..."
           gh workflow run auto-deploy.yml --ref $(git rev-parse HEAD~1)
         env:
           GH_TOKEN: ${{ github.token }}
-      
+
       - name: Attempt Auto-Fix
         if: steps.health.outputs.status != '200' && steps.health.outputs.status != 'skip'
         run: |
-          echo "🔧 Attempting automatic fixes..."
+          echo "Attempting automatic fixes..."
           # Check for common issues
           if [ -f "package.json" ]; then
             npm ci || true
             npm run build || true
           fi
-      
+
       - name: Create Issue on Failure
         if: failure()
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           script: |
             github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: '🚨 Self-Healing: Deployment Health Check Failed',
+              title: 'Self-Healing: Deployment Health Check Failed',
               body: `Deployment health check failed.\n\nStatus: ${{ steps.health.outputs.status }}\nWorkflow: ${context.workflow}\nRun: ${context.runId}`,
               labels: ['bug', 'deployment', 'auto-generated']
             })
@@ -62,17 +68,17 @@ jobs:
   dependency-updates:
     name: Auto Update Dependencies
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-      
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
       - name: Setup Node
         if: hashFiles('package.json') != ''
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a
+        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
           node-version: '20'
-      
+
       - name: Update npm dependencies
         if: hashFiles('package.json') != ''
         run: |

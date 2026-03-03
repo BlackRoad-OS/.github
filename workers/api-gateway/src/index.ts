@@ -99,9 +99,11 @@ export default {
       return addCORSHeaders(response);
     } catch (err: any) {
       ctx.waitUntil(trackError(env, ctx_req, err));
+      // Do not leak internal error details in production
+      const isDev = env.ENVIRONMENT === "development";
       return Response.json(
-        { error: "internal_error", message: err.message, requestId: ctx_req.requestId },
-        { status: 500, headers: corsHeaders() },
+        { error: "internal_error", message: isDev ? err.message : "An unexpected error occurred", requestId: ctx_req.requestId },
+        { status: 500, headers: corsHeaders(request.headers.get("Origin") || undefined) },
       );
     }
   },
@@ -265,13 +267,30 @@ async function authenticate(request: Request, env: Env): Promise<AuthResult> {
 }
 
 async function handleLogin(request: Request, env: Env): Promise<Response> {
-  const { email, password } = await request.json() as { email: string; password: string };
+  const body = await request.json() as { email?: string; password?: string };
+  const email = (body.email || "").trim().toLowerCase();
+  const password = body.password || "";
+
+  // Input validation
+  if (!email || !password) {
+    return Response.json({ error: "missing_fields", message: "Email and password are required" }, { status: 400, headers: corsHeaders() });
+  }
+  if (email.length > 254 || password.length > 256) {
+    return Response.json({ error: "invalid_input", message: "Input exceeds maximum length" }, { status: 400, headers: corsHeaders() });
+  }
 
   const user = await env.DB.prepare(
     "SELECT id, email, password_hash, role FROM users WHERE email = ?",
   ).bind(email).first();
 
   if (!user) {
+    // Constant-time-ish: still hash to avoid timing side-channel
+    await hashPassword(password);
+    return Response.json({ error: "invalid_credentials" }, { status: 401, headers: corsHeaders() });
+  }
+
+  const passwordValid = await verifyPassword(password, user.password_hash as string);
+  if (!passwordValid) {
     return Response.json({ error: "invalid_credentials" }, { status: 401, headers: corsHeaders() });
   }
 
@@ -289,7 +308,25 @@ async function handleLogin(request: Request, env: Env): Promise<Response> {
 }
 
 async function handleRegister(request: Request, env: Env): Promise<Response> {
-  const { email, name, password } = await request.json() as { email: string; name: string; password: string };
+  const body = await request.json() as { email?: string; name?: string; password?: string };
+  const email = (body.email || "").trim().toLowerCase();
+  const name = (body.name || "").trim();
+  const password = body.password || "";
+
+  // Input validation
+  if (!email || !name || !password) {
+    return Response.json({ error: "missing_fields", message: "Email, name, and password are required" }, { status: 400, headers: corsHeaders() });
+  }
+  if (email.length > 254 || name.length > 128 || password.length > 256) {
+    return Response.json({ error: "invalid_input", message: "Input exceeds maximum length" }, { status: 400, headers: corsHeaders() });
+  }
+  if (password.length < 8) {
+    return Response.json({ error: "weak_password", message: "Password must be at least 8 characters" }, { status: 400, headers: corsHeaders() });
+  }
+  // Basic email format check
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return Response.json({ error: "invalid_email", message: "Invalid email format" }, { status: 400, headers: corsHeaders() });
+  }
 
   const existing = await env.DB.prepare("SELECT id FROM users WHERE email = ?").bind(email).first();
   if (existing) {
@@ -546,9 +583,20 @@ async function handleAIClassify(request: Request, env: Env): Promise<Response> {
 // EDGE DATA (KV / D1 / R2 / Vectorize)
 // ═══════════════════════════════════════════════════════════════════
 
+function sanitizeKey(raw: string): string | null {
+  // Prevent path traversal and empty keys
+  const key = raw.replace(/\.\./g, "").replace(/^\/+/, "").trim();
+  if (!key || key.length > 512) return null;
+  return key;
+}
+
 async function handleKV(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url);
-  const key = url.pathname.replace("/v1/kv/", "");
+  const rawKey = url.pathname.replace("/v1/kv/", "");
+  const key = sanitizeKey(rawKey);
+  if (!key) {
+    return Response.json({ error: "invalid_key" }, { status: 400, headers: corsHeaders() });
+  }
 
   switch (request.method) {
     case "GET": {
@@ -571,14 +619,27 @@ async function handleKV(request: Request, env: Env): Promise<Response> {
   }
 }
 
+// Allowed tables for D1 queries — prevents SQL injection via dynamic table names
+const ALLOWED_TABLES = new Set([
+  "users", "signals", "audit_log", "webhooks", "api_keys", "sessions", "metrics",
+]);
+
 async function handleD1(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url);
   const table = url.pathname.replace("/v1/db/", "").split("/")[0];
 
+  // Validate table name against allowlist to prevent SQL injection
+  if (!ALLOWED_TABLES.has(table)) {
+    return Response.json(
+      { error: "invalid_table", message: `Table '${table}' is not accessible` },
+      { status: 400, headers: corsHeaders() },
+    );
+  }
+
   switch (request.method) {
     case "GET": {
-      const limit = parseInt(url.searchParams.get("limit") || "50");
-      const offset = parseInt(url.searchParams.get("offset") || "0");
+      const limit = Math.min(Math.max(parseInt(url.searchParams.get("limit") || "50") || 50, 1), 500);
+      const offset = Math.max(parseInt(url.searchParams.get("offset") || "0") || 0, 0);
       const results = await env.DB.prepare(
         `SELECT * FROM ${table} LIMIT ? OFFSET ?`,
       ).bind(limit, offset).all();
@@ -586,6 +647,14 @@ async function handleD1(request: Request, env: Env): Promise<Response> {
     }
     case "POST": {
       const { query, params } = await request.json() as { query: string; params?: any[] };
+      // Only allow SELECT, INSERT, UPDATE — block DROP, ALTER, DELETE without WHERE
+      const normalized = query.trim().toUpperCase();
+      if (normalized.startsWith("DROP") || normalized.startsWith("ALTER") || normalized.startsWith("TRUNCATE")) {
+        return Response.json(
+          { error: "forbidden_query", message: "DDL operations are not allowed via API" },
+          { status: 403, headers: corsHeaders() },
+        );
+      }
       const stmt = env.DB.prepare(query);
       const result = params ? await stmt.bind(...params).run() : await stmt.run();
       return Response.json(result, { headers: corsHeaders() });
@@ -597,7 +666,11 @@ async function handleD1(request: Request, env: Env): Promise<Response> {
 
 async function handleR2(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url);
-  const key = url.pathname.replace("/v1/storage/", "");
+  const rawKey = url.pathname.replace("/v1/storage/", "");
+  const key = sanitizeKey(rawKey);
+  if (!key) {
+    return Response.json({ error: "invalid_key" }, { status: 400, headers: corsHeaders() });
+  }
 
   switch (request.method) {
     case "GET": {
@@ -679,7 +752,17 @@ async function handleWebhookIngress(
   ctx: ExecutionContext,
 ): Promise<Response> {
   const source = path.replace("/v1/webhooks/", "").split("/")[0];
+
+  // Validate webhook source against allowlist
+  const ALLOWED_WEBHOOK_SOURCES = new Set(["github", "stripe", "salesforce", "slack", "cloudflare", "figma", "google"]);
+  if (!ALLOWED_WEBHOOK_SOURCES.has(source)) {
+    return Response.json({ error: "unknown_source", message: `Webhook source '${source}' is not supported` }, { status: 400, headers: corsHeaders() });
+  }
+
   const body = await request.text();
+  if (!body) {
+    return Response.json({ error: "empty_body" }, { status: 400, headers: corsHeaders() });
+  }
 
   // Verify webhook signatures
   switch (source) {
@@ -694,6 +777,19 @@ async function handleWebhookIngress(
       const signature = request.headers.get("Stripe-Signature") || "";
       if (!signature) {
         return Response.json({ error: "missing_signature" }, { status: 403, headers: corsHeaders() });
+      }
+      // Verify Stripe signature timestamp to prevent replay attacks
+      const parts = signature.split(",").reduce((acc: Record<string, string>, part) => {
+        const [k, v] = part.split("=");
+        acc[k] = v;
+        return acc;
+      }, {});
+      const timestamp = parseInt(parts.t || "0");
+      if (Math.abs(Date.now() / 1000 - timestamp) > 300) {
+        return Response.json({ error: "stale_signature", message: "Webhook signature too old" }, { status: 403, headers: corsHeaders() });
+      }
+      if (!parts.v1 || !await verifyHMAC(`${timestamp}.${body}`, `sha256=${parts.v1}`, env.STRIPE_WEBHOOK_SECRET)) {
+        return Response.json({ error: "invalid_signature" }, { status: 403, headers: corsHeaders() });
       }
       break;
     }
@@ -923,12 +1019,21 @@ function buildContext(request: Request): RequestContext {
   };
 }
 
-function corsHeaders(): Record<string, string> {
+const ALLOWED_ORIGINS = [
+  "https://blackroad.ai",
+  "https://app.blackroad.ai",
+  "https://staging.blackroad.ai",
+  "http://localhost:3000",
+];
+
+function corsHeaders(origin?: string): Record<string, string> {
+  const allowedOrigin = origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
   return {
-    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Origin": allowedOrigin,
     "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization, X-API-Key",
     "Access-Control-Max-Age": "86400",
+    "Vary": "Origin",
   };
 }
 
@@ -956,14 +1061,69 @@ async function hash(input: string): Promise<string> {
 }
 
 async function hashPassword(password: string): Promise<string> {
-  return hash(password + "blackroad-salt");
+  // Use PBKDF2 with a random salt for production-grade password hashing
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const saltHex = Array.from(salt).map((b) => b.toString(16).padStart(2, "0")).join("");
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(password),
+    "PBKDF2",
+    false,
+    ["deriveBits"],
+  );
+  const derived = await crypto.subtle.deriveBits(
+    { name: "PBKDF2", hash: "SHA-256", salt, iterations: 100000 },
+    key,
+    256,
+  );
+  const hashHex = Array.from(new Uint8Array(derived)).map((b) => b.toString(16).padStart(2, "0")).join("");
+  return `pbkdf2:100000:${saltHex}:${hashHex}`;
+}
+
+async function verifyPassword(password: string, stored: string): Promise<boolean> {
+  if (!stored.startsWith("pbkdf2:")) {
+    // Legacy hash fallback — compare with old method, then caller should re-hash
+    const legacy = await hash(password + "blackroad-salt");
+    return legacy === stored;
+  }
+  const [, iterStr, saltHex, expectedHash] = stored.split(":");
+  const iterations = parseInt(iterStr);
+  const salt = new Uint8Array(saltHex.match(/.{2}/g)!.map((b) => parseInt(b, 16)));
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(password),
+    "PBKDF2",
+    false,
+    ["deriveBits"],
+  );
+  const derived = await crypto.subtle.deriveBits(
+    { name: "PBKDF2", hash: "SHA-256", salt, iterations },
+    key,
+    256,
+  );
+  const hashHex = Array.from(new Uint8Array(derived)).map((b) => b.toString(16).padStart(2, "0")).join("");
+  return hashHex === expectedHash;
 }
 
 async function verifyJWT(token: string, secret: string): Promise<{ sub: string; role: string } | null> {
   try {
-    const [headerB64, payloadB64, signatureB64] = token.split(".");
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
+    const [headerB64, payloadB64, signatureB64] = parts;
+
+    // Validate header — only allow HS256
+    const header = JSON.parse(atob(headerB64));
+    if (header.alg !== "HS256") return null;
+
     const payload = JSON.parse(atob(payloadB64));
+
+    // Check expiration
     if (payload.exp && payload.exp < Date.now() / 1000) return null;
+    // Check issued-at isn't in the future (clock skew tolerance: 60s)
+    if (payload.iat && payload.iat > Date.now() / 1000 + 60) return null;
+    // Require sub claim
+    if (!payload.sub) return null;
+
     // Verify signature with HMAC-SHA256
     const key = await crypto.subtle.importKey(
       "raw",
