@@ -1,0 +1,63 @@
+# Stripe Billing Service Configuration
+# Runs on lucidia:8092
+
+service:
+  name: stripe-billing
+  org: FND
+  port: 8092
+  node: lucidia
+
+stripe:
+  api_version: "2024-12-18.acacia"
+  webhook_path: /v1/stripe/webhooks
+  events:
+    - payment_intent.succeeded
+    - payment_intent.payment_failed
+    - customer.created
+    - customer.subscription.created
+    - customer.subscription.updated
+    - customer.subscription.deleted
+    - invoice.paid
+    - invoice.payment_failed
+    - charge.succeeded
+    - charge.failed
+
+products:
+  blackroad_basic:
+    name: "BlackRoad Basic"
+    amount: 100  # $1.00/month
+    interval: month
+    features:
+      - API access
+      - 1 workspace
+
+  blackroad_pro:
+    name: "BlackRoad Pro"
+    amount: 500  # $5.00/month
+    interval: month
+    features:
+      - API access
+      - 10 workspaces
+      - Priority support
+
+  blackroad_enterprise:
+    name: "BlackRoad Enterprise"
+    amount: null  # Custom pricing
+    interval: month
+    features:
+      - Everything
+      - SLA
+      - Dedicated support
+
+signals:
+  emit:
+    - "💰 FND → OS : payment_received"
+    - "📦 FND → OS : subscription_started"
+    - "⚠️ FND → OS : payment_failed"
+    - "📊 FND → OS : mrr_update"
+
+routing:
+  tunnel: blackroad-primary
+  origin: http://localhost:8092
+  health: http://localhost:8092/health
+  edge_path: /v1/stripe

@@ -1,0 +1,24 @@
+[project]
+name = "blackroad"
+version = "0.1.0"
+description = "BlackRoad OS — The Bridge"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = [
+    "prototypes/webhooks/tests",
+    "prototypes/operator/tests",
+    "prototypes/dispatcher/tests",
+    "tests/e2e",
+]
+asyncio_mode = "auto"
+markers = [
+    "e2e: end-to-end integration tests",
+    "stripe: Stripe-specific tests",
+    "webhook: webhook handler tests",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+ignore = ["E501"]

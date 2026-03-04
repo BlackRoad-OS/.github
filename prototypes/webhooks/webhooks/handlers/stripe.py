@@ -55,7 +55,7 @@ class StripeHandler(WebhookHandler):
 
         # Compute expected signature
         payload = f"{timestamp}.{body.decode()}"
-        expected = hmac.new(
+        expected = hmac.HMAC(
             secret.encode(),
             payload.encode(),
             hashlib.sha256

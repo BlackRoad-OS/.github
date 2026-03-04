@@ -50,14 +50,14 @@
 
 - [ ] Implement API key rotation system
 - [ ] Set up secrets vault (HashiCorp or SOPS)
-- [ ] Add webhook signature verification
+- [x] Add webhook signature verification
 - [ ] Create audit log pipeline
 - [ ] Define RBAC roles for org access
 
 ## Business Layer (FND)
 
 - [ ] Connect Salesforce sandbox environment
-- [ ] Set up Stripe test billing flow
+- [x] Set up Stripe test billing flow
 - [ ] Build CRM sync engine prototype
 - [ ] Create customer onboarding automation
 - [ ] Design pricing model for routing-as-a-service
@@ -72,7 +72,7 @@
 
 ## DevOps & Automation
 
-- [ ] Add end-to-end integration tests
+- [x] Add end-to-end integration tests
 - [ ] Set up staging environment
 - [ ] Create release automation workflow
 - [ ] Build deployment dashboard
@@ -94,6 +94,11 @@ _Move items here when done._
 - [x] Configure GitHub Actions workflows (8)
 - [x] Build MCP server for AI assistants
 - [x] Define node configurations (7 nodes)
+- [x] Build Stripe billing template with working code
+- [x] Fix Stripe webhook signature verification (hmac.HMAC)
+- [x] Create pytest infrastructure + 98 passing tests
+- [x] E2E tests: Stripe webhook → signal → routing pipeline
+- [x] Wire Stripe routing to Pi cluster (FND → lucidia:8092)
 
 ---
 

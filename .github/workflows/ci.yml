@@ -132,10 +132,31 @@ jobs:
         run: |
           pip install pytest pytest-asyncio
 
-      - name: Run webhook tests
+      - name: Run webhook handler tests
         run: |
           cd prototypes/webhooks
-          python -m webhooks test --verbose
+          python -m pytest tests/ -v --tb=short
+
+  # E2E Stripe integration tests
+  test-stripe-e2e:
+    name: Test Stripe E2E
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          pip install pytest pytest-asyncio pyyaml
+
+      - name: Run Stripe e2e tests
+        run: |
+          python -m pytest tests/e2e/ -v --tb=short -m stripe
 
   # Validate YAML configs
   validate-config:
@@ -183,7 +204,7 @@ jobs:
   summary:
     name: CI Summary
     runs-on: ubuntu-latest
-    needs: [lint, test-operator, test-dispatcher, test-webhooks, validate-config]
+    needs: [lint, test-operator, test-dispatcher, test-webhooks, test-stripe-e2e, validate-config]
     if: always()
     steps:
       - name: Check results
@@ -191,8 +212,9 @@ jobs:
           echo "🎯 CI Pipeline Complete"
           echo ""
           echo "Results:"
-          echo "  Lint:       ${{ needs.lint.result }}"
-          echo "  Operator:   ${{ needs.test-operator.result }}"
-          echo "  Dispatcher: ${{ needs.test-dispatcher.result }}"
-          echo "  Webhooks:   ${{ needs.test-webhooks.result }}"
-          echo "  Config:     ${{ needs.validate-config.result }}"
+          echo "  Lint:        ${{ needs.lint.result }}"
+          echo "  Operator:    ${{ needs.test-operator.result }}"
+          echo "  Dispatcher:  ${{ needs.test-dispatcher.result }}"
+          echo "  Webhooks:    ${{ needs.test-webhooks.result }}"
+          echo "  Stripe E2E:  ${{ needs.test-stripe-e2e.result }}"
+          echo "  Config:      ${{ needs.validate-config.result }}"
