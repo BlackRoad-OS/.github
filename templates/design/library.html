@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BlackRoad — Library</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      background: #000000;
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #000000;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #ffffff;
+    }
+
+    .logo { font-size: 1.2rem; font-weight: 700; color: #ffffff; letter-spacing: 0.05em; }
+    nav { font-size: 0.65rem; display: flex; gap: 20px; }
+    nav a { color: #888888; text-decoration: none; }
+    nav a:hover { color: #ffffff; }
+
+    .hero {
+      background: #000000;
+      padding: 48px 24px 36px;
+      border-bottom: 1px solid #ffffff;
+    }
+
+    .hero-label { font-size: 0.6rem; color: #555555; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 10px; }
+    .hero h1 { font-size: 2rem; font-weight: 700; color: #ffffff; line-height: 1.05; }
+    .hero p { margin-top: 12px; font-size: 0.7rem; color: #666666; line-height: 1.9; }
+
+    .pkg-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .pkg-card {
+      padding: 28px 24px;
+      border-bottom: 1px solid #ffffff;
+    }
+
+    .pkg-name { font-size: 0.82rem; font-weight: 700; color: #ffffff; margin-bottom: 6px; }
+    .pkg-desc { font-size: 0.6rem; color: #666666; margin-bottom: 14px; line-height: 1.7; }
+
+    .pkg-install {
+      background: #111111;
+      padding: 8px 12px;
+      font-size: 0.58rem;
+      color: #888888;
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 10px;
+      border: 1px solid #222222;
+    }
+
+    .pkg-meta { font-size: 0.55rem; color: #444444; display: flex; gap: 16px; flex-wrap: wrap; }
+
+    .section {
+      padding: 32px 24px;
+      border-bottom: 1px solid #ffffff;
+    }
+
+    .section-label {
+      font-size: 0.58rem; color: #555555; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 18px;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .section-label::after { content: ''; flex: 1; height: 1px; background: #333333; }
+
+    .platform-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 8px;
+    }
+
+    .platform-item {
+      border: 1px solid #222222;
+      padding: 10px 12px;
+      font-size: 0.6rem;
+      text-align: center;
+    }
+
+    .platform-item .check { color: #00ff00; }
+    .platform-item .name { color: #888888; display: block; margin-top: 4px; }
+
+    .changelog-entry { padding: 10px 0; border-bottom: 1px solid #111111; }
+    .changelog-version { font-size: 0.7rem; font-weight: 700; color: #ffffff; }
+    .changelog-date { font-size: 0.55rem; color: #444444; margin-left: 8px; }
+    .changelog-items { font-size: 0.58rem; color: #888888; margin-top: 6px; padding-left: 16px; }
+    .changelog-items li { margin-bottom: 3px; }
+
+    footer {
+      background: #000000;
+      padding: 20px 24px;
+      border-top: 1px solid #333333;
+      font-size: 0.58rem;
+      color: #444444;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    @media (min-width: 768px) {
+      header { padding: 20px 40px; }
+      .hero { padding: 56px 40px 44px; }
+      .hero h1 { font-size: 2.4rem; }
+      .pkg-grid { grid-template-columns: repeat(2, 1fr); }
+      .pkg-card { border-right: 1px solid #ffffff; }
+      .pkg-card:nth-child(2n) { border-right: none; }
+      .section { padding: 36px 40px; }
+      footer { padding: 20px 40px; flex-direction: row; justify-content: space-between; }
+    }
+
+    @media (min-width: 1024px) {
+      .pkg-grid { grid-template-columns: repeat(4, 1fr); }
+      .pkg-card:nth-child(2n) { border-right: 1px solid #ffffff; }
+      .pkg-card:nth-child(4n) { border-right: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <span class="logo">BlackRoad</span>
+    <nav>
+      <a href="#">packages</a>
+      <a href="#">docs</a>
+      <a href="#">changelog</a>
+      <a href="#">github</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="hero-label">Library v0.4</div>
+    <h1>SDK<br>Reference</h1>
+    <p>Official packages for building on BlackRoad OS. Install via npm.</p>
+  </div>
+
+  <div class="pkg-grid">
+    <div class="pkg-card">
+      <div class="pkg-name">@blackroad/core</div>
+      <div class="pkg-desc">Core runtime, routing engine, and signal protocol.</div>
+      <div class="pkg-install">npm install @blackroad/core</div>
+      <div class="pkg-meta"><span>v0.4.2</span><span>12KB</span><span>MIT</span></div>
+    </div>
+    <div class="pkg-card">
+      <div class="pkg-name">@blackroad/agents</div>
+      <div class="pkg-desc">Agent lifecycle management, task queue, and fleet coordination.</div>
+      <div class="pkg-install">npm install @blackroad/agents</div>
+      <div class="pkg-meta"><span>v0.4.1</span><span>18KB</span><span>MIT</span></div>
+    </div>
+    <div class="pkg-card">
+      <div class="pkg-name">@blackroad/ui</div>
+      <div class="pkg-desc">Design system components following BlackRoad brand guidelines.</div>
+      <div class="pkg-install">npm install @blackroad/ui</div>
+      <div class="pkg-meta"><span>v0.3.0</span><span>24KB</span><span>MIT</span></div>
+    </div>
+    <div class="pkg-card">
+      <div class="pkg-name">@blackroad/memory</div>
+      <div class="pkg-desc">Persistent memory layer with Redis, D1, and R2 backends.</div>
+      <div class="pkg-install">npm install @blackroad/memory</div>
+      <div class="pkg-meta"><span>v0.4.0</span><span>9KB</span><span>MIT</span></div>
+    </div>
+    <div class="pkg-card">
+      <div class="pkg-name">@blackroad/network</div>
+      <div class="pkg-desc">Mesh networking, tunnel management, and service discovery.</div>
+      <div class="pkg-install">npm install @blackroad/network</div>
+      <div class="pkg-meta"><span>v0.3.2</span><span>15KB</span><span>MIT</span></div>
+    </div>
+    <div class="pkg-card">
+      <div class="pkg-name">@blackroad/crypto</div>
+      <div class="pkg-desc">Key rotation, secret management, and webhook verification.</div>
+      <div class="pkg-install">npm install @blackroad/crypto</div>
+      <div class="pkg-meta"><span>v0.3.1</span><span>7KB</span><span>MIT</span></div>
+    </div>
+    <div class="pkg-card">
+      <div class="pkg-name">@blackroad/inference</div>
+      <div class="pkg-desc">Multi-provider AI routing: Hailo, Ollama, Claude, GPT.</div>
+      <div class="pkg-install">npm install @blackroad/inference</div>
+      <div class="pkg-meta"><span>v0.4.2</span><span>11KB</span><span>MIT</span></div>
+    </div>
+    <div class="pkg-card">
+      <div class="pkg-name">@blackroad/telemetry</div>
+      <div class="pkg-desc">Metrics collection, health checks, and signal emission.</div>
+      <div class="pkg-install">npm install @blackroad/telemetry</div>
+      <div class="pkg-meta"><span>v0.3.0</span><span>6KB</span><span>MIT</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">platform support</div>
+    <div class="platform-grid">
+      <div class="platform-item"><span class="check">&check;</span><span class="name">Node.js</span></div>
+      <div class="platform-item"><span class="check">&check;</span><span class="name">Deno</span></div>
+      <div class="platform-item"><span class="check">&check;</span><span class="name">Bun</span></div>
+      <div class="platform-item"><span class="check">&check;</span><span class="name">CF Workers</span></div>
+      <div class="platform-item"><span class="check">&check;</span><span class="name">Browser</span></div>
+      <div class="platform-item"><span class="check">&check;</span><span class="name">React Native</span></div>
+      <div class="platform-item"><span class="check">&check;</span><span class="name">Raspberry Pi</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">changelog</div>
+    <div class="changelog-entry">
+      <span class="changelog-version">v0.4.2</span><span class="changelog-date">2026-02-28</span>
+      <ul class="changelog-items">
+        <li>Added local_first inference strategy</li>
+        <li>Fixed Hailo-8 batch inference timeout</li>
+      </ul>
+    </div>
+    <div class="changelog-entry">
+      <span class="changelog-version">v0.4.1</span><span class="changelog-date">2026-02-15</span>
+      <ul class="changelog-items">
+        <li>Agent fleet coordination improvements</li>
+        <li>Task queue priority scheduling</li>
+      </ul>
+    </div>
+    <div class="changelog-entry">
+      <span class="changelog-version">v0.4.0</span><span class="changelog-date">2026-02-01</span>
+      <ul class="changelog-items">
+        <li>Memory layer R2 backend support</li>
+        <li>Persistent context across sessions</li>
+      </ul>
+    </div>
+    <div class="changelog-entry">
+      <span class="changelog-version">v0.3.0</span><span class="changelog-date">2026-01-15</span>
+      <ul class="changelog-items">
+        <li>Initial public release</li>
+        <li>Core routing, agents, UI, network packages</li>
+      </ul>
+    </div>
+  </div>
+
+  <footer>
+    <span>BlackRoad OS, Inc. &mdash; Delaware C-Corp</span>
+    <span>Library v0.4 &middot; 8 packages</span>
+  </footer>
+
+</body>
+</html>

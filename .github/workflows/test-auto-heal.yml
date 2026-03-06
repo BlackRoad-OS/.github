@@ -2,7 +2,7 @@ name: 🧪 Test Auto-Heal on Failure
 
 on:
   workflow_run:
-    workflows: ["*"]
+    workflows: ["CI"]
     types: [completed]
   push:
     branches: [main, master, develop]

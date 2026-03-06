@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BlackRoad — Directory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      background: #000000;
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #000000;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #ffffff;
+    }
+
+    .logo {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.05em;
+    }
+
+    nav {
+      font-size: 0.65rem;
+      display: flex;
+      gap: 20px;
+    }
+
+    nav a {
+      color: #888888;
+      text-decoration: none;
+    }
+
+    nav a:hover { color: #ffffff; }
+
+    .hero {
+      background: #000000;
+      padding: 48px 24px 36px;
+      border-bottom: 1px solid #ffffff;
+    }
+
+    .hero-label {
+      font-size: 0.6rem;
+      color: #555555;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .hero h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.05;
+    }
+
+    .hero p {
+      margin-top: 12px;
+      font-size: 0.7rem;
+      color: #666666;
+      line-height: 1.9;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+
+    .section {
+      background: #000000;
+      padding: 32px 24px;
+      border-bottom: 1px solid #ffffff;
+    }
+
+    .section-label {
+      font-size: 0.58rem;
+      color: #555555;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #333333;
+    }
+
+    .enterprise-link {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      text-decoration: none;
+      padding: 14px 16px;
+      border: 1px solid #ffffff;
+      background: #000000;
+    }
+
+    .enterprise-link .name {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .enterprise-link .url {
+      font-size: 0.58rem;
+      color: #555555;
+      word-break: break-all;
+    }
+
+    .org-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .org-list a {
+      background: #000000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      font-size: 0.7rem;
+      color: #aaaaaa;
+      text-decoration: none;
+    }
+
+    .org-list a:hover { color: #ffffff; }
+
+    .org-list a .arrow {
+      color: #444444;
+      font-size: 0.65rem;
+      flex-shrink: 0;
+      margin-left: 8px;
+    }
+
+    .domain-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .domain-item {
+      background: #000000;
+      display: flex;
+      align-items: center;
+      padding: 8px 10px;
+      font-size: 0.7rem;
+      color: #888888;
+    }
+
+    .domain-item:hover { color: #ffffff; }
+
+    .domain-item::before {
+      content: '\2014';
+      color: #333333;
+      margin-right: 10px;
+      font-size: 0.6rem;
+      flex-shrink: 0;
+    }
+
+    footer {
+      background: #000000;
+      padding: 20px 24px;
+      border-top: 1px solid #333333;
+      font-size: 0.58rem;
+      color: #444444;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    @media (min-width: 768px) {
+      header { padding: 20px 40px; }
+      .hero { padding: 56px 40px 44px; }
+      .hero h1 { font-size: 2.4rem; }
+      .grid { grid-template-columns: repeat(3, 1fr); }
+      .section { padding: 36px 40px; border-right: 1px solid #ffffff; }
+      .section:last-child { border-right: none; }
+      footer { padding: 20px 40px; flex-direction: row; justify-content: space-between; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <span class="logo">BlackRoad</span>
+    <nav>
+      <a href="#">enterprise</a>
+      <a href="#">orgs</a>
+      <a href="#">domains</a>
+      <a href="#">docs</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="hero-label">Directory v1.0</div>
+    <h1>Infrastructure<br>Index</h1>
+    <p>GitHub enterprise, organizations, and registered domains.</p>
+  </div>
+
+  <div class="grid">
+
+    <div class="section">
+      <div class="section-label">github enterprise</div>
+      <a class="enterprise-link" href="https://github.com/enterprises/blackroad-os" target="_blank">
+        <span class="name">blackroad-os</span>
+        <span class="url">github.com/enterprises/blackroad-os</span>
+      </a>
+    </div>
+
+    <div class="section">
+      <div class="section-label">organizations &middot; 15</div>
+      <div class="org-list">
+        <a href="https://github.com/Blackbox-Enterprises" target="_blank">Blackbox-Enterprises<span class="arrow">&nearr;</span></a>
+        <a href="https://github.com/BlackRoad-AI" target="_blank">BlackRoad-AI<span class="arrow">&nearr;</span></a>
+        <a href="https://github.com/BlackRoad-Archive" target="_blank">BlackRoad-Archive<span class="arrow">&nearr;</span></a>
+        <a href="https://github.com/BlackRoad-Cloud" target="_blank">BlackRoad-Cloud<span class="arrow">&nearr;</span></a>
+        <a href="https://github.com/BlackRoad-Education" target="_blank">BlackRoad-Education<span class="arrow">&nearr;</span></a>
+        <a href="https://github.com/BlackRoad-Foundation" target="_blank">BlackRoad-Foundation<span class="arrow">&nearr;</span></a>
+        <a href="https://github.com/BlackRoad-Gov" target="_blank">BlackRoad-Gov<span class="arrow">&nearr;</span></a>
+        <a href="https://github.com/BlackRoad-Hardware" target="_blank">BlackRoad-Hardware<span class="arrow">&nearr;</span></a>
+        <a href="https://github.com/BlackRoad-Interactive" target="_blank">BlackRoad-Interactive<span class="arrow">&nearr;</span></a>
+        <a href="https://github.com/BlackRoad-Labs" target="_blank">BlackRoad-Labs<span class="arrow">&nearr;</span></a>
+        <a href="https://github.com/BlackRoad-Media" target="_blank">BlackRoad-Media<span class="arrow">&nearr;</span></a>
+        <a href="https://github.com/BlackRoad-OS" target="_blank">BlackRoad-OS<span class="arrow">&nearr;</span></a>
+        <a href="https://github.com/BlackRoad-Security" target="_blank">BlackRoad-Security<span class="arrow">&nearr;</span></a>
+        <a href="https://github.com/BlackRoad-Studio" target="_blank">BlackRoad-Studio<span class="arrow">&nearr;</span></a>
+        <a href="https://github.com/BlackRoad-Ventures" target="_blank">BlackRoad-Ventures<span class="arrow">&nearr;</span></a>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">domains &middot; 19</div>
+      <div class="domain-list">
+        <div class="domain-item">blackboxprogramming.io</div>
+        <div class="domain-item">blackroad.company</div>
+        <div class="domain-item">blackroad.io</div>
+        <div class="domain-item">blackroad.me</div>
+        <div class="domain-item">blackroad.network</div>
+        <div class="domain-item">blackroad.systems</div>
+        <div class="domain-item">blackroadai.com</div>
+        <div class="domain-item">blackroadinc.us</div>
+        <div class="domain-item">blackroadqi.com</div>
+        <div class="domain-item">blackroadquantum.com</div>
+        <div class="domain-item">blackroadquantum.info</div>
+        <div class="domain-item">blackroadquantum.net</div>
+        <div class="domain-item">blackroadquantum.shop</div>
+        <div class="domain-item">blackroadquantum.store</div>
+        <div class="domain-item">lucidia.earth</div>
+        <div class="domain-item">lucidia.studio</div>
+        <div class="domain-item">lucidiaqi.com</div>
+        <div class="domain-item">roadchain.io</div>
+        <div class="domain-item">roadcoin.io</div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <span>BlackRoad OS, Inc. &mdash; Delaware C-Corp</span>
+    <span>1 enterprise &middot; 15 orgs &middot; 19 domains</span>
+  </footer>
+
+</body>
+</html>

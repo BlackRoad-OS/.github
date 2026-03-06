@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BlackRoad — Agent Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      background: #000000;
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #000000;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #ffffff;
+    }
+
+    .logo {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.05em;
+    }
+
+    nav {
+      font-size: 0.65rem;
+      display: flex;
+      gap: 20px;
+    }
+
+    nav a {
+      color: #888888;
+      text-decoration: none;
+    }
+
+    nav a:hover { color: #ffffff; }
+
+    .hero {
+      background: #000000;
+      padding: 48px 24px 36px;
+      border-bottom: 1px solid #ffffff;
+    }
+
+    .hero-label {
+      font-size: 0.6rem;
+      color: #555555;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .hero h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.05;
+    }
+
+    .hero p {
+      margin-top: 12px;
+      font-size: 0.7rem;
+      color: #666666;
+      line-height: 1.9;
+    }
+
+    .status-badges {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      font-size: 0.6rem;
+      padding: 4px 10px;
+      border: 1px solid #333333;
+      color: #888888;
+    }
+
+    .badge.online { border-color: #00ff00; color: #00ff00; }
+    .badge.idle { border-color: #ffaa00; color: #ffaa00; }
+    .badge.offline { border-color: #ff0000; color: #ff0000; }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+
+    .section {
+      background: #000000;
+      padding: 32px 24px;
+      border-bottom: 1px solid #ffffff;
+    }
+
+    .section-label {
+      font-size: 0.58rem;
+      color: #555555;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #333333;
+    }
+
+    .agent-card {
+      border: 1px solid #222222;
+      padding: 14px 16px;
+      margin-bottom: 8px;
+    }
+
+    .agent-card .agent-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .agent-card .agent-name {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .agent-card .agent-status {
+      font-size: 0.55rem;
+      padding: 2px 8px;
+      border: 1px solid #333333;
+    }
+
+    .agent-card .agent-status.online { border-color: #00ff00; color: #00ff00; }
+    .agent-card .agent-status.idle { border-color: #ffaa00; color: #ffaa00; }
+    .agent-card .agent-status.offline { border-color: #ff0000; color: #ff0000; }
+
+    .agent-card .agent-meta {
+      font-size: 0.58rem;
+      color: #555555;
+      margin-bottom: 10px;
+    }
+
+    .agent-card .agent-task {
+      font-size: 0.6rem;
+      color: #888888;
+      margin-bottom: 10px;
+    }
+
+    .progress-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .progress-label {
+      font-size: 0.55rem;
+      color: #555555;
+      width: 32px;
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 4px;
+      background: #222222;
+      position: relative;
+    }
+
+    .progress-bar .fill {
+      height: 100%;
+      background: #ffffff;
+    }
+
+    .progress-value {
+      font-size: 0.55rem;
+      color: #666666;
+      width: 32px;
+      text-align: right;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .metric-card {
+      border: 1px solid #222222;
+      padding: 14px 16px;
+    }
+
+    .metric-card .metric-value {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .metric-card .metric-label {
+      font-size: 0.55rem;
+      color: #555555;
+      margin-top: 4px;
+    }
+
+    .stats-table {
+      width: 100%;
+      margin-top: 16px;
+    }
+
+    .stats-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid #111111;
+      font-size: 0.6rem;
+    }
+
+    .stats-row .stats-key {
+      color: #555555;
+    }
+
+    .stats-row .stats-val {
+      color: #aaaaaa;
+    }
+
+    .config-block {
+      margin-bottom: 16px;
+    }
+
+    .config-title {
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: #888888;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .config-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      font-size: 0.58rem;
+    }
+
+    .config-item .config-key {
+      color: #555555;
+    }
+
+    .config-item .config-val {
+      color: #aaaaaa;
+    }
+
+    .activity-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .activity-entry {
+      display: flex;
+      gap: 10px;
+      padding: 6px 0;
+      font-size: 0.58rem;
+      border-bottom: 1px solid #111111;
+    }
+
+    .activity-time {
+      color: #333333;
+      white-space: nowrap;
+    }
+
+    .activity-indicator {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      margin-top: 4px;
+      flex-shrink: 0;
+    }
+
+    .activity-indicator.ok { background: #00ff00; }
+    .activity-indicator.warn { background: #ffaa00; }
+    .activity-indicator.error { background: #ff0000; }
+    .activity-indicator.info { background: #0066ff; }
+
+    .activity-msg {
+      color: #888888;
+    }
+
+    .link-group {
+      margin-bottom: 16px;
+    }
+
+    .link-group-title {
+      font-size: 0.58rem;
+      color: #555555;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 8px;
+    }
+
+    .link-group a {
+      display: block;
+      font-size: 0.6rem;
+      color: #888888;
+      text-decoration: none;
+      padding: 4px 0;
+    }
+
+    .link-group a:hover { color: #ffffff; }
+
+    footer {
+      background: #000000;
+      padding: 20px 24px;
+      border-top: 1px solid #333333;
+      font-size: 0.58rem;
+      color: #444444;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    @media (min-width: 768px) {
+      header { padding: 20px 40px; }
+      .hero { padding: 56px 40px 44px; }
+      .hero h1 { font-size: 2.4rem; }
+      .grid-3 { grid-template-columns: repeat(3, 1fr); }
+      .grid-2 { grid-template-columns: repeat(2, 1fr); }
+      .section { padding: 36px 40px; border-right: 1px solid #ffffff; }
+      .section:last-child { border-right: none; }
+      footer { padding: 20px 40px; flex-direction: row; justify-content: space-between; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <span class="logo">BlackRoad</span>
+    <nav>
+      <a href="#">agents</a>
+      <a href="#">metrics</a>
+      <a href="#">logs</a>
+      <a href="#">config</a>
+      <a href="#">docs</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="hero-label">Dashboard v1.0</div>
+    <h1>Agent<br>Control</h1>
+    <p>Live fleet monitoring, metrics, and configuration for the BlackRoad agent mesh.</p>
+    <div class="status-badges">
+      <span class="badge online">4 online</span>
+      <span class="badge idle">2 idle</span>
+      <span class="badge offline">3 offline</span>
+      <span class="badge">99.2% uptime</span>
+    </div>
+  </div>
+
+  <div class="grid-3">
+
+    <div class="section">
+      <div class="section-label">live status</div>
+
+      <div class="agent-card">
+        <div class="agent-header">
+          <span class="agent-name">Cecilia</span>
+          <span class="agent-status online">online</span>
+        </div>
+        <div class="agent-meta">claude-opus-4-20250514 &middot; Mac Dev</div>
+        <div class="agent-task">Processing: CI pipeline review</div>
+        <div class="progress-row">
+          <span class="progress-label">CPU</span>
+          <div class="progress-bar"><div class="fill" style="width:62%"></div></div>
+          <span class="progress-value">62%</span>
+        </div>
+        <div class="progress-row">
+          <span class="progress-label">MEM</span>
+          <div class="progress-bar"><div class="fill" style="width:48%"></div></div>
+          <span class="progress-value">48%</span>
+        </div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-header">
+          <span class="agent-name">Cadence</span>
+          <span class="agent-status online">online</span>
+        </div>
+        <div class="agent-meta">gpt-4o &middot; Cloud Router</div>
+        <div class="agent-task">Processing: Webhook dispatch</div>
+        <div class="progress-row">
+          <span class="progress-label">CPU</span>
+          <div class="progress-bar"><div class="fill" style="width:34%"></div></div>
+          <span class="progress-value">34%</span>
+        </div>
+        <div class="progress-row">
+          <span class="progress-label">MEM</span>
+          <div class="progress-bar"><div class="fill" style="width:29%"></div></div>
+          <span class="progress-value">29%</span>
+        </div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-header">
+          <span class="agent-name">Eve</span>
+          <span class="agent-status online">online</span>
+        </div>
+        <div class="agent-meta">hailo-8 &middot; Edge Inference</div>
+        <div class="agent-task">Processing: Image classification</div>
+        <div class="progress-row">
+          <span class="progress-label">CPU</span>
+          <div class="progress-bar"><div class="fill" style="width:88%"></div></div>
+          <span class="progress-value">88%</span>
+        </div>
+        <div class="progress-row">
+          <span class="progress-label">MEM</span>
+          <div class="progress-bar"><div class="fill" style="width:71%"></div></div>
+          <span class="progress-value">71%</span>
+        </div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-header">
+          <span class="agent-name">Gematria</span>
+          <span class="agent-status online">online</span>
+        </div>
+        <div class="agent-meta">ollama/llama3 &middot; Local LLM</div>
+        <div class="agent-task">Processing: Document analysis</div>
+        <div class="progress-row">
+          <span class="progress-label">CPU</span>
+          <div class="progress-bar"><div class="fill" style="width:55%"></div></div>
+          <span class="progress-value">55%</span>
+        </div>
+        <div class="progress-row">
+          <span class="progress-label">MEM</span>
+          <div class="progress-bar"><div class="fill" style="width:67%"></div></div>
+          <span class="progress-value">67%</span>
+        </div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-header">
+          <span class="agent-name">Lucidia</span>
+          <span class="agent-status idle">idle</span>
+        </div>
+        <div class="agent-meta">hailo-8 &middot; Primary Node</div>
+        <div class="agent-task">Awaiting task assignment</div>
+        <div class="progress-row">
+          <span class="progress-label">CPU</span>
+          <div class="progress-bar"><div class="fill" style="width:12%"></div></div>
+          <span class="progress-value">12%</span>
+        </div>
+        <div class="progress-row">
+          <span class="progress-label">MEM</span>
+          <div class="progress-bar"><div class="fill" style="width:24%"></div></div>
+          <span class="progress-value">24%</span>
+        </div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-header">
+          <span class="agent-name">Olympia</span>
+          <span class="agent-status idle">idle</span>
+        </div>
+        <div class="agent-meta">claude-haiku &middot; Triage</div>
+        <div class="agent-task">Standby mode</div>
+        <div class="progress-row">
+          <span class="progress-label">CPU</span>
+          <div class="progress-bar"><div class="fill" style="width:5%"></div></div>
+          <span class="progress-value">5%</span>
+        </div>
+        <div class="progress-row">
+          <span class="progress-label">MEM</span>
+          <div class="progress-bar"><div class="fill" style="width:18%"></div></div>
+          <span class="progress-value">18%</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="section">
+      <div class="section-label">metrics</div>
+
+      <div class="metric-grid">
+        <div class="metric-card">
+          <div class="metric-value">1,024</div>
+          <div class="metric-label">Total Agents</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">6</div>
+          <div class="metric-label">Active Now</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">98k</div>
+          <div class="metric-label">Msgs / Hour</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">14ms</div>
+          <div class="metric-label">Avg Latency</div>
+        </div>
+      </div>
+
+      <div class="stats-table">
+        <div class="stats-row"><span class="stats-key">Cluster Nodes</span><span class="stats-val">5 active</span></div>
+        <div class="stats-row"><span class="stats-key">NATS Streams</span><span class="stats-val">12 / 12</span></div>
+        <div class="stats-row"><span class="stats-key">K3s Pods</span><span class="stats-val">38 running</span></div>
+        <div class="stats-row"><span class="stats-key">Redis Keys</span><span class="stats-val">142,891</span></div>
+        <div class="stats-row"><span class="stats-key">D1 Rows</span><span class="stats-val">2.1M</span></div>
+        <div class="stats-row"><span class="stats-key">R2 Objects</span><span class="stats-val">18,402</span></div>
+        <div class="stats-row"><span class="stats-key">CF Workers</span><span class="stats-val">4 deployed</span></div>
+        <div class="stats-row"><span class="stats-key">Tunnels</span><span class="stats-val">4 active</span></div>
+        <div class="stats-row"><span class="stats-key">Uptime</span><span class="stats-val">99.2%</span></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">config / specs</div>
+
+      <div class="config-block">
+        <div class="config-title">Orchestration</div>
+        <div class="config-item"><span class="config-key">Engine</span><span class="config-val">BlackRoad OS</span></div>
+        <div class="config-item"><span class="config-key">Messaging</span><span class="config-val">NATS JetStream</span></div>
+        <div class="config-item"><span class="config-key">Scheduler</span><span class="config-val">K3s</span></div>
+        <div class="config-item"><span class="config-key">Mesh</span><span class="config-val">Tailscale</span></div>
+      </div>
+
+      <div class="config-block">
+        <div class="config-title">Memory Layer</div>
+        <div class="config-item"><span class="config-key">Cache</span><span class="config-val">Redis 7.x</span></div>
+        <div class="config-item"><span class="config-key">Database</span><span class="config-val">D1 / SQLite</span></div>
+        <div class="config-item"><span class="config-key">Storage</span><span class="config-val">R2 + MinIO</span></div>
+        <div class="config-item"><span class="config-key">Vectors</span><span class="config-val">Vectorize</span></div>
+      </div>
+
+      <div class="config-block">
+        <div class="config-title">Inference</div>
+        <div class="config-item"><span class="config-key">Edge</span><span class="config-val">Hailo-8 (26 TOPS)</span></div>
+        <div class="config-item"><span class="config-key">Local</span><span class="config-val">Ollama / Llama 3</span></div>
+        <div class="config-item"><span class="config-key">Cloud</span><span class="config-val">Claude + GPT-4o</span></div>
+        <div class="config-item"><span class="config-key">Strategy</span><span class="config-val">local_first</span></div>
+      </div>
+
+      <div class="config-block">
+        <div class="config-title">Network</div>
+        <div class="config-item"><span class="config-key">Edge</span><span class="config-val">Cloudflare</span></div>
+        <div class="config-item"><span class="config-key">Tunnels</span><span class="config-val">4 active</span></div>
+        <div class="config-item"><span class="config-key">Domains</span><span class="config-val">19 registered</span></div>
+        <div class="config-item"><span class="config-key">DNS</span><span class="config-val">Cloudflare DNS</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="grid-2">
+
+    <div class="section">
+      <div class="section-label">activity feed</div>
+      <div class="activity-feed">
+        <div class="activity-entry">
+          <span class="activity-time">09:42:01</span>
+          <span class="activity-indicator ok"></span>
+          <span class="activity-msg">Cecilia completed CI pipeline review</span>
+        </div>
+        <div class="activity-entry">
+          <span class="activity-time">09:41:38</span>
+          <span class="activity-indicator info"></span>
+          <span class="activity-msg">Cadence routed webhook to BlackRoad-Foundation</span>
+        </div>
+        <div class="activity-entry">
+          <span class="activity-time">09:41:12</span>
+          <span class="activity-indicator ok"></span>
+          <span class="activity-msg">Eve classified 48 images (batch #1092)</span>
+        </div>
+        <div class="activity-entry">
+          <span class="activity-time">09:40:55</span>
+          <span class="activity-indicator ok"></span>
+          <span class="activity-msg">Gematria analyzed 12 documents</span>
+        </div>
+        <div class="activity-entry">
+          <span class="activity-time">09:40:30</span>
+          <span class="activity-indicator warn"></span>
+          <span class="activity-msg">Lucidia entering idle state (no pending tasks)</span>
+        </div>
+        <div class="activity-entry">
+          <span class="activity-time">09:39:45</span>
+          <span class="activity-indicator info"></span>
+          <span class="activity-msg">Memory commit: 142,891 keys synced to Redis</span>
+        </div>
+        <div class="activity-entry">
+          <span class="activity-time">09:39:12</span>
+          <span class="activity-indicator ok"></span>
+          <span class="activity-msg">Health check passed: all 5 nodes responsive</span>
+        </div>
+        <div class="activity-entry">
+          <span class="activity-time">09:38:48</span>
+          <span class="activity-indicator ok"></span>
+          <span class="activity-msg">Self-healing workflow completed successfully</span>
+        </div>
+        <div class="activity-entry">
+          <span class="activity-time">09:38:01</span>
+          <span class="activity-indicator info"></span>
+          <span class="activity-msg">NATS stream checkpoint: 12/12 streams healthy</span>
+        </div>
+        <div class="activity-entry">
+          <span class="activity-time">09:37:22</span>
+          <span class="activity-indicator ok"></span>
+          <span class="activity-msg">Tunnel keepalive: 4/4 tunnels active</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">links</div>
+
+      <div class="link-group">
+        <div class="link-group-title">Infrastructure</div>
+        <a href="https://github.com/BlackRoad-OS">BlackRoad-OS (GitHub)</a>
+        <a href="https://dash.cloudflare.com">Cloudflare Dashboard</a>
+        <a href="#">Tailscale Admin</a>
+        <a href="#">Grafana Metrics</a>
+      </div>
+
+      <div class="link-group">
+        <div class="link-group-title">Agents</div>
+        <a href="https://github.com/BlackRoad-AI">BlackRoad-AI (GitHub)</a>
+        <a href="#">Agent Registry</a>
+        <a href="#">Task Queue</a>
+      </div>
+
+      <div class="link-group">
+        <div class="link-group-title">Repositories</div>
+        <a href="https://github.com/BlackRoad-OS/.github">The Bridge (.github)</a>
+        <a href="https://github.com/BlackRoad-Cloud">BlackRoad-Cloud</a>
+        <a href="https://github.com/BlackRoad-Hardware">BlackRoad-Hardware</a>
+      </div>
+
+      <div class="link-group">
+        <div class="link-group-title">Documentation</div>
+        <a href="#">Architecture Guide</a>
+        <a href="#">API Reference</a>
+        <a href="#">Integration Map</a>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <span>BlackRoad OS, Inc. &mdash; Delaware C-Corp</span>
+    <span>Dashboard v1.0 &middot; Agent Control</span>
+  </footer>
+
+</body>
+</html>
