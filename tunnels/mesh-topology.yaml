@@ -1,0 +1,316 @@
+# ═══════════════════════════════════════════════════════════════════
+# BlackRoad Tunnel Mesh Topology
+# Complete mapping of all Cloudflare Tunnels + Tailscale mesh
+# ═══════════════════════════════════════════════════════════════════
+
+mesh:
+  name: blackroad-mesh
+  version: "2.0"
+  description: Hybrid edge-to-origin tunnel mesh with Tailscale overlay
+
+# ─── Cloudflare Tunnels ─────────────────────────────────────────
+tunnels:
+  blackroad-primary:
+    node: lucidia
+    config: /etc/cloudflared/lucidia.yaml
+    origin: lucidia.blackroad.ts.net
+    role: primary
+    services_exposed: 15
+    domains:
+      - api.blackroad.ai
+      - metrics.blackroad.ai
+      - auth.blackroad.ai
+      - vault.blackroad.ai
+      - inference.blackroad.ai
+      - gov.blackroad.ai
+      - ssh.blackroad.ai
+      - prometheus.blackroad.ai
+
+  blackroad-storage:
+    node: aria
+    config: /etc/cloudflared/aria.yaml
+    origin: aria.blackroad.ts.net
+    role: storage
+    services_exposed: 7
+    domains:
+      - storage.blackroad.ai
+      - storage-console.blackroad.ai
+      - gdrive.blackroad.ai
+      - backup.blackroad.ai
+      - db.blackroad.ai
+      - redis.blackroad.ai
+
+  blackroad-agents:
+    node: alice
+    config: /etc/cloudflared/alice.yaml
+    origin: alice.blackroad.ts.net
+    role: agents
+    services_exposed: 7
+    domains:
+      - agents.blackroad.ai
+      - ai.blackroad.ai
+      - mcp.blackroad.ai
+      - hailo-alice.blackroad.ai
+
+  blackroad-compute:
+    node: octavia
+    config: /etc/cloudflared/octavia.yaml
+    origin: octavia.blackroad.ts.net
+    role: compute
+    services_exposed: 11
+    domains:
+      - jobs.blackroad.ai
+      - content.blackroad.ai
+      - social.blackroad.ai
+      - game.blackroad.ai
+      - meta.blackroad.ai
+      - figma.blackroad.ai
+      - assets.blackroad.ai
+      - lab.blackroad.ai
+
+# ─── Tailscale Overlay Network ──────────────────────────────────
+tailscale:
+  tailnet: blackroad.ts.net
+  nodes:
+    lucidia:
+      ip: 100.x.x.1
+      hostname: lucidia.blackroad.ts.net
+      role: primary
+      advertise_routes:
+        - 192.168.1.0/24
+      exit_node: false
+
+    octavia:
+      ip: 100.x.x.2
+      hostname: octavia.blackroad.ts.net
+      role: compute
+      advertise_routes: []
+      exit_node: false
+
+    aria:
+      ip: 100.x.x.3
+      hostname: aria.blackroad.ts.net
+      role: storage
+      advertise_routes: []
+      exit_node: false
+
+    alice:
+      ip: 100.x.x.4
+      hostname: alice.blackroad.ts.net
+      role: agents
+      advertise_routes: []
+      exit_node: false
+
+    arcadia:
+      ip: 100.x.x.5
+      hostname: arcadia.blackroad.ts.net
+      role: auxiliary
+      advertise_routes: []
+      exit_node: false
+
+    cecilia:
+      ip: 100.x.x.6
+      hostname: cecilia.blackroad.ts.net
+      role: coordination
+      advertise_routes: []
+      exit_node: false
+
+  acls:
+    - action: accept
+      src: ["*"]
+      dst: ["*:*"]
+      comment: Full mesh — all nodes can talk to all nodes
+
+# ─── DNS Mapping ────────────────────────────────────────────────
+dns:
+  zone: blackroad.ai
+  records:
+    # ── Primary (lucidia via tunnel) ──
+    - name: api
+      type: CNAME
+      target: blackroad-primary.cfargotunnel.com
+      proxied: true
+
+    - name: metrics
+      type: CNAME
+      target: blackroad-primary.cfargotunnel.com
+      proxied: true
+
+    - name: auth
+      type: CNAME
+      target: blackroad-primary.cfargotunnel.com
+      proxied: true
+
+    - name: vault
+      type: CNAME
+      target: blackroad-primary.cfargotunnel.com
+      proxied: true
+
+    - name: inference
+      type: CNAME
+      target: blackroad-primary.cfargotunnel.com
+      proxied: true
+
+    - name: gov
+      type: CNAME
+      target: blackroad-primary.cfargotunnel.com
+      proxied: true
+
+    - name: ssh
+      type: CNAME
+      target: blackroad-primary.cfargotunnel.com
+      proxied: true
+
+    - name: prometheus
+      type: CNAME
+      target: blackroad-primary.cfargotunnel.com
+      proxied: false
+
+    # ── Storage (aria via tunnel) ──
+    - name: storage
+      type: CNAME
+      target: blackroad-storage.cfargotunnel.com
+      proxied: true
+
+    - name: storage-console
+      type: CNAME
+      target: blackroad-storage.cfargotunnel.com
+      proxied: true
+
+    - name: gdrive
+      type: CNAME
+      target: blackroad-storage.cfargotunnel.com
+      proxied: true
+
+    - name: backup
+      type: CNAME
+      target: blackroad-storage.cfargotunnel.com
+      proxied: true
+
+    - name: db
+      type: CNAME
+      target: blackroad-storage.cfargotunnel.com
+      proxied: true
+
+    - name: redis
+      type: CNAME
+      target: blackroad-storage.cfargotunnel.com
+      proxied: true
+
+    # ── Agents (alice via tunnel) ──
+    - name: agents
+      type: CNAME
+      target: blackroad-agents.cfargotunnel.com
+      proxied: true
+
+    - name: ai
+      type: CNAME
+      target: blackroad-agents.cfargotunnel.com
+      proxied: true
+
+    - name: mcp
+      type: CNAME
+      target: blackroad-agents.cfargotunnel.com
+      proxied: true
+
+    # ── Compute (octavia via tunnel) ──
+    - name: jobs
+      type: CNAME
+      target: blackroad-compute.cfargotunnel.com
+      proxied: true
+
+    - name: content
+      type: CNAME
+      target: blackroad-compute.cfargotunnel.com
+      proxied: true
+
+    - name: social
+      type: CNAME
+      target: blackroad-compute.cfargotunnel.com
+      proxied: true
+
+    - name: game
+      type: CNAME
+      target: blackroad-compute.cfargotunnel.com
+      proxied: true
+
+    - name: meta
+      type: CNAME
+      target: blackroad-compute.cfargotunnel.com
+      proxied: true
+
+    - name: figma
+      type: CNAME
+      target: blackroad-compute.cfargotunnel.com
+      proxied: true
+
+    - name: assets
+      type: CNAME
+      target: blackroad-compute.cfargotunnel.com
+      proxied: true
+
+    - name: lab
+      type: CNAME
+      target: blackroad-compute.cfargotunnel.com
+      proxied: true
+
+    # ── Edge Workers (Cloudflare direct) ──
+    - name: edge
+      type: CNAME
+      target: blackroad-api-gateway.workers.dev
+      proxied: true
+
+    - name: cdn
+      type: CNAME
+      target: blackroad-assets.r2.dev
+      proxied: true
+
+    # ── Education / Docs ──
+    - name: learn
+      type: CNAME
+      target: blackroad-storage.cfargotunnel.com
+      proxied: true
+
+    - name: docs
+      type: CNAME
+      target: blackroad-storage.cfargotunnel.com
+      proxied: true
+
+# ─── Traffic Flow ───────────────────────────────────────────────
+flow:
+  description: |
+    User → Cloudflare Edge (300+ PoPs)
+      → Workers (api-gateway) → Rate limit, auth, cache
+        → Cloudflare Tunnel → Origin node
+          → Tailscale mesh → Internal services
+
+  paths:
+    external_api:
+      entry: api.blackroad.ai
+      edge: blackroad-api-gateway (Worker)
+      tunnel: blackroad-primary
+      origin: lucidia:8080
+
+    ai_inference:
+      entry: ai.blackroad.ai
+      edge: blackroad-api-gateway (Worker)
+      tunnel: blackroad-agents
+      origin: alice:8080
+
+    storage_api:
+      entry: storage.blackroad.ai
+      edge: blackroad-api-gateway (Worker)
+      tunnel: blackroad-storage
+      origin: aria:9000
+
+    compute_jobs:
+      entry: jobs.blackroad.ai
+      edge: blackroad-api-gateway (Worker)
+      tunnel: blackroad-compute
+      origin: octavia:8081
+
+    websocket_signals:
+      entry: wss://api.blackroad.ai/ws
+      edge: blackroad-api-gateway (Worker + Durable Object)
+      tunnel: n/a (edge-terminated)
+      origin: Durable Object (WebSocketRoom)

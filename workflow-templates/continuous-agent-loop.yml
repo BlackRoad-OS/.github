@@ -1,0 +1,23 @@
+name: "Continuous Agent Loop"
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+concurrency:
+  group: continuous-${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  run-and-requeue:
+    runs-on: [self-hosted, blackroad]
+    timeout-minutes: 1450
+    steps:
+      - name: Work cycle
+        run: sleep 86403 && echo "cycle complete"
+      - name: Self-retrigger
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run ${{ github.workflow }}.yml --repo ${{ github.repository }}

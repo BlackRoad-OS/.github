@@ -1,0 +1,7 @@
+{
+  "name": "Pi Runner Sync",
+  "description": "Sync with Pi self-hosted runners - $0 billable",
+  "iconName": "octicons:server-24",
+  "categories": ["continuous-integration", "deployment"],
+  "filePatterns": ["package*.json", "Cargo.toml", "*.py"]
+}

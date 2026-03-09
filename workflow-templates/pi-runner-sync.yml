@@ -1,0 +1,20 @@
+name: "Pi Runner Sync"
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: [self-hosted, blackroad]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Platform sync
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          echo "🤖 $(hostname) running platform sync"
+          echo "branch: ${{ github.ref_name }}"
+          echo "commit: ${{ github.sha }}"

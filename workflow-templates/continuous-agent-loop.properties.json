@@ -1,0 +1,6 @@
+{
+  "name": "Continuous Agent Loop",
+  "description": "24h+3s self-triggering loop on Pi runners - $0 billable",
+  "iconName": "octicons:sync-24",
+  "categories": ["automation"]
+}

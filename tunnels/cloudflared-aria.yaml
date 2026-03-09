@@ -1,0 +1,67 @@
+# ═══════════════════════════════════════════════════════════════════
+# Cloudflare Tunnel — aria (Storage Node)
+# Exposes: MinIO S3, PostgreSQL proxy, Redis, GDrive sync, Backups
+# ═══════════════════════════════════════════════════════════════════
+#
+# Create:   cloudflared tunnel create blackroad-storage
+# Run:      cloudflared tunnel --config /etc/cloudflared/aria.yaml run
+
+tunnel: blackroad-storage
+credentials-file: /etc/cloudflared/blackroad-storage.json
+
+originRequest:
+  connectTimeout: 30s
+  tlsTimeout: 10s
+  tcpKeepAlive: 30s
+  keepAliveConnections: 10
+  keepAliveTimeout: 90s
+
+ingress:
+  # ── MinIO S3 API ──
+  - hostname: storage.blackroad.ai
+    service: http://localhost:9000
+    originRequest:
+      connectTimeout: 60s
+
+  # ── MinIO Console ──
+  - hostname: storage-console.blackroad.ai
+    service: http://localhost:9001
+    originRequest:
+      noTLSVerify: true
+
+  # ── Google Drive Sync API ──
+  - hostname: api.blackroad.ai
+    path: /v1/gdrive.*
+    service: http://localhost:8097
+
+  - hostname: gdrive.blackroad.ai
+    service: http://localhost:8097
+
+  # ── Backup Service ──
+  - hostname: api.blackroad.ai
+    path: /v1/backup.*
+    service: http://localhost:8098
+
+  - hostname: backup.blackroad.ai
+    service: http://localhost:8098
+
+  # ── PostgreSQL TCP proxy (Access Controlled) ──
+  - hostname: db.blackroad.ai
+    service: tcp://localhost:5432
+    originRequest:
+      connectTimeout: 10s
+
+  # ── Redis TCP proxy (Access Controlled) ──
+  - hostname: redis.blackroad.ai
+    service: tcp://localhost:6379
+
+  # ── Prometheus metrics ──
+  - hostname: aria-metrics.blackroad.ai
+    service: http://localhost:9100
+
+  # ── SSH ──
+  - hostname: ssh-aria.blackroad.ai
+    service: ssh://localhost:22
+
+  # ── Catch-all ──
+  - service: http_status:404

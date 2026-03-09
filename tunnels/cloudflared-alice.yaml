@@ -1,0 +1,74 @@
+# ═══════════════════════════════════════════════════════════════════
+# Cloudflare Tunnel — alice (Agent Node)
+# Exposes: Agent runtime, MCP server, Hailo inference, Cron agents
+# ═══════════════════════════════════════════════════════════════════
+#
+# Create:   cloudflared tunnel create blackroad-agents
+# Run:      cloudflared tunnel --config /etc/cloudflared/alice.yaml run
+
+tunnel: blackroad-agents
+credentials-file: /etc/cloudflared/blackroad-agents.json
+
+originRequest:
+  connectTimeout: 30s
+  tlsTimeout: 10s
+  tcpKeepAlive: 30s
+  keepAliveConnections: 10
+  keepAliveTimeout: 90s
+
+ingress:
+  # ── AI Agent Runtime ──
+  - hostname: api.blackroad.ai
+    path: /v1/agents.*
+    service: http://localhost:8082
+    originRequest:
+      connectTimeout: 120s
+
+  - hostname: agents.blackroad.ai
+    service: http://localhost:8082
+    originRequest:
+      connectTimeout: 120s
+
+  # ── AI Completion (router) ──
+  - hostname: api.blackroad.ai
+    path: /v1/complete.*
+    service: http://localhost:8080
+
+  - hostname: ai.blackroad.ai
+    service: http://localhost:8080
+
+  # ── AI Embeddings ──
+  - hostname: api.blackroad.ai
+    path: /v1/embed.*
+    service: http://localhost:8080
+
+  # ── MCP Server ──
+  - hostname: api.blackroad.ai
+    path: /v1/mcp.*
+    service: http://localhost:8083
+
+  - hostname: mcp.blackroad.ai
+    service: http://localhost:8083
+    originRequest:
+      connectTimeout: 60s
+
+  # ── Hailo Local Inference ──
+  - hostname: api.blackroad.ai
+    path: /v1/hailo.*
+    service: http://localhost:5000
+    originRequest:
+      connectTimeout: 60s
+
+  - hostname: hailo-alice.blackroad.ai
+    service: http://localhost:5000
+
+  # ── Prometheus metrics ──
+  - hostname: alice-metrics.blackroad.ai
+    service: http://localhost:9100
+
+  # ── SSH ──
+  - hostname: ssh-alice.blackroad.ai
+    service: ssh://localhost:22
+
+  # ── Catch-all ──
+  - service: http_status:404

@@ -1,0 +1,163 @@
+# ═══════════════════════════════════════════════════════════════════
+# BlackRoad API Gateway — Wrangler Configuration
+# Primary edge entry point for the entire BlackRoad ecosystem
+# ═══════════════════════════════════════════════════════════════════
+
+name = "blackroad-api-gateway"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# ─── Account ─────────────────────────────────────────────────────
+# account_id = "YOUR_ACCOUNT_ID"  # Set via CLOUDFLARE_ACCOUNT_ID env var
+
+# ─── Routes ──────────────────────────────────────────────────────
+routes = [
+  { pattern = "api.blackroad.ai/*", zone_name = "blackroad.ai" },
+  { pattern = "edge.blackroad.ai/*", zone_name = "blackroad.ai" },
+]
+
+# ─── KV Namespaces ───────────────────────────────────────────────
+[[kv_namespaces]]
+binding = "CACHE"
+id = "CACHE_KV_ID"
+preview_id = "CACHE_KV_PREVIEW_ID"
+
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "SESSIONS_KV_ID"
+preview_id = "SESSIONS_KV_PREVIEW_ID"
+
+[[kv_namespaces]]
+binding = "RATE_LIMITS"
+id = "RATE_LIMITS_KV_ID"
+preview_id = "RATE_LIMITS_KV_PREVIEW_ID"
+
+[[kv_namespaces]]
+binding = "CONFIG"
+id = "CONFIG_KV_ID"
+preview_id = "CONFIG_KV_PREVIEW_ID"
+
+[[kv_namespaces]]
+binding = "API_KEYS"
+id = "API_KEYS_KV_ID"
+preview_id = "API_KEYS_KV_PREVIEW_ID"
+
+# ─── D1 Databases ────────────────────────────────────────────────
+[[d1_databases]]
+binding = "DB"
+database_name = "blackroad"
+database_id = "BLACKROAD_D1_ID"
+
+# ─── R2 Buckets ──────────────────────────────────────────────────
+[[r2_buckets]]
+binding = "ASSETS"
+bucket_name = "blackroad-assets"
+
+[[r2_buckets]]
+binding = "UPLOADS"
+bucket_name = "blackroad-uploads"
+
+# ─── Workers AI ──────────────────────────────────────────────────
+[ai]
+binding = "AI"
+
+# ─── Queues (Producers) ─────────────────────────────────────────
+[[queues.producers]]
+binding = "WEBHOOK_QUEUE"
+queue = "blackroad-webhooks"
+
+[[queues.producers]]
+binding = "ANALYTICS_QUEUE"
+queue = "blackroad-analytics"
+
+[[queues.producers]]
+binding = "SIGNAL_QUEUE"
+queue = "blackroad-signals"
+
+# ─── Queues (Consumers) ─────────────────────────────────────────
+[[queues.consumers]]
+queue = "blackroad-webhooks"
+max_batch_size = 10
+max_batch_timeout = 30
+
+[[queues.consumers]]
+queue = "blackroad-analytics"
+max_batch_size = 50
+max_batch_timeout = 60
+
+[[queues.consumers]]
+queue = "blackroad-signals"
+max_batch_size = 10
+max_batch_timeout = 10
+
+# ─── Analytics Engine ────────────────────────────────────────────
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+
+# ─── Vectorize ───────────────────────────────────────────────────
+[[vectorize]]
+binding = "VECTORIZE"
+index_name = "blackroad-embeddings"
+
+# ─── Durable Objects ─────────────────────────────────────────────
+[durable_objects]
+bindings = [
+  { name = "RATE_LIMITER", class_name = "RateLimiter" },
+  { name = "SESSION_MANAGER", class_name = "SessionManager" },
+  { name = "WEBSOCKET_ROOM", class_name = "WebSocketRoom" },
+]
+
+[[migrations]]
+tag = "v1"
+new_classes = ["RateLimiter", "SessionManager", "WebSocketRoom"]
+
+# ─── Service Bindings (Tunnel Origins) ───────────────────────────
+[[services]]
+binding = "ORIGIN_PRIMARY"
+service = "blackroad-tunnel-lucidia"
+
+[[services]]
+binding = "ORIGIN_STORAGE"
+service = "blackroad-tunnel-aria"
+
+[[services]]
+binding = "ORIGIN_AGENTS"
+service = "blackroad-tunnel-alice"
+
+[[services]]
+binding = "ORIGIN_COMPUTE"
+service = "blackroad-tunnel-octavia"
+
+# ─── Scheduled (CRON) ───────────────────────────────────────────
+[triggers]
+crons = [
+  "*/5 * * * *",   # Health check all nodes every 5 min
+  "0 * * * *",     # Hourly metrics aggregation
+  "0 0 * * *",     # Daily API key rotation
+]
+
+# ─── Environment Variables ───────────────────────────────────────
+[vars]
+ENVIRONMENT = "production"
+NODE_NAME = "shellfish"
+
+# ─── Secrets (set via `wrangler secret put`) ─────────────────────
+# JWT_SECRET
+# STRIPE_WEBHOOK_SECRET
+# GITHUB_WEBHOOK_SECRET
+# ANTHROPIC_API_KEY
+
+# ═══════════════════════════════════════════════════════════════════
+# STAGING ENVIRONMENT
+# ═══════════════════════════════════════════════════════════════════
+
+[env.staging]
+name = "blackroad-api-gateway-staging"
+routes = [
+  { pattern = "staging-api.blackroad.ai/*", zone_name = "blackroad.ai" },
+]
+
+[env.staging.vars]
+ENVIRONMENT = "staging"
+NODE_NAME = "shellfish-staging"

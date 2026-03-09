@@ -16,7 +16,7 @@ jobs:
   dependency-auto-pr:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       
       - name: 📦 Check for dependency updates
         id: deps
@@ -102,7 +102,7 @@ jobs:
   code-quality-pr:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       
       - name: 🔍 Analyze code quality
         id: quality
@@ -174,7 +174,7 @@ jobs:
   security-auto-pr:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       
       - name: 🔒 Security audit
         id: security
@@ -221,7 +221,7 @@ jobs:
   documentation-auto-pr:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       
       - name: 📚 Generate documentation
         id: docs
@@ -281,7 +281,7 @@ EOFREADME
   performance-auto-pr:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       
       - name: ⚡ Performance optimization
         id: perf

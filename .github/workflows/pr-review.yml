@@ -19,7 +19,7 @@ jobs:
       has_workflows: ${{ steps.changes.outputs.workflows }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           fetch-depth: 0
 
@@ -42,7 +42,7 @@ jobs:
     if: needs.analyze.outputs.has_python == 'true'
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -70,7 +70,7 @@ jobs:
     if: needs.analyze.outputs.has_yaml == 'true'
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
       - name: Validate YAML
         run: |
@@ -89,7 +89,7 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
       - name: Check workflow syntax
         run: |
@@ -101,7 +101,7 @@ jobs:
           done >> $GITHUB_STEP_SUMMARY
 
       - name: Comment on PR
-        uses: actions/github-script@v7
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
         with:
           script: |
             const body = `## Workflow Changes Detected

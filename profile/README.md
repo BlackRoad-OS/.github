@@ -1,55 +1,38 @@
-# BlackRoad OS
+<div align="center">
 
-> **We route intelligence. We don't build it.**
+# ⚡ BlackRoad OS
 
----
+### The Operating System for AI
 
-## What Is This?
+Core platform powering 30,000+ AI agents, infrastructure mesh, and the BlackRoad developer ecosystem.
 
-BlackRoad is an orchestration layer that connects users to the intelligence that already exists - Claude, GPT, Llama, databases, APIs, and more.
+[![Platform](https://img.shields.io/badge/Platform-blackroad.io-FF1D6C?style=for-the-badge)](https://blackroad.io)
+[![Agents](https://img.shields.io/badge/AI_Agents-30%2C000-9C27B0?style=for-the-badge)](https://agents.blackroad.io)
+[![Cost](https://img.shields.io/badge/AI_Cost-%240-F5A623?style=for-the-badge)](https://blackroad.io)
 
-We don't train models. We don't buy GPUs. We route requests to the right tool at the right time.
-
-```
-[User Request] → [Operator] → [Right Tool] → [Answer]
-```
+</div>
 
 ---
 
-## The Stack
+## 🎯 Focus Areas
 
-| Layer | What |
-|-------|------|
-| **Edge** | Cloudflare |
-| **Compute** | Raspberry Pi cluster + Hailo-8 AI accelerators |
-| **Mesh** | Tailscale encrypted network |
-| **CRM** | Salesforce |
-| **Code** | GitHub (you're here) |
+`AI Agents` • `Developer Tools` • `Infrastructure` • `Open Platform`
 
----
+## 🔗 Links
 
-## Organizations
-
-BlackRoad spans 15 specialized orgs:
-
-**Core:** BlackRoad-OS (here) · BlackRoad-AI · BlackRoad-Cloud
-**Research:** BlackRoad-Labs · BlackRoad-Security
-**Business:** BlackRoad-Foundation · BlackRoad-Ventures · Blackbox-Enterprises
-**Creative:** BlackRoad-Media · BlackRoad-Studio · BlackRoad-Interactive
-**Infrastructure:** BlackRoad-Hardware · BlackRoad-Archive
-**Community:** BlackRoad-Education · BlackRoad-Gov
+| | |
+|---|---|
+| 🌐 **Website** | [blackroad-os.github.io](https://blackroad-os.github.io) |
+| 📖 **Docs** | [docs.blackroad.io](https://docs.blackroad.io) |
+| 💬 **Status** | [status.blackroad.io](https://status.blackroad.io) |
+| 🤖 **Agents** | [agents.blackroad.io](https://agents.blackroad.io) |
 
 ---
 
-## The Bridge
+<div align="center">
 
-This `.github` repo is the coordination point - where architecture decisions are made, where the streams converge, where we plan what comes next.
+**Part of [BlackRoad OS](https://blackroad.io)** — 30,000 AI Agents • 17 Organizations • 1,800+ Repos • $0 AI Cost
 
-**Docs:**
-- [Architecture Overview](BLACKROAD_ARCHITECTURE.md)
-- [Repository Map](../REPO_MAP.md)
-- [Stream Definitions](../STREAMS.md)
+*© BlackRoad OS, Inc. All rights reserved.*
 
----
-
-*BlackRoad OS, Inc.*
+</div>
