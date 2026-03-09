@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlackRoad Pixel Worlds - Game Hub</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=JetBrains+Mono:wght@400;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#050510;color:#e0e0e0;font-family:'JetBrains Mono',monospace;min-height:100vh;overflow-x:hidden}
+
+/* Starfield BG */
+body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
+  background-image:
+    radial-gradient(1px 1px at 10% 20%,rgba(255,255,255,0.5),transparent),
+    radial-gradient(1px 1px at 30% 60%,rgba(255,255,255,0.3),transparent),
+    radial-gradient(1px 1px at 50% 10%,rgba(255,255,255,0.4),transparent),
+    radial-gradient(1px 1px at 70% 40%,rgba(255,255,255,0.3),transparent),
+    radial-gradient(1px 1px at 90% 70%,rgba(255,255,255,0.5),transparent),
+    radial-gradient(2px 2px at 20% 80%,rgba(0,212,255,0.3),transparent),
+    radial-gradient(2px 2px at 60% 90%,rgba(196,77,255,0.3),transparent),
+    radial-gradient(2px 2px at 80% 20%,rgba(255,107,157,0.3),transparent),
+    radial-gradient(1px 1px at 15% 45%,rgba(255,255,255,0.4),transparent),
+    radial-gradient(1px 1px at 45% 75%,rgba(255,255,255,0.3),transparent),
+    radial-gradient(1px 1px at 75% 55%,rgba(255,255,255,0.5),transparent),
+    radial-gradient(1px 1px at 85% 15%,rgba(255,255,255,0.3),transparent);
+  pointer-events:none;z-index:0;animation:twinkle 8s ease-in-out infinite alternate}
+@keyframes twinkle{0%{opacity:0.6}100%{opacity:1}}
+
+.container{max-width:900px;margin:0 auto;padding:40px 20px;position:relative;z-index:1}
+
+/* Header */
+.header{text-align:center;margin-bottom:48px}
+.header .logo{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:16px}
+.header .logo-icon{width:48px;height:48px;background:linear-gradient(135deg,#ff6b9d,#c44dff);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.header .logo-icon svg{width:32px;height:32px}
+.header h1{font-family:'Press Start 2P',monospace;font-size:20px;background:linear-gradient(90deg,#ff6b9d,#c44dff,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.header .subtitle{font-size:12px;color:#8888aa;margin-top:8px;letter-spacing:2px}
+.gradient-bars{height:4px;background:linear-gradient(90deg,#ff6b35,#f7c948,#ff6b9d,#c44dff);margin:20px 0;border-radius:2px}
+.gradient-bar2{height:6px;background:linear-gradient(90deg,#4a90d9,#00d4ff,#7ed321,#4a90d9);border-radius:3px}
+
+/* Game Grid */
+.game-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:32px}
+
+.game-card{background:#1a1a2e;border:2px solid #2a2a4a;border-radius:12px;overflow:hidden;transition:all 0.3s;cursor:pointer;text-decoration:none;color:inherit;display:block;position:relative}
+.game-card:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(0,0,0,0.4)}
+.game-card:hover .card-preview{transform:scale(1.02)}
+
+.card-preview{height:200px;position:relative;overflow:hidden;transition:transform 0.3s}
+.card-preview .scene{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+
+/* Game-specific previews */
+.preview-harvest{background:linear-gradient(180deg,#87CEEB 0%,#4caf50 60%,#2e7d32 100%)}
+.preview-harvest::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:40%;
+  background:repeating-linear-gradient(90deg,#8B6914 0px,#8B6914 30px,#4caf50 30px,#4caf50 32px);opacity:0.3}
+
+.preview-creatures{background:linear-gradient(180deg,#1a0a3d 0%,#2a1050 50%,#0d0d1a 100%)}
+.preview-creatures::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(196,77,255,0.3),transparent);
+  animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:0.5;transform:translate(-50%,-50%) scale(1)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.2)}}
+
+.preview-pets{background:linear-gradient(180deg,#ff6b9d 0%,#c44dff 50%,#1a1a2e 100%)}
+
+.preview-runner{background:linear-gradient(180deg,#6185f8 0%,#87CEEB 40%,#4caf50 75%,#c0853c 100%)}
+.preview-runner::after{content:'';position:absolute;bottom:25%;left:20%;width:60px;height:4px;background:#4caf50;border-radius:2px;box-shadow:80px 0 0 #4caf50,160px -20px 0 #4caf50}
+
+.card-icons{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:48px;text-shadow:0 4px 12px rgba(0,0,0,0.5);display:flex;gap:8px}
+
+.card-badge{position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.6);border:1px solid;border-radius:12px;padding:3px 8px;font-size:7px;font-family:'Press Start 2P',monospace}
+.badge-farm{border-color:#7ed321;color:#7ed321}
+.badge-rpg{border-color:#c44dff;color:#c44dff}
+.badge-sim{border-color:#ff6b9d;color:#ff6b9d}
+.badge-platform{border-color:#f5a623;color:#f5a623}
+
+.card-content{padding:16px}
+.card-content h3{font-family:'Press Start 2P',monospace;font-size:10px;margin-bottom:8px}
+.card-content p{font-size:11px;color:#8888aa;line-height:1.6}
+.card-content .card-tags{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.card-tag{font-size:8px;color:#aaa;background:rgba(255,255,255,0.05);border:1px solid #2a2a4a;border-radius:3px;padding:2px 6px}
+
+.card-play{display:flex;align-items:center;gap:6px;margin-top:12px;font-size:9px;font-family:'Press Start 2P',monospace}
+.play-arrow{width:0;height:0;border-left:8px solid;border-top:5px solid transparent;border-bottom:5px solid transparent}
+.harvest .card-play,.harvest .play-arrow{color:#7ed321;border-left-color:#7ed321}
+.creatures .card-play,.creatures .play-arrow{color:#c44dff;border-left-color:#c44dff}
+.pets .card-play,.pets .play-arrow{color:#ff6b9d;border-left-color:#ff6b9d}
+.runner .card-play,.runner .play-arrow{color:#f5a623;border-left-color:#f5a623}
+
+/* Footer */
+.footer{text-align:center;margin-top:40px;padding-top:20px;border-top:1px solid #2a2a4a}
+.footer p{font-size:9px;color:#555}
+.footer a{color:#ff6b9d;text-decoration:none}
+
+/* Back link */
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:10px;color:#8888aa;text-decoration:none;margin-bottom:16px;transition:color 0.2s}
+.back-link:hover{color:#00d4ff}
+
+@media(max-width:700px){.game-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+  <a href="../index.html" class="back-link">&larr; Back to Desktop</a>
+
+  <div class="header">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="4" fill="url(#g)"/>
+          <path d="M6 7h5v4H6zm7 0h5v4h-5zM6 13h5v4H6zm7 0h5v4h-5z" fill="white" opacity="0.9"/>
+          <defs><linearGradient id="g" x1="0" y1="0" x2="24" y2="24"><stop stop-color="#ff6b9d"/><stop offset="1" stop-color="#c44dff"/></linearGradient></defs>
+        </svg>
+      </div>
+      <h1>PIXEL WORLDS</h1>
+    </div>
+    <p class="subtitle">THE BLACKROAD GAMING UNIVERSE</p>
+    <div class="gradient-bars"></div>
+    <div class="gradient-bar2"></div>
+  </div>
+
+  <div class="game-grid">
+    <!-- Harvest -->
+    <a href="stardew/index.html" class="game-card harvest">
+      <div class="card-preview">
+        <div class="scene preview-harvest"></div>
+        <div class="card-icons">\uD83C\uDF3E\uD83C\uDFE1</div>
+        <span class="card-badge badge-farm">FARM SIM</span>
+      </div>
+      <div class="card-content">
+        <h3>BLACKROAD HARVEST</h3>
+        <p>Plant crops, tend your farm, sell at market. Full day/night cycle, seasons, shop, and 5 crop types.</p>
+        <div class="card-tags">
+          <span class="card-tag">Farming</span><span class="card-tag">Seasons</span><span class="card-tag">Trading</span><span class="card-tag">Crafting</span>
+        </div>
+        <div class="card-play"><span class="play-arrow"></span> PLAY NOW</div>
+      </div>
+    </a>
+
+    <!-- Creatures -->
+    <a href="pokemon/index.html" class="game-card creatures">
+      <div class="card-preview">
+        <div class="scene preview-creatures"></div>
+        <div class="card-icons">\u26A1\uD83D\uDD2E</div>
+        <span class="card-badge badge-rpg">PIXEL RPG</span>
+      </div>
+      <div class="card-content">
+        <h3>BLACKROAD CREATURES</h3>
+        <p>Explore, battle, and capture 8 unique creatures. Type matchups, leveling, wild encounters on routes.</p>
+        <div class="card-tags">
+          <span class="card-tag">RPG</span><span class="card-tag">Battles</span><span class="card-tag">Capture</span><span class="card-tag">Explore</span>
+        </div>
+        <div class="card-play"><span class="play-arrow"></span> PLAY NOW</div>
+      </div>
+    </a>
+
+    <!-- Pets -->
+    <a href="webkinz/index.html" class="game-card pets">
+      <div class="card-preview">
+        <div class="scene preview-pets"></div>
+        <div class="card-icons">\uD83D\uDC31\uD83D\uDC36</div>
+        <span class="card-badge badge-sim">VIRTUAL PET</span>
+      </div>
+      <div class="card-content">
+        <h3>BLACKROAD PETS</h3>
+        <p>Adopt a pet, decorate rooms, feed and play. 6 pet types, 5 rooms, shop, and a coin-earning minigame.</p>
+        <div class="card-tags">
+          <span class="card-tag">Virtual Pet</span><span class="card-tag">Decorate</span><span class="card-tag">Minigames</span><span class="card-tag">Shop</span>
+        </div>
+        <div class="card-play"><span class="play-arrow"></span> PLAY NOW</div>
+      </div>
+    </a>
+
+    <!-- Runner -->
+    <a href="mario/index.html" class="game-card runner">
+      <div class="card-preview">
+        <div class="scene preview-runner"></div>
+        <div class="card-icons">\uD83C\uDF1F\uD83C\uDF44</div>
+        <span class="card-badge badge-platform">PLATFORMER</span>
+      </div>
+      <div class="card-content">
+        <h3>BLACKROAD RUNNER</h3>
+        <p>Run, jump, stomp enemies across 3 worlds. Power-ups, coins, question blocks, and boss flagpoles.</p>
+        <div class="card-tags">
+          <span class="card-tag">Platformer</span><span class="card-tag">Action</span><span class="card-tag">3 Worlds</span><span class="card-tag">Power-ups</span>
+        </div>
+        <div class="card-play"><span class="play-arrow"></span> PLAY NOW</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="footer">
+    <p>&copy; 2026 BlackRoad OS, Inc. | <a href="../index.html">Desktop</a> | All Rights Reserved</p>
+  </div>
+</div>
+</body>
+</html>
