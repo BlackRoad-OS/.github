@@ -8,7 +8,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const navItems = document.querySelectorAll('.nav-item');
   navItems.forEach(item => {
     item.addEventListener('click', (e) => {
-      e.preventDefault();
+      const href = item.getAttribute('href');
+      // Only prevent default for same-page anchors; let real links through
+      if (!href || href === '#') {
+        e.preventDefault();
+      }
       navItems.forEach(n => n.classList.remove('active'));
       item.classList.add('active');
     });

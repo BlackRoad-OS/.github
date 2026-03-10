@@ -1,12 +1,25 @@
 <div align="center">
 
-# BlackRoad OS
+<img src="https://img.shields.io/badge/%F0%9F%96%A4_BlackRoad-OS-ff6b9d?style=for-the-badge&logoColor=white" alt="BlackRoad OS" height="40"/>
 
-**The sovereign operating system for distributed infrastructure.**
+# 🖤 BlackRoad OS
 
-5 edge nodes — 52 TOPS AI compute — 207 Gitea repos — 48+ domains
+### Your AI command center — click a link, watch it work. No setup required.
 
-[![Website](https://img.shields.io/badge/blackroad--os.github.io-000?style=flat-square&logo=github)](https://blackroad-os.github.io)
+---
+
+[![🚀 Launch Portal](https://img.shields.io/badge/%F0%9F%9A%80_Launch_the_Portal-ff6b9d?style=for-the-badge)](https://blackroad-os.github.io/.github/)
+&nbsp;
+[![🎮 Play Games](https://img.shields.io/badge/%F0%9F%8E%AE_Play_Games-c44dff?style=for-the-badge)](https://blackroad-os.github.io/.github/games/)
+&nbsp;
+[![🌐 Website](https://img.shields.io/badge/%F0%9F%8C%90_Website-00d4ff?style=for-the-badge)](https://blackroad-os.github.io)
+
+---
+
+| 🖥️ [Command Center](https://blackroad-os.github.io/.github/) | 🌾 [Harvest](https://blackroad-os.github.io/.github/games/stardew/) | ⚡ [Creatures](https://blackroad-os.github.io/.github/games/pokemon/) | 🐱 [Pets](https://blackroad-os.github.io/.github/games/webkinz/) | ⭐ [Runner](https://blackroad-os.github.io/.github/games/mario/) |
+|:---:|:---:|:---:|:---:|:---:|
+
+**5 edge nodes · 52 TOPS AI · 207 repos · 48+ domains**
 
 </div>
 
