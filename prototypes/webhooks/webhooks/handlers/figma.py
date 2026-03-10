@@ -62,7 +62,7 @@ class FigmaHandler(WebhookHandler):
             try:
                 body_dict = self._parse_json(body)
                 return body_dict.get("passcode") == secret
-            except:
+            except Exception:
                 return False
 
         # Verify HMAC signature

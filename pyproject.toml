@@ -1,0 +1,10 @@
+[tool.pytest.ini_options]
+testpaths = [
+    "prototypes/operator/tests",
+    "prototypes/dispatcher/tests",
+    "prototypes/webhooks/tests",
+]
+asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 120

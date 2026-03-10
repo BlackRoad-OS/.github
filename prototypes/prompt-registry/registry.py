@@ -3,7 +3,6 @@ Prompt Registry
 Central storage and management for prompt templates.
 """
 
-import os
 import json
 import time
 from typing import Optional

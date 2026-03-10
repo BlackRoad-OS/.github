@@ -7,7 +7,7 @@ Handles communication over stdio (standard MCP transport).
 import sys
 import json
 import asyncio
-from typing import Optional, Callable, Awaitable
+from typing import Optional
 
 from .server import BlackRoadMCP
 

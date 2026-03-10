@@ -4,7 +4,6 @@ Health Checker - Is everything alive?
 Monitor the health of the BlackRoad ecosystem.
 """
 
-import os
 import subprocess
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional

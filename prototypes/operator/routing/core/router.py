@@ -192,17 +192,17 @@ class Operator:
 
         lines = [
             f"Query: {result.request.query}",
-            f"",
-            f"Classification:",
+            "",
+            "Classification:",
             f"  Category: {result.classification.category}",
             f"  Confidence: {result.confidence:.1%}",
             f"  Matched: {', '.join(result.classification.matched_patterns)}",
-            f"",
-            f"Destination:",
+            "",
+            "Destination:",
             f"  Org: {result.org}",
             f"  Code: {result.org_code}",
             f"  Description: {ORGS[result.org_code]['description']}",
-            f"",
+            "",
             f"Signal: {result.signal}",
         ]
 

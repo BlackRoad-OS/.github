@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -48,7 +48,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
@@ -60,7 +60,7 @@ jobs:
       - name: Run operator tests
         run: |
           cd prototypes/operator
-          python -m pytest tests/ -v || echo "No tests yet"
+          python -m pytest tests/ -v
 
       - name: Test routing classification
         run: |
@@ -82,7 +82,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
@@ -104,16 +104,10 @@ jobs:
           assert len(orgs) > 0
           "
 
-      - name: Test dispatcher routing
+      - name: Run dispatcher tests
         run: |
           cd prototypes/dispatcher
-          python -c "
-          from dispatcher.core import Dispatcher
-          d = Dispatcher(mock=True)
-          import asyncio
-          result = asyncio.run(d.dispatch('test query'))
-          print(f'Routed to: {result.org_code}')
-          "
+          python -m pytest tests/ -v
 
   # Test webhooks
   test-webhooks:
@@ -123,7 +117,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
@@ -136,6 +130,7 @@ jobs:
         run: |
           cd prototypes/webhooks
           python -m webhooks test --verbose
+          python -m pytest tests/ -v
 
   # Validate YAML configs
   validate-config:
@@ -145,7 +140,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 

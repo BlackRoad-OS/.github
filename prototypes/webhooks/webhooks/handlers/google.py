@@ -90,7 +90,7 @@ class GoogleHandler(WebhookHandler):
         try:
             decoded = base64.b64decode(data_b64).decode()
             payload = json.loads(decoded)
-        except:
+        except Exception:
             payload = {"raw_data": data_b64}
 
         # Get event type from attributes or payload

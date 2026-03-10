@@ -6,11 +6,11 @@ Takes a request, figures out where it goes, sends it there.
 
 import sys
 from pathlib import Path
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional, Dict, Any, List
 
-from .registry import Registry, Org, Service
+from .registry import Registry, Org
 from .client import ServiceClient, ServiceResponse, ServiceStatus, MockServiceClient
 
 # Add operator to path for classification
@@ -129,7 +129,7 @@ class Dispatcher:
                 route_result = self.operator.route(query, context=context)
                 org_code = route_result.org_code
                 classification = route_result.classification
-            except Exception as e:
+            except Exception:
                 # Fallback to registry pattern matching
                 org_code, _ = self.registry.match(query)
         else:

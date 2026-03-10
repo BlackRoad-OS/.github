@@ -8,9 +8,9 @@ and dispatches them to the appropriate org.
 import json
 from typing import Dict, Any, Optional, List, Type
 from datetime import datetime
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
-from .signal import Signal, SignalType
+from .signal import Signal
 from .handlers import (
     WebhookHandler,
     GitHubHandler,

@@ -7,7 +7,7 @@ Real-time code metrics for the BlackRoad ecosystem.
 import os
 import subprocess
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 from pathlib import Path
 from datetime import datetime
 

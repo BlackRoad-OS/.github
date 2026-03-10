@@ -4,7 +4,6 @@ Registry - Load and manage the routing registry.
 The registry contains all orgs, services, and endpoints.
 """
 
-import os
 import re
 from pathlib import Path
 from dataclasses import dataclass, field

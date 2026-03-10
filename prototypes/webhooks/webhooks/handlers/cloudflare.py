@@ -1,7 +1,6 @@
 """Cloudflare webhook handler."""
 
 import hmac
-import hashlib
 from typing import Dict, Any, Optional
 from .base import WebhookHandler
 from ..signal import Signal, SignalType
