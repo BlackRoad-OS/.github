@@ -12,10 +12,11 @@
 
 ---
 
-## Active Repositories (132)
+## Active Repositories (133)
 
 | Repository | Description |
 |---|---|
+| [roadcli](https://github.com/BlackRoad-OS/roadcli) | BlackRoad command line interface |
 | [roadpad](https://github.com/BlackRoad-OS/roadpad) | Terminal-native plain-text editor for BlackRoad OS |
 | [blackroad-os.github.io](https://github.com/BlackRoad-OS/blackroad-os.github.io) | BlackRoad OS public surface |
 | [remember](https://github.com/BlackRoad-OS/remember) | BlackRoad OS — remember |
@@ -79,20 +80,20 @@
 | [blackroad-os-docs](https://github.com/BlackRoad-OS/blackroad-os-docs) | ARCHIVED: Consolidated into BlackRoad-OS-Inc/blackroad-docs |
 | [blackroad-app-factory](https://github.com/BlackRoad-OS/blackroad-app-factory) | Automated iOS & Android app generation and deployment - mass produce apps without gatekeepers |
 | [backroad-social-platform](https://github.com/BlackRoad-OS/backroad-social-platform) | Social platform for BlackRoad OS community |
-| [app-blackroad-io](https://github.com/BlackRoad-OS/app-blackroad-io) |  |
+| [app-blackroad-io](https://github.com/BlackRoad-OS/app-blackroad-io) | BlackRoad OS web application |
 | [roadcommand-enhanced](https://github.com/BlackRoad-OS/roadcommand-enhanced) | 🛣️ Roadcommand-enhanced - BlackRoad OS command-enhanced service |
 | [blackroad-roadcoin](https://github.com/BlackRoad-OS/blackroad-roadcoin) | BlackRoad Product: roadcoin |
 | [genesis-road](https://github.com/BlackRoad-OS/genesis-road) | Genesis development platform |
 | [blackroad-zapier](https://github.com/BlackRoad-OS/blackroad-zapier) | BlackRoad Zapier Integration - Connect to 5000+ apps |
 | [lucidia-command-center](https://github.com/BlackRoad-OS/lucidia-command-center) | 🖤 lucidia-command-center - BlackRoad OS service |
-| [blackroad-api-cloudflare](https://github.com/BlackRoad-OS/blackroad-api-cloudflare) |  |
+| [blackroad-api-cloudflare](https://github.com/BlackRoad-OS/blackroad-api-cloudflare) | Cloudflare Worker API for BlackRoad OS services |
 | [roadvpn](https://github.com/BlackRoad-OS/roadvpn) | VPN service platform |
 | [roadstudio](https://github.com/BlackRoad-OS/roadstudio) | Creative studio platform |
 | [roadmarket](https://github.com/BlackRoad-OS/roadmarket) | Marketplace platform |
 | [roadlog-monitoring](https://github.com/BlackRoad-OS/roadlog-monitoring) | Log aggregation and monitoring |
 | [road-deploy](https://github.com/BlackRoad-OS/road-deploy) | Deployment automation platform |
 | [road-control](https://github.com/BlackRoad-OS/road-control) | Infrastructure control plane |
-| [blackroad.io](https://github.com/BlackRoad-OS/blackroad.io) |  |
+| [blackroad.io](https://github.com/BlackRoad-OS/blackroad.io) | Main website for BlackRoad OS |
 | [blackroad-zapier-app](https://github.com/BlackRoad-OS/blackroad-zapier-app) | Official BlackRoad Zapier App - Connect AI infrastructure to 5000+ apps |
 | [blackroad-webhooks](https://github.com/BlackRoad-OS/blackroad-webhooks) | Webhooks Event System - 106 event types, HMAC-SHA256 signatures, retry logic |
 | [blackroad-ratelimit](https://github.com/BlackRoad-OS/blackroad-ratelimit) | Rate limiting service with sliding window algorithm, multiple matchers, and throttling |
@@ -103,7 +104,7 @@
 | [blackroad-dev-portal](https://github.com/BlackRoad-OS/blackroad-dev-portal) | Developer portal - service catalog, SDKs, documentation |
 | [blackroad-cron](https://github.com/BlackRoad-OS/blackroad-cron) | Scheduled Jobs - cron tasks with monitoring and execution logs |
 | [blackroad-cli-npm](https://github.com/BlackRoad-OS/blackroad-cli-npm) | Official CLI for BlackRoad APIs - npm install -g blackroad |
-| [blackroad-chrome-extension](https://github.com/BlackRoad-OS/blackroad-chrome-extension) | BlackRoad AI Infrastructure Dashboard - Chrome Extension for monitoring 30,000+ AI agents |
+| [blackroad-chrome-extension](https://github.com/BlackRoad-OS/blackroad-chrome-extension) | Chrome extension for monitoring BlackRoad OS infrastructure |
 | [blackroad-audit](https://github.com/BlackRoad-OS/blackroad-audit) | Audit Logs - track API activity, user actions, security events |
 | [blackroad-analytics](https://github.com/BlackRoad-OS/blackroad-analytics) | API Analytics Dashboard - real-time metrics for all BlackRoad APIs |
 | [BlackRoad-Personal](https://github.com/BlackRoad-OS/BlackRoad-Personal) | Alexa's personal workspace and experiments |
@@ -115,7 +116,7 @@
 | [blackroad-io](https://github.com/BlackRoad-OS/blackroad-io) | Official BlackRoad website - blackroad.io main landing page and documentation |
 | [ai](https://github.com/BlackRoad-OS/ai) | Artificial intelligence models, agents, and intelligence layers for the BlackRoad system. |
 | [agent-registry](https://github.com/BlackRoad-OS/agent-registry) | 🤖 Registry of all 1,000 BlackRoad AI agents - names, capabilities, families, memory systems |
-| [blackroad-30k-agents](https://github.com/BlackRoad-OS/blackroad-30k-agents) | Massive-scale AI agent orchestration: Deploy and manage 30,000 autonomous agents with Kubernetes auto-scaling, self-healing, and real-time monitoring |
+| [blackroad-30k-agents](https://github.com/BlackRoad-OS/blackroad-30k-agents) | AI agent orchestration with Kubernetes auto-scaling and self-healing |
 | [BlackRoad-Private](https://github.com/BlackRoad-OS/BlackRoad-Private) | Proprietary core systems — Agent orchestration, PS-SHA-infinity identity, RoadChain audit ledger, and enterprise infrastructure. |
 | [blackroad-os-secrets](https://github.com/BlackRoad-OS/blackroad-os-secrets) | Private repository for BlackRoad OS corporate documents, secrets, and sensitive information (Atlas incorporation, credentials, keys) |
 | [training-blackroad-io](https://github.com/BlackRoad-OS/training-blackroad-io) | 🖤 Training & certification at training.blackroad.io |
@@ -140,7 +141,7 @@
 | [blackroad-agents](https://github.com/BlackRoad-OS/blackroad-agents) | BlackRoad Agent API - telemetry, job scheduling, and CeCe dynamic planner |
 | [blackroad-agent-os](https://github.com/BlackRoad-OS/blackroad-agent-os) | Distributed agent orchestration system for Raspberry Pi machines |
 | [blackroad-os-codex-infinity](https://github.com/BlackRoad-OS/blackroad-os-codex-infinity) | 🖤 Infinite code indexing system - PS-SHA-∞ verified |
-| [apollo-30k-deployment](https://github.com/BlackRoad-OS/apollo-30k-deployment) | 🚀 Apollo: Deploy and manage 30,000 AI agents across BlackRoad infrastructure with full monitoring, orchestration, and self-healing |
+| [apollo-30k-deployment](https://github.com/BlackRoad-OS/apollo-30k-deployment) | Apollo deployment orchestrator for BlackRoad AI agents |
 | [blackroad-os-disaster-recovery](https://github.com/BlackRoad-OS/blackroad-os-disaster-recovery) | BlackRoad OS Disaster Recovery - Credentials, Configs, and Critical Files |
 | [claude-collaboration-system](https://github.com/BlackRoad-OS/claude-collaboration-system) | 🌌 The most advanced multi-agent AI collaboration system ever created. 10 production tools for coordinating 1000+ Claude instances at scale. THE SINGULARITY IS HERE! |
 | [blackroad-hello](https://github.com/BlackRoad-OS/blackroad-hello) | 🖤 Welcome & onboarding portal |
@@ -150,7 +151,7 @@
 | [blackroad-os-operator](https://github.com/BlackRoad-OS/blackroad-os-operator) | BlackRoad OS operator and automation engine |
 
 <details>
-<summary>Archived (67)</summary>
+<summary>Archived (66)</summary>
 
 | Repository | Description |
 |---|---|
@@ -220,7 +221,6 @@
 | [blackroadai-com](https://github.com/BlackRoad-OS/blackroadai-com) | 🖤 BlackRoad AI at blackroadai.com |
 | [blackroad-agent-cli](https://github.com/BlackRoad-OS/blackroad-agent-cli) | CLI tools for managing and interacting with BlackRoad AI agents |
 | [auth-blackroad-io](https://github.com/BlackRoad-OS/auth-blackroad-io) | 🖤 Authentication at auth.blackroad.io |
-| [BlackRoad-Anthropic](https://github.com/BlackRoad-OS/BlackRoad-Anthropic) | Anthropic Claude API integrations and orchestration |
 
 </details>
 
