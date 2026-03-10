@@ -144,7 +144,7 @@ class ServiceClient:
                     # Try to parse JSON
                     try:
                         response_data = await response.json()
-                    except:
+                    except Exception:
                         response_data = await response.text()
 
                     return ServiceResponse(

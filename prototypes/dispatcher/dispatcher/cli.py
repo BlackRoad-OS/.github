@@ -15,7 +15,6 @@ Usage:
 import asyncio
 import argparse
 import json
-from typing import Optional
 
 
 def run_async(coro):
@@ -176,7 +175,7 @@ async def cmd_ping(args):
     if reachable:
         print(f"  Result: 🟢 Reachable ({latency}ms)")
     else:
-        print(f"  Result: 🔴 Unreachable")
+        print("  Result: 🔴 Unreachable")
 
     print()
     await dispatcher.close()

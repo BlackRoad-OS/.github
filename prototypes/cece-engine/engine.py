@@ -5,7 +5,6 @@ Implements the PERCEIVE → CLASSIFY → DECIDE → EXECUTE → LEARN pipeline
 for handling issues, PRs, webhooks, and scheduled tasks.
 """
 
-import json
 import re
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -357,7 +356,7 @@ class CeceEngine:
         output_lines = [
             f"Reviewed PR: {task.title}",
             f"  Org: {task.org}",
-            f"  Checks: correctness, security, performance, style, tests",
+            "  Checks: correctness, security, performance, style, tests",
         ]
         return EngineResult(
             task=task,

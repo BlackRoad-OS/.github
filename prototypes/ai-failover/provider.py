@@ -8,7 +8,7 @@ import time
 import json
 import asyncio
 from dataclasses import dataclass, field
-from typing import Optional, Any
+from typing import Optional
 from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
 

@@ -337,7 +337,7 @@ def main():
     print(f"\nTotal events: {summary['total_events']}")
     print(f"Categories: {json.dumps(summary['by_category'], indent=2)}")
     print(f"Outcomes: {json.dumps(summary['by_outcome'], indent=2)}")
-    print(f"\nRecent events:")
+    print("\nRecent events:")
     for evt in logger.query(limit=5):
         print(f"  [{evt['severity']:>8}] {evt['actor']:<16} {evt['action']:<24} -> {evt['outcome']}")
 

@@ -8,7 +8,6 @@ Usage:
     python -m operator.cli --stats
 """
 
-import sys
 import argparse
 from .core.router import Operator
 
@@ -103,7 +102,7 @@ def interactive_mode(op: Operator):
 
             if query.lower() == "stats":
                 stats = op.stats
-                print(f"\n📊 Statistics:")
+                print("\n📊 Statistics:")
                 print(f"   Total routes: {stats['total']}")
                 print(f"   By org: {stats['by_org']}")
                 print(f"   Avg confidence: {stats['avg_confidence']:.1%}")

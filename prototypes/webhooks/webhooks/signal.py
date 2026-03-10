@@ -6,7 +6,7 @@ Every webhook becomes a signal that flows through the mesh.
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any
 from enum import Enum
 
 

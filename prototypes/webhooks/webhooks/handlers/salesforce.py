@@ -1,7 +1,5 @@
 """Salesforce webhook handler."""
 
-import hmac
-import hashlib
 from typing import Dict, Any, Optional
 from .base import WebhookHandler
 from ..signal import Signal, SignalType
@@ -72,7 +70,7 @@ class SalesforceHandler(WebhookHandler):
             body_dict = self._parse_json(body)
             org_id = body_dict.get("OrganizationId") or body_dict.get("organizationId", "")
             return org_id == secret
-        except:
+        except Exception:
             return False
 
     def parse(self, headers: Dict[str, str], body: Dict[str, Any]) -> Signal:

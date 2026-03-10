@@ -3,7 +3,6 @@ Audit Log Store
 Append-only storage with indexing for fast queries.
 """
 
-import time
 from collections import defaultdict
 from typing import Optional
 

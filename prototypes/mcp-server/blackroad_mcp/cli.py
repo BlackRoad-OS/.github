@@ -15,7 +15,6 @@ import sys
 import json
 import asyncio
 import argparse
-from typing import Optional
 
 from .server import BlackRoadMCP
 
@@ -86,7 +85,7 @@ def cmd_call(args):
                 # Try to parse as JSON
                 try:
                     tool_args[key] = json.loads(value)
-                except:
+                except (ValueError, TypeError):
                     tool_args[key] = value
             else:
                 # Positional argument for simple tools
@@ -310,7 +309,7 @@ MCP Client Configuration:
     subparsers = parser.add_subparsers(dest="command")
 
     # HTTP mode
-    http_parser = parser.add_argument_group("HTTP mode")
+    parser.add_argument_group("HTTP mode")
     parser.add_argument("--http", action="store_true", help="Run HTTP server instead of stdio")
     parser.add_argument("--host", default="localhost", help="HTTP host (default: localhost)")
     parser.add_argument("--port", type=int, default=8090, help="HTTP port (default: 8090)")

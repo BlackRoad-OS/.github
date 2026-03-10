@@ -6,7 +6,6 @@ The nerve center for BlackRoad monitoring.
 """
 
 import os
-import sys
 import time
 import argparse
 from datetime import datetime
@@ -14,7 +13,7 @@ from typing import Optional
 from pathlib import Path
 
 from .counter import Counter, CodeMetrics
-from .health import HealthChecker, HealthStatus, Status
+from .health import HealthChecker, HealthStatus
 
 
 class Dashboard:

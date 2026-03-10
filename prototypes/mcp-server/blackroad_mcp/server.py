@@ -6,10 +6,9 @@ Implements the Model Context Protocol for BlackRoad mesh access.
 
 import json
 import sys
-import asyncio
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 
 # Add prototypes to path for imports

@@ -6,14 +6,12 @@ If the primary fails, automatically cascades to the next available provider.
 
 import time
 import asyncio
-import json
 from collections import deque
 from dataclasses import dataclass, field
 from typing import Optional
 
 from config import ProviderConfig, ROUTER_CONFIG
 from provider import AIProvider, ProviderError
-from circuit_breaker import CircuitState
 
 
 @dataclass

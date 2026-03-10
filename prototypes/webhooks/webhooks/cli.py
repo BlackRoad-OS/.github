@@ -11,7 +11,6 @@ Usage:
 
 import argparse
 import json
-import sys
 from typing import Dict, Any
 
 from .receiver import WebhookReceiver, process_webhook
@@ -219,7 +218,7 @@ def cmd_simulate(args):
 
     if webhook_key not in SAMPLE_WEBHOOKS:
         print(f"\n  Unknown webhook: {webhook_key}")
-        print(f"\n  Available webhooks:")
+        print("\n  Available webhooks:")
         for key in sorted(SAMPLE_WEBHOOKS.keys()):
             print(f"    - {key}")
         print()
@@ -242,10 +241,10 @@ def cmd_simulate(args):
         print(f"  Verified: {'Yes' if result.verified else 'No (no secret)'}")
         print(f"  Time:     {result.processing_time_ms}ms")
         print()
-        print(f"  Signal:")
+        print("  Signal:")
         print(f"    {result.signal.format()}")
         print()
-        print(f"  Signal Data:")
+        print("  Signal Data:")
         for key, value in result.signal.data.items():
             print(f"    {key}: {value}")
     else:
@@ -344,7 +343,6 @@ def cmd_test(args):
 def cmd_serve(args):
     """Start a webhook server (requires aiohttp)."""
     try:
-        import asyncio
         from aiohttp import web
     except ImportError:
         print("\n  Error: aiohttp is required for server mode")

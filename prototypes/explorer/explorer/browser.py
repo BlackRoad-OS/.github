@@ -4,7 +4,6 @@ Browser - Core explorer functionality.
 Navigate the BlackRoad ecosystem programmatically.
 """
 
-import os
 import re
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
