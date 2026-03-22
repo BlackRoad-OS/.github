@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BlackRoad OS — The sovereign operating system</title>
+  <meta name="description" content="BlackRoad OS: A complete, self-hosted OS stack. 400+ scripts, 5 Pi nodes, 69 agents, zero external dependencies. Remember the Road. Pave Tomorrow." />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#0a0a0a" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="BlackRoad OS — The sovereign operating system" />
+  <meta property="og:description" content="A complete, self-hosted OS stack. 400+ scripts, 5 Pi nodes, 69 agents, zero external dependencies. Remember the Road. Pave Tomorrow." />
+  <meta property="og:image" content="https://images.blackroad.io/pixel-art/road-logo.png" />
+  <meta property="og:url" content="https://github.com/BlackRoad-OS" />
+  <meta property="og:site_name" content="BlackRoad OS" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="BlackRoad OS — The sovereign operating system" />
+  <meta name="twitter:description" content="A complete, self-hosted OS stack. 400+ scripts, 5 Pi nodes, 69 agents, zero external dependencies. Remember the Road. Pave Tomorrow." />
+  <meta name="twitter:image" content="https://images.blackroad.io/pixel-art/road-logo.png" />
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0a0a0a;
+      --card:      #131313;
+      --inset:     #0f0f0f;
+      --text:      #f5f5f5;
+      --text-2:    #d4d4d4;
+      --text-3:    #a3a3a3;
+      --muted:     #737373;
+      --dim:       #525252;
+      --faint:     #404040;
+      --ghost:     #333333;
+      --border:    #1a1a1a;
+      --border-sub:#141414;
+      --border-hov:#262626;
+      --grad: linear-gradient(90deg, #FF6B2B, #FF2255, #CC00AA, #8844FF, #4488FF, #00D4FF);
+      --r-card: 10px;
+      --r-btn:  7px;
+      --r-inp:  8px;
+      --max-w:  720px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 52px;
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 16px;
+    }
+    .nav-spectrum {
+      display: flex;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+    .nav-spectrum span {
+      width: 3px;
+      height: 14px;
+      border-radius: 2px;
+      display: block;
+    }
+    .nav-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text);
+      text-decoration: none;
+      flex: 1;
+    }
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: var(--text-2); }
+
+    /* ── GRADIENT BAR ── */
+    .grad-bar {
+      height: 1px;
+      background: var(--grad);
+    }
+
+    /* ── LAYOUT ── */
+    .container {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    section { padding: 52px 0; }
+
+    /* ── HERO ── */
+    .hero { padding: 72px 0 52px; text-align: center; }
+    .hero-eyebrow {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 18px;
+      padding: 4px 12px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--card);
+    }
+    .hero h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: clamp(28px, 5vw, 42px);
+      line-height: 1.15;
+      color: var(--text);
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
+    }
+    .hero-sub {
+      font-size: 16px;
+      color: var(--muted);
+      max-width: 520px;
+      margin: 0 auto 32px;
+      line-height: 1.65;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 22px;
+      background: var(--text);
+      color: var(--bg);
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: var(--r-btn);
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-primary:hover { opacity: 0.88; }
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 22px;
+      background: transparent;
+      color: var(--text-2);
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: var(--r-btn);
+      text-decoration: none;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .btn-ghost:hover { border-color: var(--border-hov); color: var(--text); }
+
+    /* ── STAT STRIP ── */
+    .stats {
+      background: var(--inset);
+      border-top: 1px solid var(--border-sub);
+      border-bottom: 1px solid var(--border-sub);
+      padding: 0;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border-sub);
+    }
+    .stat {
+      background: var(--inset);
+      padding: 24px 20px;
+      text-align: center;
+    }
+    .stat-val {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 22px;
+      color: var(--text);
+      line-height: 1;
+      margin-bottom: 5px;
+    }
+    .stat-lbl {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    /* ── SECTION HEADER ── */
+    .section-head {
+      margin-bottom: 28px;
+    }
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 22px;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+    .section-sub {
+      font-size: 14px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* ── PRODUCT CARDS ── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r-card);
+      padding: 20px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      transition: border-color 0.15s;
+    }
+    .card:hover { border-color: var(--border-hov); }
+    .card-accent {
+      width: 3px;
+      height: 40px;
+      border-radius: 2px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .card-body {}
+    .card-title {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text);
+      margin-bottom: 5px;
+    }
+    .card-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+    .card-tag {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--dim);
+      background: var(--inset);
+      border: 1px solid var(--border-sub);
+      border-radius: 4px;
+      padding: 2px 8px;
+    }
+
+    /* ── FEATURE LIST ── */
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r-card);
+      overflow: hidden;
+    }
+    .feature-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-sub);
+    }
+    .feature-row:last-child { border-bottom: none; }
+    .feature-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .feature-text {
+      font-size: 14px;
+      color: var(--text-2);
+      flex: 1;
+    }
+    .feature-badge {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--dim);
+      background: var(--inset);
+      border: 1px solid var(--border-sub);
+      border-radius: 4px;
+      padding: 2px 8px;
+      white-space: nowrap;
+    }
+
+    /* ── TERMINAL ── */
+    .terminal {
+      background: var(--inset);
+      border: 1px solid var(--border);
+      border-radius: var(--r-card);
+      overflow: hidden;
+    }
+    .term-header {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .term-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .term-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--dim);
+      margin-left: 4px;
+    }
+    .term-body {
+      padding: 20px 22px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.9;
+    }
+    .term-prompt { color: var(--dim); }
+    .term-cmd    { color: var(--text-2); }
+    .term-out    { color: var(--muted); }
+    .term-ok     { color: var(--text-3); }
+    .term-hi     { color: var(--text); font-weight: 500; }
+
+    /* ── ROADMAP ── */
+    .roadmap { display: flex; flex-direction: column; gap: 0; }
+    .rm-item {
+      display: flex;
+      gap: 18px;
+      position: relative;
+    }
+    .rm-item:not(:last-child)::before {
+      content: '';
+      position: absolute;
+      left: 7px;
+      top: 22px;
+      bottom: -14px;
+      width: 1px;
+      background: var(--border-sub);
+    }
+    .rm-dot-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+      padding-top: 4px;
+    }
+    .rm-dot {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+    }
+    .rm-body {
+      padding-bottom: 28px;
+      flex: 1;
+    }
+    .rm-phase {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 4px;
+    }
+    .rm-title {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text-2);
+      margin-bottom: 4px;
+    }
+    .rm-desc {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* ── INTEGRATIONS ── */
+    .int-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .int-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-3);
+      text-decoration: none;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .int-pill:hover { border-color: var(--border-hov); color: var(--text-2); }
+    .int-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 0 32px;
+    }
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .footer-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--text-3);
+    }
+    .footer-copy {
+      font-size: 12px;
+      color: var(--dim);
+    }
+    .footer-links {
+      display: flex;
+      gap: 16px;
+    }
+    .footer-links a {
+      font-size: 12px;
+      color: var(--dim);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .footer-links a:hover { color: var(--text-3); }
+
+    /* ── DIVIDER ── */
+    .divider {
+      height: 1px;
+      background: var(--border-sub);
+      margin: 0;
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 560px) {
+      nav { padding: 0 16px; }
+      .nav-links { display: none; }
+      .hero { padding: 48px 0 36px; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .cards-grid { grid-template-columns: 1fr; }
+      .rm-item:not(:last-child)::before { display: none; }
+      .footer-inner { flex-direction: column; align-items: flex-start; }
+      section { padding: 36px 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-spectrum">
+    <span style="background:#FF6B2B"></span>
+    <span style="background:#FF2255"></span>
+    <span style="background:#CC00AA"></span>
+    <span style="background:#8844FF"></span>
+    <span style="background:#4488FF"></span>
+    <span style="background:#00D4FF"></span>
+  </div>
+  <a href="https://github.com/BlackRoad-OS" class="nav-title">BlackRoad OS</a>
+  <ul class="nav-links">
+    <li><a href="#products">Products</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="https://blackroad.io">BlackRoad</a></li>
+  </ul>
+</nav>
+
+<!-- GRADIENT BAR -->
+<div class="grad-bar"></div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <span class="hero-eyebrow">BlackRoad OS — BlackRoad OS</span>
+    <h1>The sovereign operating system</h1>
+    <p class="hero-sub">A complete, self-hosted OS stack. 400+ scripts, 5 Pi nodes, 69 agents, zero external dependencies. Remember the Road. Pave Tomorrow.</p>
+    <div class="hero-actions">
+      <a href="https://buy.stripe.com/test" class="btn-primary">Get Started →</a>
+      <a href="https://github.com/BlackRoad-OS" class="btn-ghost">View on GitHub</a>
+    </div>
+  </div>
+</section>
+
+<!-- GRADIENT BAR -->
+<div class="grad-bar"></div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="stat-val">400+</div>
+        <div class="stat-lbl">Scripts</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val">5</div>
+        <div class="stat-lbl">Nodes</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val">69</div>
+        <div class="stat-lbl">Agents</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val">40</div>
+        <div class="stat-lbl">Projects</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<section id="products">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-label">Products</div>
+      <div class="section-title">What we ship</div>
+      <div class="section-sub">Every product runs on sovereign infrastructure. No vendor lock-in.</div>
+    </div>
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-accent" style="background:#FF6B2B"></div>
+        <div class="card-body">
+          <div class="card-title">Desktop Client</div>
+          <div class="card-desc">Core product built on the BlackRoad OS stack. Sovereign, local-first, production-ready.</div>
+          <span class="card-tag">Live</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-accent" style="background:#FF2255"></div>
+        <div class="card-body">
+          <div class="card-title">Agent Runtime</div>
+          <div class="card-desc">Purpose-built tooling that integrates seamlessly across the BlackRoad ecosystem.</div>
+          <span class="card-tag">Live</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-accent" style="background:#CC00AA"></div>
+        <div class="card-body">
+          <div class="card-title">CLI Tools</div>
+          <div class="card-desc">Advanced capabilities for power users. Runs on-device, respects your hardware.</div>
+          <span class="card-tag">Beta</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-accent" style="background:#8844FF"></div>
+        <div class="card-body">
+          <div class="card-title">Sovereign Platform</div>
+          <div class="card-desc">Platform-level infrastructure for building and scaling your own workflows.</div>
+          <span class="card-tag">Beta</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-label">Features</div>
+      <div class="section-title">Built different</div>
+      <div class="section-sub">The design principles that make BlackRoad OS operate at a different level.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-row">
+        <div class="feature-dot" style="background:#FF6B2B"></div>
+        <div class="feature-text">Sovereign infrastructure — every service runs on hardware we own</div>
+        <span class="feature-badge">Core</span>
+      </div>
+      <div class="feature-row">
+        <div class="feature-dot" style="background:#FF2255"></div>
+        <div class="feature-text">Local-first execution with WireGuard mesh across 5 Pi nodes</div>
+        <span class="feature-badge">Network</span>
+      </div>
+      <div class="feature-row">
+        <div class="feature-dot" style="background:#CC00AA"></div>
+        <div class="feature-text">Agent runtime with 69+ active agents coordinating across the fleet</div>
+        <span class="feature-badge">Agents</span>
+      </div>
+      <div class="feature-row">
+        <div class="feature-dot" style="background:#8844FF"></div>
+        <div class="feature-text">Zero external dependencies — Gitea, Ollama, MinIO, PowerDNS, Caddy</div>
+        <span class="feature-badge">Stack</span>
+      </div>
+      <div class="feature-row">
+        <div class="feature-dot" style="background:#4488FF"></div>
+        <div class="feature-text">Audit-logged operations — every action tracked, every session recorded</div>
+        <span class="feature-badge">Audit</span>
+      </div>
+      <div class="feature-row">
+        <div class="feature-dot" style="background:#00D4FF"></div>
+        <div class="feature-text">Proprietary license — BlackRoad OS IP, built by Alexa Amundson</div>
+        <span class="feature-badge">License</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TERMINAL -->
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-label">CLI</div>
+      <div class="section-title">Command the stack</div>
+      <div class="section-sub">The BlackRoad CLI gives you full control from your terminal.</div>
+    </div>
+    <div class="terminal">
+      <div class="term-header">
+        <div class="term-dot" style="background:#404040"></div>
+        <div class="term-dot" style="background:#404040"></div>
+        <div class="term-dot" style="background:#404040"></div>
+        <span class="term-label">blackroad-cli — zsh</span>
+      </div>
+      <div class="term-body">
+        <div><span class="term-prompt">~ $ </span><span class="term-cmd">br status --fleet</span></div>
+        <div class="term-out">  Connecting to BlackRoad fleet...</div>
+        <div class="term-out">  Fleet: Alice .49 · Cecilia .96 · Octavia .101 · Aria .98 · Lucidia .38</div>
+        <div class="term-out">  Agents active: 69+ · Models loaded: 16 · TOPS: 52</div>
+        <div class="term-hi">  ✓ Connected to BlackRoad OS — Pave Tomorrow.</div>
+        <div>&nbsp;</div>
+        <div><span class="term-prompt">~ $ </span><span class="term-cmd">br status --health</span></div>
+        <div class="term-ok">  [OK] Gitea   — 239 repos · 8 orgs</div>
+        <div class="term-ok">  [OK] Ollama  — 16 models · Cecilia</div>
+        <div class="term-ok">  [OK] MinIO   — 4 buckets · 120MB</div>
+        <div class="term-ok">  [OK] DNS     — PowerDNS · ns1.blackroad.io</div>
+        <div class="term-ok">  [OK] WireGuard — mesh 12/12 nodes</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ROADMAP -->
+<section id="roadmap">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-label">Roadmap</div>
+      <div class="section-title">Where we're going</div>
+      <div class="section-sub">Five phases. One direction: sovereign, scalable, yours.</div>
+    </div>
+    <div class="roadmap">
+      <div class="rm-item">
+        <div class="rm-dot-wrap"><div class="rm-dot" style="background:#FF6B2B;border-color:#FF6B2B"></div></div>
+        <div class="rm-body">
+          <div class="rm-phase">Phase 1</div>
+          <div class="rm-title">Foundation</div>
+          <div class="rm-desc">Core infrastructure, CLI tooling, agent runtime, Gitea primary, WireGuard mesh. Done.</div>
+        </div>
+      </div>
+      <div class="rm-item">
+        <div class="rm-dot-wrap"><div class="rm-dot" style="background:#FF2255;border-color:#FF2255"></div></div>
+        <div class="rm-body">
+          <div class="rm-phase">Phase 2</div>
+          <div class="rm-title">Product</div>
+          <div class="rm-desc">Ship the core product suite. 92 registered products. All running on sovereign stack.</div>
+        </div>
+      </div>
+      <div class="rm-item">
+        <div class="rm-dot-wrap"><div class="rm-dot" style="background:#CC00AA;border-color:#CC00AA"></div></div>
+        <div class="rm-body">
+          <div class="rm-phase">Phase 3</div>
+          <div class="rm-title">Platform</div>
+          <div class="rm-desc">Public API surface, partner integrations, developer tools, Operator SDK.</div>
+        </div>
+      </div>
+      <div class="rm-item">
+        <div class="rm-dot-wrap"><div class="rm-dot" style="background:#8844FF;border-color:#8844FF"></div></div>
+        <div class="rm-body">
+          <div class="rm-phase">Phase 4</div>
+          <div class="rm-title">Scale</div>
+          <div class="rm-desc">Expand fleet, add Hailo nodes, geographic distribution, 1000+ agents.</div>
+        </div>
+      </div>
+      <div class="rm-item">
+        <div class="rm-dot-wrap"><div class="rm-dot" style="background:#4488FF;border-color:#4488FF"></div></div>
+        <div class="rm-body">
+          <div class="rm-phase">Phase 5</div>
+          <div class="rm-title">Ecosystem</div>
+          <div class="rm-desc">Third-party builders, marketplace, community grants, Amundson Foundation support.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- INTEGRATIONS -->
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-label">Integrations</div>
+      <div class="section-title">Connected to the road</div>
+      <div class="section-sub">Every org in the BlackRoad network is a node. Every link strengthens the mesh.</div>
+    </div>
+    <div class="int-row">
+      <a href="https://blackroad.io" class="int-pill">
+        <span class="int-dot" style="background:#FF6B2B"></span>
+        blackroad.io
+      </a>
+      <a href="https://roundtrip.blackroad.io" class="int-pill">
+        <span class="int-dot" style="background:#FF2255"></span>
+        RoundTrip
+      </a>
+      <a href="https://github.com/BlackRoad-Studio" class="int-pill">
+        <span class="int-dot" style="background:#CC00AA"></span>
+        BlackRoad-Studio
+      </a>
+      <a href="https://github.com/BlackRoad-AI" class="int-pill">
+        <span class="int-dot" style="background:#8844FF"></span>
+        BlackRoad-AI
+      </a>
+      <a href="https://github.com/BlackRoad-Cloud" class="int-pill">
+        <span class="int-dot" style="background:#4488FF"></span>
+        BlackRoad-Cloud
+      </a>
+      <a href="https://github.com/BlackRoad-Security" class="int-pill">
+        <span class="int-dot" style="background:#00D4FF"></span>
+        BlackRoad-Security
+      </a>
+      <a href="https://github.com/BlackRoad-Labs" class="int-pill">
+        <span class="int-dot" style="background:#FF6B2B"></span>
+        BlackRoad-Labs
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER GRADIENT BAR -->
+<div class="grad-bar"></div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="nav-spectrum">
+          <span style="background:#FF6B2B;width:3px;height:14px;border-radius:2px;display:block"></span>
+          <span style="background:#FF2255;width:3px;height:14px;border-radius:2px;display:block"></span>
+          <span style="background:#CC00AA;width:3px;height:14px;border-radius:2px;display:block"></span>
+          <span style="background:#8844FF;width:3px;height:14px;border-radius:2px;display:block"></span>
+          <span style="background:#4488FF;width:3px;height:14px;border-radius:2px;display:block"></span>
+          <span style="background:#00D4FF;width:3px;height:14px;border-radius:2px;display:block"></span>
+        </div>
+        <span class="footer-name">BlackRoad OS</span>
+      </div>
+      <div class="footer-copy">© 2026 BlackRoad OS, Inc. — Pave Tomorrow.</div>
+      <div class="footer-links">
+        <a href="https://blackroad.io">blackroad.io</a>
+        <a href="https://github.com/BlackRoad-OS">GitHub</a>
+        <a href="https://buy.stripe.com/test">Pricing</a>
+        <a href="https://github.com/BlackRoad-OS/.github/blob/main/LICENSE">License</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
