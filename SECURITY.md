@@ -1,61 +1,23 @@
 # Security Policy
 
-## Supported Versions
+## Reporting Vulnerabilities
 
-We actively support the following versions with security updates:
-
-| Version | Supported          |
-| ------- | ------------------ |
-| latest  | :white_check_mark: |
-| main    | :white_check_mark: |
-
-## Reporting a Vulnerability
-
-We take security vulnerabilities seriously. If you discover a security issue, please report it responsibly.
-
-### How to Report
-
-**Please DO NOT open a public GitHub issue for security vulnerabilities.**
-
-Instead, please email: **security@blackroad.io**
-
-In your report, please include:
-
+Email **alexa@blackroad.io** with:
 - Description of the vulnerability
-- Steps to reproduce the issue
-- Potential impact
-- Any suggested fixes (optional)
+- Steps to reproduce
+- Impact assessment
 
-### What to Expect
+**Do not** open a public GitHub issue for security vulnerabilities.
 
-- **Acknowledgment**: We'll acknowledge your report within 48 hours
-- **Assessment**: We'll assess the vulnerability and determine its severity
-- **Updates**: We'll keep you informed of our progress
-- **Resolution**: We'll work on a fix and coordinate disclosure timing with you
-- **Credit**: With your permission, we'll credit you in our security advisories
+## Response Time
+- Acknowledgment: 24 hours
+- Assessment: 72 hours
+- Fix: depends on severity
 
-### Security Features
+## Scope
+All repos under [BlackRoad OS Enterprise](https://github.com/enterprises/blackroad-os) — 34 orgs, 2,315+ repos.
 
-This repository is protected with:
+## Hall of Fame
+We credit all responsible disclosures (with permission).
 
-- ✅ Dependabot vulnerability scanning
-- ✅ Automated security updates
-- ✅ Secret scanning
-- ✅ CodeQL code analysis (where applicable)
-
-### Best Practices
-
-When contributing to this project:
-
-- Never commit secrets, API keys, or credentials
-- Keep dependencies up to date
-- Follow secure coding guidelines
-- Review Dependabot alerts promptly
-
-## Bug Bounty Program
-
-We currently do not have a formal bug bounty program, but we greatly appreciate responsible disclosure and will acknowledge contributors who help improve our security posture.
-
----
-
-**BlackRoad OS** - Building secure, scalable systems
+*Pave Tomorrow.*
