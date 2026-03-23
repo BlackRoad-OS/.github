@@ -1,19 +1,16 @@
 # BlackRoad-OS
 
-**Core platform** — Part of the BlackRoad OS ecosystem.
+**BlackRoad OS — sovereign operating system. Self-hosted AI, mesh networking, fleet. Est. 2025. Pave Tomorrow.**
 
-> 18 orgs · 20 domains · 200 agents · Sovereign infrastructure
+> Remember the Road. Pave Tomorrow.
+
+BlackRoad OS, Inc. — Delaware C-Corp, incorporated November 17, 2025.
 
 1253 public repositories | [blackroad.io](https://blackroad.io) | [BlackRoad-OS-Inc](https://github.com/BlackRoad-OS-Inc)
 
-## Key Repositories
-
-- [.github](https://github.com/BlackRoad-OS/.github) — Organization-wide configuration for BlackRoad-OS[0:60]
-- [blackroad-os.github.io](https://github.com/BlackRoad-OS/blackroad-os.github.io) — BlackRoad OS public surface[0:60]
-- [roadstreaming](https://github.com/BlackRoad-OS/roadstreaming) — 🛣️ Roadstreaming - BlackRoad OS streaming service[0:60]
-- [roadscreen](https://github.com/BlackRoad-OS/roadscreen) — Screen recording and sharing[0:60]
-- [blackroad-live-broadcast](https://github.com/BlackRoad-OS/blackroad-live-broadcast) — Live streaming with multi-destination broadcasting[0:60]
+18 orgs · 20 domains · 200 agents · 2,156 repos · Sovereign infrastructure
 
 ---
 
-Proprietary — BlackRoad OS, Inc. All rights reserved.
+Proprietary — BlackRoad OS, Inc. All rights reserved. Incorporated 2025.
+
