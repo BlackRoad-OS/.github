@@ -1,5 +1,4 @@
-# BlackRoad OS, Inc. — Funding
-# All contributions support proprietary development of BlackRoad OS
-
-github: [blackboxprogramming]
-custom: ['https://blackroad.io/sponsor', 'https://blackroad.io/donate']
+github: blackboxprogramming
+custom:
+  - https://pay.blackroad.io
+  - https://blackroad.company
