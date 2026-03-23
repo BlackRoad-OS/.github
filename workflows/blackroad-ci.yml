@@ -1,0 +1,17 @@
+name: BlackRoad CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check LICENSE
+        run: |
+          test -f LICENSE && head -1 LICENSE | grep -qi "BLACKROAD"
+      - name: Check README
+        run: test -f README.md || test -f README
