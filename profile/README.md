@@ -1,16 +1,14 @@
 # BlackRoad-OS
 
-**BlackRoad OS — sovereign operating system. Self-hosted AI, mesh networking, fleet. Est. 2025. Pave Tomorrow.**
+**Core operating system**
 
-> Remember the Road. Pave Tomorrow.
+Part of [BlackRoad OS Enterprise](https://github.com/enterprises/blackroad-os) — sovereign infrastructure.
 
-BlackRoad OS, Inc. — Delaware C-Corp, incorporated November 17, 2025.
+| | |
+|---|---|
+| **Enterprise** | [github.com/enterprises/blackroad-os](https://github.com/enterprises/blackroad-os) |
+| **Website** | [blackroad.io](https://blackroad.io) |
+| **Search** | [search.blackroad.io](https://search.blackroad.io) |
+| **Org Page** | [blackroad-os.github.io](https://blackroad-os.github.io) |
 
-1253 public repositories | [blackroad.io](https://blackroad.io) | [BlackRoad-OS-Inc](https://github.com/BlackRoad-OS-Inc)
-
-18 orgs · 20 domains · 200 agents · 2,156 repos · Sovereign infrastructure
-
----
-
-Proprietary — BlackRoad OS, Inc. All rights reserved. Incorporated 2025.
-
+> 34 orgs · 2,315+ repos · Pave Tomorrow.
