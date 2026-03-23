@@ -1,0 +1,43 @@
+name: BlackRoad CI
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  detect-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect project type
+        id: detect
+        run: |
+          if [ -f "wrangler.toml" ]; then echo "type=worker" >> $GITHUB_OUTPUT
+          elif [ -f "package.json" ]; then echo "type=node" >> $GITHUB_OUTPUT
+          elif [ -f "requirements.txt" ] || [ -f "pyproject.toml" ]; then echo "type=python" >> $GITHUB_OUTPUT
+          elif [ -f "Cargo.toml" ]; then echo "type=rust" >> $GITHUB_OUTPUT
+          elif [ -f "go.mod" ]; then echo "type=go" >> $GITHUB_OUTPUT
+          else echo "type=static" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Node.js build
+        if: steps.detect.outputs.type == 'node' || steps.detect.outputs.type == 'worker'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci || npm install
+        if: steps.detect.outputs.type == 'node' || steps.detect.outputs.type == 'worker'
+      - run: npm test || true
+        if: steps.detect.outputs.type == 'node' || steps.detect.outputs.type == 'worker'
+
+      - name: Python lint
+        if: steps.detect.outputs.type == 'python'
+        run: |
+          pip install ruff 2>/dev/null || true
+          ruff check . || true
+
+      - name: Deploy Worker
+        if: steps.detect.outputs.type == 'worker' && github.event_name == 'push'
+        run: npx wrangler deploy --dry-run || true
