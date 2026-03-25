@@ -1,4 +1,2 @@
-github: blackboxprogramming
-custom:
-  - https://pay.blackroad.io
-  - https://blackroad.company
+github: [blackboxprogramming]
+custom: ["https://blackroad.io"]

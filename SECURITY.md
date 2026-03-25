@@ -1,23 +1,27 @@
 # Security Policy
 
-## Reporting Vulnerabilities
+## Supported Versions
 
-Email **alexa@blackroad.io** with:
+Only the latest release on the default branch is actively maintained.
+
+## Reporting a Vulnerability
+
+**Do not open a public issue for security vulnerabilities.**
+
+Email **security@blackroad.io** with:
 - Description of the vulnerability
 - Steps to reproduce
-- Impact assessment
+- Potential impact
 
-**Do not** open a public GitHub issue for security vulnerabilities.
+We will acknowledge receipt within 48 hours and provide a timeline for a fix.
 
-## Response Time
-- Acknowledgment: 24 hours
-- Assessment: 72 hours
-- Fix: depends on severity
+## Disclosure Policy
 
-## Scope
-All repos under [BlackRoad OS Enterprise](https://github.com/enterprises/blackroad-os) — 34 orgs, 2,315+ repos.
+We follow coordinated disclosure. We ask that you give us 90 days to address the issue before public disclosure.
 
-## Hall of Fame
-We credit all responsible disclosures (with permission).
+## Security Practices
 
-*Pave Tomorrow.*
+- All commits to main/master require pull requests (enterprise ruleset)
+- SHA pinning is required for all GitHub Actions
+- Sensitive files (.env, *.pem, *.key) are blocked at the enterprise level
+- Version tags (v*) are immutable once pushed
