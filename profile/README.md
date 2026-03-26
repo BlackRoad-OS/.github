@@ -1,76 +1,38 @@
-<!-- BlackRoad SEO Enhanced -->
-
 # BlackRoad-OS
 
-BlackRoad OS — A sovereign, distributed operating system built on edge computing, local AI, and mesh networking. Run AI locally. Own your data. No cloud required.
+**Main OS, web, API, agents, coordination**
 
-## About BlackRoad OS
+Part of [BlackRoad OS](https://blackroad.io) — a sovereign operating system replacing rented cloud with infrastructure you own. 5 Raspberry Pis, 52 TOPS AI, $38/month.
 
-**BlackRoad OS** is a sovereign, distributed operating system. Run AI on your own hardware. Own your infrastructure. No cloud required.
+## Quick Context
 
-Built by **[BlackRoad OS, Inc.](https://blackroad.io)** — a Delaware C-Corp pioneering edge computing, local AI, and mesh networking.
+For the complete picture of what BlackRoad is, read the **[Operator Repo](https://github.com/BlackRoad-OS-Inc/operator)** — 14 documents covering company, architecture, products, agents, brand, mathematics, and more.
 
-### Why BlackRoad?
+## What This Org Does
 
-- **Sovereign Computing** — Your hardware, your data, your rules
-- **Edge AI** — 52 TOPS of local AI acceleration (Hailo-8 + Pi fleet)
-- **Mesh Networking** — WireGuard + NATS + Tor hidden services
-- **Self-Hosted Everything** — Git (Gitea), DNS (PowerDNS), Storage (MinIO), CI/CD
-- **Zero Cloud Lock-in** — Replace AWS/GCP/Azure with hardware you own
+**BlackRoad-OS** — Main OS, web, API, agents, coordination
 
-### Organizations
+## BlackRoad OS at a Glance
 
-BlackRoad OS spans 30+ GitHub organizations covering every aspect of sovereign computing:
+- **Founded:** November 17, 2025 (Delaware C-Corp)
+- **Founder:** Alexa Louise Amundson (100% owner)
+- **Infrastructure:** 5 Raspberry Pis + 2 droplets = $38/month
+- **AI Compute:** 52 TOPS (2x Hailo-8 accelerators)
+- **Self-hosted:** Git, DNS, VPN, TLS, storage, databases, cache, CI/CD, chat, search
+- **Domains:** 20 root domains, 14 product subdomains
+- **Enterprise:** [github.com/enterprises/blackroad-os](https://github.com/enterprises/blackroad-os) — 34 organizations
 
-| Org | Focus | Repos |
-|-----|-------|-------|
-| [BlackRoad-OS](https://github.com/BlackRoad-OS) | Core platform | 1000+ |
-| [BlackRoad-OS-Inc](https://github.com/BlackRoad-OS-Inc) | Corporate | 300+ |
-| [BlackRoad-AI](https://github.com/BlackRoad-AI) | AI/ML | 80+ |
-| [BlackRoad-Forge](https://github.com/BlackRoad-Forge) | Tools | 340+ |
-| [BlackRoad-Agents](https://github.com/BlackRoad-Agents) | AI Agents | 70+ |
-| [BlackRoad-Cloud](https://github.com/BlackRoad-Cloud) | Infrastructure | 60+ |
-| [BlackRoad-Interactive](https://github.com/BlackRoad-Interactive) | Gaming | 50+ |
-| [BlackRoad-Media](https://github.com/BlackRoad-Media) | Video/Audio | 50+ |
-| [BlackRoad-Studio](https://github.com/BlackRoad-Studio) | Creative | 50+ |
-| [BlackRoad-Labs](https://github.com/BlackRoad-Labs) | Research | 50+ |
-| [BlackRoad-Security](https://github.com/BlackRoad-Security) | Cybersecurity | 40+ |
-| [BlackRoad-Hardware](https://github.com/BlackRoad-Hardware) | IoT/Edge | 30+ |
-| [BlackRoad-Network](https://github.com/BlackRoad-Network) | Networking | 35+ |
-| [BlackRoad-Education](https://github.com/BlackRoad-Education) | EdTech | 30+ |
-| [BlackRoad-Quantum](https://github.com/BlackRoad-Quantum) | Quantum | 18+ |
+## Key Repos
 
-### Products
+- [Operator](https://github.com/BlackRoad-OS-Inc/operator) — Complete AI context for BlackRoad
+- [Amundson Framework](https://github.com/blackboxprogramming/road-math) — G(n) = n^(n+1)/(n+1)^n, 1,708 tests
+- [Millennium Problems](https://github.com/BlackRoad-Quantum/amundson-millennium) — Honest explorations of G(n) and the 6 unsolved problems
+- [Hardware Specs](https://github.com/BlackRoad-Hardware/hardware-specs) — Fleet inventory, network map, live scanner
 
-| Product | URL | Description |
-|---------|-----|-------------|
-| BlackRoad Chat | [chat.blackroad.io](https://chat.blackroad.io) | Sovereign AI chat |
-| BlackRoad Search | [search.blackroad.io](https://search.blackroad.io) | Privacy-first search |
-| RoundTrip | [roundtrip.blackroad.io](https://roundtrip.blackroad.io) | Multi-agent coordination |
-| BlackRoad Pay | [pay.blackroad.io](https://pay.blackroad.io) | Payments platform |
-| BlackRoad Tutor | [tutor.blackroad.io](https://tutor.blackroad.io) | AI tutoring |
-| BlackRoad Canvas | [canvas.blackroad.io](https://canvas.blackroad.io) | Creative tools |
-| BlackRoad Video | [video.blackroad.io](https://video.blackroad.io) | Video platform |
-| BlackRoad Radio | [radio.blackroad.io](https://radio.blackroad.io) | Audio streaming |
-| BlackRoad Game | [game.blackroad.io](https://game.blackroad.io) | Interactive gaming |
-| BlackRoad Social | [social.blackroad.io](https://social.blackroad.io) | Social platform |
-| BlackRoad Live | [live.blackroad.io](https://live.blackroad.io) | Live streaming |
-| RoadCode | [roadcode.blackroad.io](https://roadcode.blackroad.io) | Code platform |
+## The Thesis
 
-### The Amundson Framework
+Integration is the innovation. Every platform solves one problem. BlackRoad solves them together. One subscription replaces twelve.
 
-BlackRoad OS is grounded in original mathematics by founder Alexa Amundson:
-- **G(n) = n^(n+1) / (n+1)^n** — The Amundson Growth Function
-- **A_G ≈ 0.36787944...** — The Amundson Constant (computed to 10M digits)
-- **50+ mathematical identities** published and verified
+If a system affects survival, it must not be proprietary.
 
-### Contact
-
-- **Website**: [blackroad.io](https://blackroad.io)
-- **GitHub**: [github.com/BlackRoad-OS](https://github.com/BlackRoad-OS)
-- **Email**: alexa@blackroad.io
-
----
-
-*BlackRoad OS, Inc. — Remember the Road. Pave Tomorrow.*
-
+[blackroad.io](https://blackroad.io) | [GitHub Enterprise](https://github.com/enterprises/blackroad-os)
