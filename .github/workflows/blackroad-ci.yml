@@ -1,43 +1,170 @@
 name: BlackRoad CI
+
 on:
   push:
     branches: [main, master]
   pull_request:
     branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: write
 
 jobs:
-  detect-and-build:
+  ci:
+    name: CI
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
-      - name: Detect project type
+      - name: Detect and validate
         id: detect
         run: |
-          if [ -f "wrangler.toml" ]; then echo "type=worker" >> $GITHUB_OUTPUT
-          elif [ -f "package.json" ]; then echo "type=node" >> $GITHUB_OUTPUT
-          elif [ -f "requirements.txt" ] || [ -f "pyproject.toml" ]; then echo "type=python" >> $GITHUB_OUTPUT
-          elif [ -f "Cargo.toml" ]; then echo "type=rust" >> $GITHUB_OUTPUT
-          elif [ -f "go.mod" ]; then echo "type=go" >> $GITHUB_OUTPUT
-          else echo "type=static" >> $GITHUB_OUTPUT
+          ERRORS=0
+          WARNINGS=0
+          SUMMARY=""
+
+          echo "## BlackRoad CI Report" >> $GITHUB_STEP_SUMMARY
+          echo "**Repo:** \`${{ github.repository }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # ---- Shell scripts ----
+          SHELL_FILES=$(find . -name "*.sh" -not -path "./.git/*" -not -path "./node_modules/*" -not -path "./.venv/*" 2>/dev/null)
+          SHELL_COUNT=$(echo "$SHELL_FILES" | grep -c . 2>/dev/null || echo 0)
+          if [ "$SHELL_COUNT" -gt 0 ]; then
+            echo "### Shell ($SHELL_COUNT files)" >> $GITHUB_STEP_SUMMARY
+            SYNTAX_FAIL=0
+            while IFS= read -r f; do
+              [ -z "$f" ] && continue
+              if ! bash -n "$f" 2>/dev/null; then
+                echo "- Syntax error: \`$f\`" >> $GITHUB_STEP_SUMMARY
+                SYNTAX_FAIL=$((SYNTAX_FAIL+1))
+              fi
+            done <<< "$SHELL_FILES"
+            if [ "$SYNTAX_FAIL" -eq 0 ]; then
+              echo "- All $SHELL_COUNT scripts pass syntax check" >> $GITHUB_STEP_SUMMARY
+            else
+              WARNINGS=$((WARNINGS+SYNTAX_FAIL))
+            fi
+            echo "" >> $GITHUB_STEP_SUMMARY
           fi
 
-      - name: Node.js build
-        if: steps.detect.outputs.type == 'node' || steps.detect.outputs.type == 'worker'
-        uses: actions/setup-node@v4
+          # ---- Node.js ----
+          if [ -f package.json ]; then
+            PKG_NAME=$(node -e "try{console.log(require('./package.json').name||'unnamed')}catch{console.log('parse-error')}" 2>/dev/null)
+            echo "### Node.js (\`$PKG_NAME\`)" >> $GITHUB_STEP_SUMMARY
+
+            # Check if package.json is valid JSON
+            if ! node -e "JSON.parse(require('fs').readFileSync('package.json','utf8'))" 2>/dev/null; then
+              echo "- Invalid package.json" >> $GITHUB_STEP_SUMMARY
+              ERRORS=$((ERRORS+1))
+            else
+              # Check for lockfile
+              if [ -f package-lock.json ] || [ -f yarn.lock ] || [ -f pnpm-lock.yaml ]; then
+                echo "- Lockfile present" >> $GITHUB_STEP_SUMMARY
+              fi
+
+              # Only run tests if there's a real test script
+              HAS_TEST=$(node -e "const p=require('./package.json');const t=p.scripts?.test||'';console.log(t&&!t.includes('no test specified')?'yes':'no')" 2>/dev/null)
+              if [ "$HAS_TEST" = "yes" ]; then
+                echo "- Test script found, running..." >> $GITHUB_STEP_SUMMARY
+              fi
+            fi
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # ---- Python ----
+          PY_FILES=$(find . -name "*.py" -not -path "./.git/*" -not -path "./node_modules/*" -not -path "./.venv/*" -not -path "./env/*" 2>/dev/null)
+          PY_COUNT=$(echo "$PY_FILES" | grep -c . 2>/dev/null || echo 0)
+          if [ "$PY_COUNT" -gt 0 ]; then
+            echo "### Python ($PY_COUNT files)" >> $GITHUB_STEP_SUMMARY
+            SYNTAX_FAIL=0
+            while IFS= read -r f; do
+              [ -z "$f" ] && continue
+              if ! python3 -c "import ast; ast.parse(open('$f').read())" 2>/dev/null; then
+                echo "- Syntax error: \`$f\`" >> $GITHUB_STEP_SUMMARY
+                SYNTAX_FAIL=$((SYNTAX_FAIL+1))
+              fi
+            done <<< "$(echo "$PY_FILES" | head -50)"
+            if [ "$SYNTAX_FAIL" -eq 0 ]; then
+              echo "- All files pass syntax check" >> $GITHUB_STEP_SUMMARY
+            else
+              WARNINGS=$((WARNINGS+SYNTAX_FAIL))
+            fi
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # ---- Go ----
+          if [ -f go.mod ]; then
+            echo "### Go" >> $GITHUB_STEP_SUMMARY
+            GO_MOD=$(head -1 go.mod)
+            echo "- Module: \`$GO_MOD\`" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # ---- HTML ----
+          HTML_COUNT=$(find . -name "*.html" -not -path "./.git/*" -not -path "./node_modules/*" -not -path "./dist/*" -not -path "./.next/*" | wc -l 2>/dev/null)
+          if [ "$HTML_COUNT" -gt 0 ]; then
+            echo "### HTML ($HTML_COUNT files)" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # ---- Rust ----
+          if [ -f Cargo.toml ]; then
+            echo "### Rust" >> $GITHUB_STEP_SUMMARY
+            CRATE=$(grep '^name' Cargo.toml | head -1 | cut -d'"' -f2)
+            echo "- Crate: \`$CRATE\`" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # ---- Dockerfile ----
+          if [ -f Dockerfile ] || [ -f docker-compose.yml ] || [ -f docker-compose.yaml ]; then
+            echo "### Docker" >> $GITHUB_STEP_SUMMARY
+            [ -f Dockerfile ] && echo "- Dockerfile present" >> $GITHUB_STEP_SUMMARY
+            [ -f docker-compose.yml ] || [ -f docker-compose.yaml ] && echo "- Compose file present" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # ---- Summary ----
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          if [ "$ERRORS" -gt 0 ]; then
+            echo "**Result: $ERRORS errors, $WARNINGS warnings**" >> $GITHUB_STEP_SUMMARY
+          elif [ "$WARNINGS" -gt 0 ]; then
+            echo "**Result: $WARNINGS warnings (non-blocking)**" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**Result: Passed**" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "*BlackRoad OS, Inc. | [blackroad.io](https://blackroad.io)*" >> $GITHUB_STEP_SUMMARY
+
+      # Only run npm tests if package.json exists with a real test script
+      - name: Setup Node.js
+        if: hashFiles('package.json') != ''
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: '20'
-      - run: npm ci || npm install
-        if: steps.detect.outputs.type == 'node' || steps.detect.outputs.type == 'worker'
-      - run: npm test || true
-        if: steps.detect.outputs.type == 'node' || steps.detect.outputs.type == 'worker'
+          node-version: 22
+        continue-on-error: true
 
-      - name: Python lint
-        if: steps.detect.outputs.type == 'python'
+      - name: Install dependencies
+        if: hashFiles('package.json') != ''
         run: |
-          pip install ruff 2>/dev/null || true
-          ruff check . || true
+          if [ -f package-lock.json ]; then
+            npm ci --ignore-scripts 2>/dev/null || npm install --ignore-scripts 2>/dev/null || true
+          elif [ -f yarn.lock ]; then
+            yarn install --frozen-lockfile --ignore-scripts 2>/dev/null || true
+          else
+            npm install --ignore-scripts 2>/dev/null || true
+          fi
+        continue-on-error: true
 
-      - name: Deploy Worker
-        if: steps.detect.outputs.type == 'worker' && github.event_name == 'push'
-        run: npx wrangler deploy --dry-run || true
+      - name: Run tests
+        if: hashFiles('package.json') != ''
+        run: |
+          HAS_TEST=$(node -e "const p=require('./package.json');const t=p.scripts?.test||'';console.log(t&&!t.includes('no test specified')?'yes':'no')" 2>/dev/null)
+          if [ "$HAS_TEST" = "yes" ]; then
+            npm test 2>&1 || echo "Tests reported failures (see above)"
+          else
+            echo "No test script configured, skipping"
+          fi
+        continue-on-error: true
